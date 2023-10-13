@@ -10,10 +10,38 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>flt-rpc</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>flt-rpc-common</module>
+        <module>flt-rpc-client</module>
+        <module>flt-rpc-server</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>flt-rpc-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>flt-rpc-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>flt-rpc-server</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
