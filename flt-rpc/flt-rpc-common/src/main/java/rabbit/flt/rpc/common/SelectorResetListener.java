@@ -2,7 +2,7 @@ package rabbit.flt.rpc.common;
 
 import java.nio.channels.SelectionKey;
 
-public interface KeyListener {
+public interface SelectorResetListener {
 
     /**
      * 重建selector后出发的事件

@@ -109,7 +109,7 @@ public class Serializer {
             }
             resource.close();
         } catch (Exception e) {
-
+            logger.error(e.getMessage(), e);
         }
     }
 }

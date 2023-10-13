@@ -47,4 +47,12 @@ public class ServerNode {
     public void setPort(int port) {
         this.port = port;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "host='" + host + '\'' +
+                ", port=" + port +
+                '}';
+    }
 }
