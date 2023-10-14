@@ -45,7 +45,7 @@ public class ChannelStatus {
      */
     public String getName() {
         for (Field field : getClass().getDeclaredFields()) {
-            if (Modifier.isAbstract(field.getModifiers()) && ChannelStatus.class == field.getType()) {
+            if (Modifier.isStatic(field.getModifiers()) && ChannelStatus.class == field.getType()) {
                 try {
                     field.setAccessible(true);
                     ChannelStatus status  = (ChannelStatus) field.get(null);
