@@ -9,6 +9,9 @@ public class PoolConfig {
 
     private int workerThreadCount = 1;
 
+    /**
+     * 获取客户端超时秒数
+     */
     private int acquireClientTimeoutSeconds = 3;
 
     /**

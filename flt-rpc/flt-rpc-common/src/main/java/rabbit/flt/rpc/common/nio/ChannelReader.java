@@ -37,9 +37,10 @@ public abstract class ChannelReader implements ChannelAdaptor {
     @Override
     public final SelectorWrapper resetSelector() {
         try {
+            // !!!!此处有bug
             Selector newSelector = Selector.open();
             if (null == selectorWrapper) {
-                selectorWrapper = new SelectorWrapper(newSelector);
+                selectorWrapper = new SelectorWrapper();
                 return selectorWrapper;
             }
             Selector oldSelector = this.selectorWrapper.getSelector();
@@ -189,7 +190,7 @@ public abstract class ChannelReader implements ChannelAdaptor {
                 break;
             }
             if (0 == read) {
-                LockSupport.parkNanos(1000 * 1000);
+                LockSupport.parkNanos(1000L * 1000);
                 if (System.currentTimeMillis() - start > 10 * 1000) {
                     throw new ChannelReadException("read time out exception, no data is read beyond 10s");
                 }
