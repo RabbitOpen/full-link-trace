@@ -85,5 +85,10 @@ public class ContextManager {
     public void close() {
         quit.release();
         selectionKeyCache.forEach((key, t) -> closeKey(key));
+        try {
+            monitor.join();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 }

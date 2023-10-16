@@ -56,7 +56,7 @@ public class Server extends AbstractServerChannel implements Registrar {
 
     private ChannelProcessor processor;
 
-    private ContextManager contextManager = new ContextManager();
+    private ContextManager contextManager;
 
     private RequestDispatcher requestDispatcher = new RequestDispatcher();
 
@@ -85,6 +85,7 @@ public class Server extends AbstractServerChannel implements Registrar {
             throw new RpcException("illegal status error, server is started!");
         }
         started = true;
+        contextManager = new ContextManager();
         selectorWrapper = new SelectorWrapper();
         serverSocketChannel = ServerSocketChannel.open();
         for (Map.Entry<SocketOption<Integer>, Integer> entry : options.entrySet()) {
