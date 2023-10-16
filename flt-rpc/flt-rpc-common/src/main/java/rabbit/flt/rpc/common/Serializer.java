@@ -12,7 +12,6 @@ import rabbit.flt.common.log.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Serializer {
 
@@ -26,28 +25,6 @@ public class Serializer {
         @Override
         protected Kryo create() {
             Kryo kryo = new Kryo() {
-                private ReentrantLock lock = new ReentrantLock();
-
-                @Override
-                public void writeObject(Output output, Object object) {
-                    try {
-                        lock.lock();
-                        super.writeObject(output, object);
-                    } finally {
-                        lock.unlock();
-                    }
-                }
-
-                @Override
-                public <T> T readObject(Input input, Class<T> type) {
-                    try {
-                        lock.lock();
-                        return super.readObject(input, type);
-                    } finally {
-                        lock.unlock();
-                    }
-                }
-
                 @Override
                 public Registration getRegistration(Class type) {
                     Registration registration = getClassResolver().getRegistration(type);

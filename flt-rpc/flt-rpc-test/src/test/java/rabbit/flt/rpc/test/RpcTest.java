@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rabbit.flt.common.Metrics;
 import rabbit.flt.common.metrics.GcMetrics;
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.client.RequestFactory;
@@ -13,6 +14,7 @@ import rabbit.flt.rpc.client.pool.ChannelResourcePool;
 import rabbit.flt.rpc.client.pool.ClientChannel;
 import rabbit.flt.rpc.client.pool.ConfigBuilder;
 import rabbit.flt.rpc.client.pool.ResourceGuard;
+import rabbit.flt.rpc.client.pool.SecureChannelResourcePool;
 import rabbit.flt.rpc.common.NamedExecutor;
 import rabbit.flt.rpc.common.ServerNode;
 import rabbit.flt.rpc.common.exception.NoPreparedClientException;
@@ -23,6 +25,7 @@ import rabbit.flt.rpc.common.nio.SelectorWrapper;
 import rabbit.flt.rpc.common.rpc.Authentication;
 import rabbit.flt.rpc.common.rpc.DataService;
 import rabbit.flt.rpc.common.rpc.KeepAlive;
+import rabbit.flt.rpc.common.rpc.ProtocolService;
 import rabbit.flt.rpc.server.Server;
 import rabbit.flt.rpc.server.ServerBuilder;
 
@@ -39,6 +42,7 @@ public class RpcTest {
 
     /**
      * 连接失败测试
+     *
      * @throws Exception
      */
     @Test
@@ -68,6 +72,7 @@ public class RpcTest {
 
     /**
      * rpc调用
+     *
      * @throws Exception
      */
     @Test
@@ -160,6 +165,79 @@ public class RpcTest {
             TestCase.assertTrue(e instanceof NoPreparedClientException);
         }
         resourcePool.close();
+    }
+
+    /**
+     * 刷新服务端节点列表测试
+     *
+     * @throws Exception
+     */
+    @Test
+    public void refreshServerTest() throws Exception {
+        int port = 10001;
+        String host = "localhost";
+        Semaphore refreshServerSemaphore = new Semaphore(0);
+        ChannelResourcePool resourcePool = new SecureChannelResourcePool() {
+            @Override
+            public void refreshServerNodes(List<ServerNode> nodeList) {
+                super.refreshServerNodes(nodeList);
+                refreshServerSemaphore.release();
+            }
+        };
+        Server server = ServerBuilder.builder()
+                .workerThreadCount(1)
+                .host(host).port(port)
+                .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
+                .registerHandler(Authentication.class, (app, sig) -> true)
+                .registerHandler(ProtocolService.class, new ProtocolService() {
+                    @Override
+                    public List<ServerNode> getServerNodes() {
+                        return Arrays.asList(new ServerNode(host, port),
+                                new ServerNode(host, port),
+                                new ServerNode(host, port + 1),
+                                new ServerNode(host, port + 2)
+                        );
+                    }
+
+                    @Override
+                    public boolean isMetricsEnabled(String applicationCode, Class<? extends Metrics> type) {
+                        return false;
+                    }
+                })
+                .maxPendingConnections(16 * 1024 * 1024)
+                .maxPendingConnections(1000)
+                .build();
+
+        server.start();
+
+        // 每个服务端2个连接
+        int connectionsPerServer = 2;
+        resourcePool.init(ConfigBuilder.builder()
+                .workerThreadCount(1)
+                .bossThreadCount(1)
+                .password("1234567f1234567f")
+                .connectionsPerServer(connectionsPerServer)
+                .acquireClientTimeoutSeconds(3)
+                .serverNodes(Arrays.asList(new ServerNode(host, port), new ServerNode(host, port + 10)))
+                .build());
+
+        ResourceGuard resourceGuard = resourcePool.getResourceGuard();
+        refreshServerSemaphore.acquire(1);
+        int size = resourcePool.getPoolConfig().getServerNodes().size();
+        TestCase.assertEquals(connectionsPerServer * size, resourceGuard.getClientChannels().size());
+        TestCase.assertEquals(connectionsPerServer * size, resourcePool.getClientChannelList().size());
+        int connected = 0, unconnected = 0;
+        for (ClientChannel channel : resourcePool.getClientChannelList()) {
+            if (channel.getServerNode().isSameNode(new ServerNode(host, port))) {
+                connected++;
+            } else {
+                unconnected++;
+            }
+        }
+        TestCase.assertEquals(4, unconnected);
+        TestCase.assertEquals(2, connected);
+        resourcePool.close();
+        server.close();
     }
 
 }

@@ -222,7 +222,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
     }
 
     @Override
-    protected ServerNode getServerNode() {
+    public ServerNode getServerNode() {
         return serverNode;
     }
 
@@ -318,4 +318,5 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
     protected void resetLastConnectTime() {
         this.lastConnectTime = 0;
     }
+
 }
