@@ -104,6 +104,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
     public ClientChannel(ExecutorService workerExecutor, ExecutorService bossExecutor, ServerNode serverNode,
                          ResourceGuard guard, SelectorWrapper selectorWrapper) {
         this.channelListener = channel -> {
+            // do nothing
         };
         this.workerExecutor = workerExecutor;
         this.bossExecutor = bossExecutor;

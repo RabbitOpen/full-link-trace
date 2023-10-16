@@ -195,6 +195,7 @@ public class Server extends AbstractServerChannel implements Registrar {
             response.setSuccess(false);
             response.setMsg("unregistered handler[" + request.getInterfaceClz().getName() + "]");
             response.setCode(ResponseCode.UN_REGISTERED_HANDLER);
+            getRequestDispatcher().write(selectionKey, response);
         } else {
             contextManager.active(selectionKey);
             getRequestDispatcher().handleRequest(selectionKey, rpcRequest);
