@@ -3,6 +3,7 @@ package rabbit.flt.rpc.common.rpc;
 import rabbit.flt.rpc.common.Protocol;
 import rabbit.flt.rpc.common.Request;
 import rabbit.flt.rpc.common.RpcException;
+import rabbit.flt.rpc.common.exception.ChannelClosedException;
 import rabbit.flt.rpc.common.exception.RpcTimeoutException;
 import rabbit.flt.rpc.common.exception.UnAuthenticatedException;
 import rabbit.flt.rpc.common.exception.UnRegisteredHandlerException;
@@ -57,7 +58,7 @@ public class RpcRequest extends Protocol<Request> {
                 throw new UnRegisteredHandlerException(response.getMsg());
             }
             if (CHANNEL_CLOSED == response.getCode()) {
-                throw new UnRegisteredHandlerException(response.getMsg());
+                throw new ChannelClosedException(response.getMsg());
             }
             throw new RpcException(response.getMsg());
         }

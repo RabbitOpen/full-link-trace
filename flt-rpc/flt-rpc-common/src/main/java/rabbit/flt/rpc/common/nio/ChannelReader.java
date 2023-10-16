@@ -43,7 +43,7 @@ public abstract class ChannelReader implements ChannelAdaptor {
             SelectorWrapper oldSelector = this.selectorWrapper;
             this.selectorWrapper = new SelectorWrapper();
             for (SelectionKey oldKey : oldSelector.getSelector().keys()) {
-                if (!oldKey.isAcceptable()) {
+                if (!oldKey.isValid()) {
                     continue;
                 }
                 SelectionKey newKey = oldKey.channel().register(selectorWrapper.getSelector(),
