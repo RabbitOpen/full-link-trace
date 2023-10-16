@@ -15,7 +15,6 @@ import java.io.Closeable;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.LockSupport;
@@ -37,20 +36,21 @@ public abstract class ChannelReader implements ChannelAdaptor {
     @Override
     public final SelectorWrapper resetSelector() {
         try {
-            // !!!!此处有bug
-            Selector newSelector = Selector.open();
             if (null == selectorWrapper) {
                 selectorWrapper = new SelectorWrapper();
                 return selectorWrapper;
             }
-            Selector oldSelector = this.selectorWrapper.getSelector();
-            for (SelectionKey oldKey : oldSelector.keys()) {
+            SelectorWrapper oldSelector = this.selectorWrapper;
+            this.selectorWrapper = new SelectorWrapper();
+            for (SelectionKey oldKey : oldSelector.getSelector().keys()) {
                 if (!oldKey.isAcceptable()) {
                     continue;
                 }
-                SelectionKey newKey = oldKey.channel().register(newSelector, oldKey.interestOps(), oldKey.attachment());
+                SelectionKey newKey = oldKey.channel().register(selectorWrapper.getSelector(),
+                        oldKey.interestOps(), oldKey.attachment());
                 getSelectorResetListener().keyChanged(oldKey, newKey);
             }
+            oldSelector.close();
         } catch (Exception e) {
             throw new RpcException(e);
         }
@@ -236,5 +236,9 @@ public abstract class ChannelReader implements ChannelAdaptor {
      */
     protected final int getMaxFrameLength() {
         return maxFrameLength;
+    }
+
+    public SelectorWrapper getWrapper() {
+        return selectorWrapper;
     }
 }

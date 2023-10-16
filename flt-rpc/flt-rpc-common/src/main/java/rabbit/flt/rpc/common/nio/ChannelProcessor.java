@@ -25,6 +25,7 @@ public class ChannelProcessor extends Thread {
         this.selectorWrapper = selectorWrapper;
         this.channelReader = channelReader;
         setDaemon(false);
+        setName("channel-processor");
     }
 
     @Override
