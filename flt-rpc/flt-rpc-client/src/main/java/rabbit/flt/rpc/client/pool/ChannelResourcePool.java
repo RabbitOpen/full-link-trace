@@ -104,7 +104,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
         // 守卫的关闭操作可能会涉及使用资源池，所以采取无锁关闭
         resourceGuard.close();
         try {
-            lock.unlock();
+            lock.lock();
             channelProcessor.close();
             // 关闭所有连接
             this.clientChannelList.forEach(clientChannel -> clientChannel.close());
@@ -261,7 +261,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
      * @throws RpcException
      */
     @Override
-    public <T> T doRequest(RpcRequest request, int timeoutSeconds) throws RpcException {
+    public <T> T doRequest(RpcRequest request, int timeoutSeconds) {
         try {
             request.increase();
             long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;

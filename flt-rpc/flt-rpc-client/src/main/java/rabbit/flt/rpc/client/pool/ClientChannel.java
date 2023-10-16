@@ -21,7 +21,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -133,7 +132,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
     }
 
     @Override
-    public <T> T doRequest(RpcRequest request, int timeoutSeconds) throws RpcException {
+    public <T> T doRequest(RpcRequest request, int timeoutSeconds) {
         try {
             lock.lock();
             if (!getChannelStatus().isConnected()) {

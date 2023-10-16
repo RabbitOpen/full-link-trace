@@ -67,6 +67,16 @@ public class ConfigBuilder {
     }
 
     /**
+     * 获取连接超时秒数
+     * @param acquireClientTimeoutSeconds
+     * @return
+     */
+    public ConfigBuilder acquireClientTimeoutSeconds(int acquireClientTimeoutSeconds) {
+        operations.add(c -> c.setAcquireClientTimeoutSeconds(acquireClientTimeoutSeconds));
+        return this;
+    }
+
+    /**
      * 设置rpc最大重试次数
      * @param maxRetryTime
      * @return

@@ -5,7 +5,7 @@ public class Request {
     /**
      * 函数名
      */
-    private String method;
+    private String methodName;
 
     /**
      * 所属接口
@@ -22,12 +22,12 @@ public class Request {
      */
     private Class<?>[] parameterTypes;
 
-    public String getMethod() {
-        return method;
+    public String getMethodName() {
+        return methodName;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
     }
 
     public Class<?> getInterfaceClz() {

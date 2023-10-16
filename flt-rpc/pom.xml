@@ -15,6 +15,7 @@
         <module>flt-rpc-common</module>
         <module>flt-rpc-client</module>
         <module>flt-rpc-server</module>
+        <module>flt-rpc-test</module>
     </modules>
 
     <properties>
@@ -43,5 +44,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+
 
 </project>

@@ -47,7 +47,7 @@ public abstract class RequestFactory implements InvocationHandler {
         RpcRequest rpcRequest = new RpcRequest();
         rpcRequest.increaseRequestId();
         Request request = new Request();
-        request.setMethod(methodName);
+        request.setMethodName(methodName);
         request.setInterfaceClz(method.getDeclaringClass());
         request.setParameterTypes(method.getParameterTypes());
         request.setParameters(args);
