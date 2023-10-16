@@ -1,5 +1,6 @@
 package rabbit.flt.rpc.server;
 
+import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.rpc.common.NamedExecutor;
 import rabbit.flt.rpc.common.Request;
 import rabbit.flt.rpc.common.ResponseCode;
@@ -65,11 +66,11 @@ public class Server extends AbstractServerChannel implements Registrar {
     private boolean started = false;
 
     protected Server() {
-        this.host = "127.0.0.1";
         // 注册认证，默认通过
         register(Authentication.class, (applicationCode, signature) -> true);
         // 注册心跳
         getRequestDispatcher().registerHandler(KeepAlive.class, (KeepAlive) () -> {
+            // do nothing
         });
     }
 
@@ -90,7 +91,7 @@ public class Server extends AbstractServerChannel implements Registrar {
             serverSocketChannel.setOption(entry.getKey(), entry.getValue());
         }
         serverSocketChannel.configureBlocking(false);
-        serverSocketChannel.bind(new InetSocketAddress(host, port), maxPendingConnections);
+        serverSocketChannel.bind(new InetSocketAddress(getHost(), port), maxPendingConnections);
         serverSocketChannel.register(getWrapper().getSelector(), SelectionKey.OP_ACCEPT);
         processor = new ChannelProcessor(selectorWrapper, this);
         processor.start();
@@ -142,6 +143,10 @@ public class Server extends AbstractServerChannel implements Registrar {
 
     public void setBossThreadCount(int bossThreadCount) {
         this.bossThreadCount = bossThreadCount;
+    }
+
+    protected String getHost() {
+        return StringUtils.isEmpty(host) ? String.join(".", new String[] {"0", "0", "0", "0"}) : host;
     }
 
     public void setBossExecutor(ExecutorService bossExecutor) {
