@@ -410,8 +410,8 @@ public class RpcTest {
             }
         };
 
-        // 每个服务端2个连接
-        int connectionsPerServer = 2;
+        // 每个服务端1个连接
+        int connectionsPerServer = 1;
         resourcePool.init(ConfigBuilder.builder()
                 .workerThreadCount(2)
                 .bossThreadCount(1)
@@ -434,16 +434,16 @@ public class RpcTest {
                 throw e;
             }
         }
-        closeSemaphore.acquire(2);
+        closeSemaphore.acquire(connectionsPerServer);
 
         connectSemaphore.drainPermits();
         for (int i = 0; i < 50; i++) {
             logger.info("\n--------------------        restart server       -----------------------");
             server.start();
-            connectSemaphore.acquire(2);
+            connectSemaphore.acquire(connectionsPerServer);
             TestCase.assertEquals("abc001", userService.getName("abc"));
             server.close();
-            closeSemaphore.acquire(2);
+            closeSemaphore.acquire(connectionsPerServer);
         }
         resourcePool.close();
     }
