@@ -12,6 +12,7 @@
         <module>flt-rpc</module>
         <module>flt-common</module>
         <module>flt-plugins</module>
+        <module>flt-core</module>
     </modules>
 
     <properties>

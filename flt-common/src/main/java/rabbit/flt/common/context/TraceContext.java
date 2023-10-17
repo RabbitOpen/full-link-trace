@@ -185,7 +185,7 @@ public class TraceContext {
             if (isTraceOpenedBy(target)) {
                 return spanId;
             }
-            spanId += "-" + getChildSpanIdIndex(spanId);
+            spanId = spanId.concat("-").concat(getChildSpanIdIndex(spanId).toString());
             initRootSpanId(spanId);
         }
         return spanId;
