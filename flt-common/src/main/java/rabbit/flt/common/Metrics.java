@@ -29,9 +29,12 @@ public abstract class Metrics {
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
         setProcessName(runtimeMXBean.getName());
         setOnlineTime(runtimeMXBean.getStartTime());
-
     }
 
+    /**
+     * 获取主机ip
+     * @return
+     */
     protected String getHostIp() {
         try {
             return Inet4Address.getLocalHost().getHostAddress();

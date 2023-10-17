@@ -85,7 +85,7 @@ public class AgentLogger implements InvocationHandler {
                     if (arr[j] instanceof Exception) {
                         result = result + ", " + errorMsg;
                     } else {
-                        result = result.replaceFirst("\\{\\}}", Matcher.quoteReplacement(errorMsg));
+                        result = result.replaceFirst("\\{\\}", Matcher.quoteReplacement(errorMsg));
                     }
                 }
             } else {
@@ -93,7 +93,7 @@ public class AgentLogger implements InvocationHandler {
                 if (args[i] instanceof Exception) {
                     result = result + ", " + errorMsg;
                 } else {
-                    result = result.replaceFirst("\\{\\}}", Matcher.quoteReplacement(errorMsg));
+                    result = result.replaceFirst("\\{\\}", Matcher.quoteReplacement(errorMsg));
                 }
             }
         }

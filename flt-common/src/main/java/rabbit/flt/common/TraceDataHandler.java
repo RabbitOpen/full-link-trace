@@ -2,7 +2,6 @@ package rabbit.flt.common;
 
 import rabbit.flt.common.trace.TraceData;
 
-import java.io.Closeable;
 import java.util.List;
 
 /**
