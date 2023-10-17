@@ -4,7 +4,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 
-public class AesUtil {
+public class AESUtil {
 
     private static final String algorithm = "AES/ECB/PKCS5Padding";
 

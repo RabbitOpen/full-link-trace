@@ -1,6 +1,6 @@
 package rabbit.flt.rpc.client.pool;
 
-import rabbit.flt.common.utils.AesUtil;
+import rabbit.flt.common.utils.AESUtil;
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.client.RequestFactory;
 import rabbit.flt.rpc.common.ChannelStatus;
@@ -27,7 +27,7 @@ public class SecureChannelResourcePool extends ChannelResourcePool {
             };
             try {
                 Authentication proxy = factory.proxy(Authentication.class);
-                String signature = AesUtil.encrypt("" + System.currentTimeMillis(), config.getPassword());
+                String signature = AESUtil.encrypt("" + System.currentTimeMillis(), config.getPassword());
                 proxy.authenticate(config.getApplicationCode(), signature);
                 channel.setChannelStatus(ChannelStatus.AUTHENTICATED);
             } catch (Exception e) {

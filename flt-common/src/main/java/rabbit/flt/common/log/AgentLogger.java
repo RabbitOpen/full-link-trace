@@ -1,6 +1,7 @@
 package rabbit.flt.common.log;
 
 
+import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.utils.StringUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -35,7 +36,7 @@ public class AgentLogger implements InvocationHandler {
             try {
                 Class<?> clz = Thread.currentThread().getContextClassLoader().loadClass(getSlf4jLoggerClassName());
                 slf4jLogger = clz.getDeclaredMethod("getLogger", String.class).invoke(null, loggerName);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 // 没有日志对象则直接控制台输出
                 printWithConsole(args);
                 return null;
@@ -46,7 +47,7 @@ public class AgentLogger implements InvocationHandler {
                     try {
                         return slf4jLogger.getClass().getDeclaredMethod(method.getName(), method.getParameterTypes());
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        throw new AgentException(e);
                     }
                 }).invoke(slf4jLogger, args);
     }
@@ -55,7 +56,7 @@ public class AgentLogger implements InvocationHandler {
         if (null == types || 0 == types.length) {
             return "_$NO_PARA_LOG_METHOD";
         }
-        return String.join("-", Arrays.asList(types).stream().map(t -> t.getSimpleName()).collect(Collectors.toList()));
+        return String.join("-", Arrays.asList(types).stream().map(Class::getSimpleName).collect(Collectors.toList()));
     }
 
     private String getSlf4jLoggerClassName() {
