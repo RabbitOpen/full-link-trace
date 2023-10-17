@@ -3,7 +3,6 @@ package rabbit.flt.common;
 import rabbit.flt.common.exception.QueueFullException;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;

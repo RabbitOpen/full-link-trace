@@ -27,7 +27,7 @@ public class SecureChannelResourcePool extends ChannelResourcePool {
             };
             try {
                 Authentication proxy = factory.proxy(Authentication.class);
-                String signature = AESUtil.encrypt("" + System.currentTimeMillis(), config.getPassword());
+                String signature = AESUtil.encrypt(Long.toString(System.currentTimeMillis()), config.getPassword());
                 proxy.authenticate(config.getApplicationCode(), signature);
                 channel.setChannelStatus(ChannelStatus.AUTHENTICATED);
             } catch (Exception e) {

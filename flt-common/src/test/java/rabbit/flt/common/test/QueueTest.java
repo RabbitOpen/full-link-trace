@@ -20,6 +20,7 @@ public class QueueTest {
     @Test
     public void queueTest() throws Exception {
         LinkedQueue<String> pbq = new LinkedQueue<>(2000);
+        pbq.drainTo(new ArrayList<>(), 10, 0);
         AtomicLong counter = new AtomicLong(0);
         Semaphore semaphore = new Semaphore(0);
         int threadCount = 50;
