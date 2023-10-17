@@ -1,5 +1,8 @@
 package rabbit.flt.common;
 
+import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.utils.StringUtils;
+
 import java.io.InputStream;
 
 /**
@@ -44,4 +47,16 @@ public abstract class AbstractConfigFactory {
     public static void setFactoryLoader(ConfigFactoryLoader factoryLoader) {
         AbstractConfigFactory.factoryLoader = factoryLoader;
     }
+
+    public static void setAgentConfigFile(String agentConfigFile) {
+        if (StringUtils.isEmpty(agentConfigFile)) {
+            throw new AgentException("agent config error, config file can't be empty!");
+        }
+        AbstractConfigFactory.agentConfigFile = agentConfigFile;
+    }
+
+    public static String getAgentConfigFile() {
+        return agentConfigFile;
+    }
+
 }

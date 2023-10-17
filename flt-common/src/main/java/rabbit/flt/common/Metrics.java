@@ -32,10 +32,17 @@ public abstract class Metrics {
     }
 
     /**
-     * 获取主机ip
+     * 指标类型
      * @return
      */
-    protected String getHostIp() {
+    public abstract String getMetricsType();
+
+    /**
+     * 获取主机ip
+     *
+     * @return
+     */
+    public static String getHostIp() {
         try {
             return Inet4Address.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
