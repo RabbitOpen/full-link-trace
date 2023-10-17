@@ -113,6 +113,13 @@ public class TraceContext {
         return stackInfo;
     }
 
+    public static MethodStackInfo getStackInfo(Method method) {
+        if (null == methodStackContext.get()) {
+            return null;
+        }
+        return methodStackContext.get().get(method);
+    }
+
     /**
      * 出栈
      * @param method

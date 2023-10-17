@@ -40,6 +40,24 @@ public abstract class AbstractConfigFactory {
     public abstract void doInitialize();
 
     /**
+     * 获取配置对象
+     * @return
+     */
+    protected abstract AgentConfig getAgentConfig();
+
+    /**
+     * 获取配置对象
+     * @return
+     */
+    public static AgentConfig getConfig() {
+        AbstractConfigFactory factory = getFactory();
+        if (null == factory) {
+            return null;
+        }
+        return factory.getAgentConfig();
+    }
+
+    /**
      * 初始化
      */
     public abstract void doInitialize(InputStream stream);
