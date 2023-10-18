@@ -101,7 +101,7 @@ public class AgentEntry {
                 .or(nameStartsWith("java."))
                 .or(nameStartsWith("javax."));
         AgentConfig config = AbstractConfigFactory.getConfig();
-        if (null == config) {
+        if (null != config) {
             String ignorePackages = config.getIgnorePackages();
             if (!StringUtils.isEmpty(ignorePackages)) {
                 for (String pkg : ignorePackages.split(",")) {

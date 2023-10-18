@@ -28,19 +28,6 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>sonar</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <sonar.host.url>http://localhost:9000</sonar.host.url>
-                <sonar.projectName>${project.artifactId}</sonar.projectName>
-            </properties>
-        </profile>
-    </profiles>
-
     <build>
         <plugins>
             <plugin>
@@ -81,24 +68,24 @@
                             <relocations>
                                 <relocation>
                                     <pattern>net.bytebuddy</pattern>
-                                    <shadePattern>rabbit.flt.bytebuddy</shadePattern>
+                                    <shadedPattern>rabbit.flt.bytebuddy</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.esotericsoftware</pattern>
-                                    <shadePattern>rabbit.flt.esotericsoftware</shadePattern>
+                                    <shadedPattern>rabbit.flt.esotericsoftware</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.objenesis</pattern>
-                                    <shadePattern>rabbit.flt.objenesis</shadePattern>
+                                    <shadedPattern>rabbit.flt.objenesis</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.fasterxml.uuid</pattern>
-                                    <shadePattern>rabbit.flt.uuid</shadePattern>
+                                    <shadedPattern>rabbit.flt.uuid</shadedPattern>
                                 </relocation>
                                 <!-- 替换logger -->
                                 <relocation>
                                     <pattern>org.slf4j.Logger</pattern>
-                                    <shadePattern>rabbit.flt.common.log.Logger</shadePattern>
+                                    <shadedPattern>rabbit.flt.common.log.Logger</shadedPattern>
                                     <excludes>
                                         <exclude>
                                             org.slf4j.LoggerFactory
@@ -108,7 +95,7 @@
                                 <!-- 替换logger factory -->
                                 <relocation>
                                     <pattern>org.slf4j.LoggerFactory</pattern>
-                                    <shadePattern>rabbit.flt.common.log.AgentLoggerFactory</shadePattern>
+                                    <shadedPattern>rabbit.flt.common.log.AgentLoggerFactory</shadedPattern>
                                 </relocation>
                             </relocations>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
@@ -119,8 +106,9 @@
                                         <Can-Redefine-Classes>true</Can-Redefine-Classes>
                                     </manifestEntries>
                                 </transformer>
-
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServiceResourceTransformer"/>
+                                <!--合并 spi 接口-->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer">
+                                </transformer>
                             </transformers>
                         </configuration>
                     </execution>
