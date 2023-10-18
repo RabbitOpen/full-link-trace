@@ -10,6 +10,7 @@ import rabbit.flt.rpc.common.SelectorResetListener;
 import rabbit.flt.rpc.common.Serializer;
 import rabbit.flt.rpc.common.ServerNode;
 import rabbit.flt.rpc.common.exception.IllegalChannelStatusException;
+import rabbit.flt.rpc.common.exception.RpcTimeoutException;
 import rabbit.flt.rpc.common.nio.AbstractClientChannel;
 import rabbit.flt.rpc.common.nio.SelectorWrapper;
 import rabbit.flt.rpc.common.rpc.KeepAlive;
@@ -87,7 +88,8 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
      * @param serverNode
      */
     public ClientChannel(ChannelResourcePool pool, ServerNode serverNode) {
-        this(pool.getWorkerExecutor(), pool.getBossExecutor(), serverNode, pool.getResourceGuard(), pool.getWrapper());
+        this(pool.getWorkerExecutor(), pool.getBossExecutor(), serverNode, pool.getResourceGuard(),
+                pool.getWrapper(), pool.getPoolConfig().getRpcRequestTimeoutSeconds());
         this.callbackExecutor = pool.getCallbackExecutor();
         this.channelListener = pool.getPoolConfig().getChannelListener();
     }
@@ -103,6 +105,21 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
      */
     public ClientChannel(ExecutorService workerExecutor, ExecutorService bossExecutor, ServerNode serverNode,
                          ResourceGuard guard, SelectorWrapper selectorWrapper) {
+        this(workerExecutor, bossExecutor, serverNode, guard, selectorWrapper, 30);
+    }
+
+    /**
+     * 构建函数
+     *
+     * @param workerExecutor
+     * @param bossExecutor
+     * @param serverNode
+     * @param guard
+     * @param selectorWrapper
+     * @param rpcTimeoutSeconds
+     */
+    private ClientChannel(ExecutorService workerExecutor, ExecutorService bossExecutor, ServerNode serverNode,
+                         ResourceGuard guard, SelectorWrapper selectorWrapper, int rpcTimeoutSeconds) {
         this.channelListener = channel -> {
             // do nothing
         };
@@ -112,13 +129,13 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
         this.resourceGuard = guard;
         this.selectorWrapper = selectorWrapper;
         this.resourceGuard.add(this);
-        initKeepAlive();
+        initKeepAlive(rpcTimeoutSeconds);
     }
 
     /**
      * 初始化心跳服务
      */
-    private void initKeepAlive() {
+    private void initKeepAlive(int rpcTimeoutSeconds) {
         keepAlive = new RequestFactory() {
             @Override
             protected Client getClient() {
@@ -128,6 +145,11 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
             @Override
             protected int getMaxRetryTime() {
                 return 0;
+            }
+
+            @Override
+            protected int getRequestTimeoutSeconds() {
+                return rpcTimeoutSeconds;
             }
         }.proxy(KeepAlive.class);
     }
@@ -171,6 +193,10 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
         }
         try {
             return request.getResponse(timeoutSeconds);
+        } catch (RpcTimeoutException e) {
+            // 超时断开重连
+            disconnected(selectionKey);
+            throw e;
         } finally {
             signals.remove(request.getRequestId());
         }
@@ -250,7 +276,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
             lock.lock();
             close(socketChannel);
             socketChannel = null;
-            selectionKey.cancel();
+            this.selectionKey.cancel();
             clearSignals();
             setChannelStatus(INIT);
         } finally {

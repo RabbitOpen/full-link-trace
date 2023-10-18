@@ -47,6 +47,16 @@ public class ResourceGuard extends Thread {
             protected Client getClient() {
                 return pool;
             }
+
+            @Override
+            protected int getMaxRetryTime() {
+                return 0;
+            }
+
+            @Override
+            protected int getRequestTimeoutSeconds() {
+                return pool.getPoolConfig().getRpcRequestTimeoutSeconds();
+            }
         }.proxy(ProtocolService.class);
     }
 

@@ -16,10 +16,10 @@ import rabbit.flt.rpc.client.pool.ConfigBuilder;
 import rabbit.flt.rpc.client.pool.ResourceGuard;
 import rabbit.flt.rpc.client.pool.SecureChannelResourcePool;
 import rabbit.flt.rpc.common.NamedExecutor;
+import rabbit.flt.rpc.common.RpcException;
 import rabbit.flt.rpc.common.ServerNode;
-import rabbit.flt.rpc.common.exception.ChannelClosedException;
-import rabbit.flt.rpc.common.exception.IllegalChannelStatusException;
 import rabbit.flt.rpc.common.exception.NoPreparedClientException;
+import rabbit.flt.rpc.common.exception.RpcTimeoutException;
 import rabbit.flt.rpc.common.exception.UnAuthenticatedException;
 import rabbit.flt.rpc.common.exception.UnRegisteredHandlerException;
 import rabbit.flt.rpc.common.nio.ChannelProcessor;
@@ -38,6 +38,7 @@ import java.nio.channels.SelectionKey;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.LockSupport;
 
 @RunWith(JUnit4.class)
 public class RpcTest {
@@ -95,7 +96,7 @@ public class RpcTest {
 
         server.start();
         Semaphore serverClosedSemaphore = new Semaphore(0);
-        Semaphore refreshServerSemaphore = new Semaphore(0);
+        Semaphore serverConnectedSemaphore = new Semaphore(0);
         ChannelResourcePool resourcePool = new ChannelResourcePool() {
             @Override
             public void disconnected(SelectionKey selectionKey) {
@@ -104,9 +105,9 @@ public class RpcTest {
             }
 
             @Override
-            public void refreshServerNodes(List<ServerNode> nodeList) {
-                super.refreshServerNodes(nodeList);
-                refreshServerSemaphore.release();
+            public void onServerConnected(SelectionKey selectionKey) {
+                super.onServerConnected(selectionKey);
+                serverConnectedSemaphore.release();
             }
         };
 
@@ -123,7 +124,7 @@ public class RpcTest {
 
             @Override
             protected int getRequestTimeoutSeconds() {
-                return 30;
+                return 2;
             }
         };
 
@@ -133,6 +134,7 @@ public class RpcTest {
                 .password("1234567f1234567f")
                 .connectionsPerServer(1)
                 .acquireClientTimeoutSeconds(3)
+                .rpcRequestTimeoutSeconds(2)
                 .serverNodes(Arrays.asList(new ServerNode(host, port), new ServerNode(host, port + 4)))
                 .build());
 
@@ -159,9 +161,17 @@ public class RpcTest {
             TestCase.assertTrue(e instanceof UnRegisteredHandlerException);
         }
 
+        serverConnectedSemaphore.drainPermits();
+        try {
+            // 超时
+            userService.wait5s();
+            throw new RuntimeException();
+        } catch (Exception e) {
+            TestCase.assertEquals(RpcTimeoutException.class, e.getClass());
+        }
+        serverConnectedSemaphore.acquire(1);
         server.close();
         serverClosedSemaphore.acquire(1);
-
         try {
             authService.authenticate("", "");
             throw new RuntimeException();
@@ -350,15 +360,8 @@ public class RpcTest {
     public void reconnectTest() throws Exception {
         int port = 10001;
         String host = "localhost";
-        Semaphore closeSemaphore = new Semaphore(0);
         Semaphore connectSemaphore = new Semaphore(0);
         ChannelResourcePool resourcePool = new SecureChannelResourcePool() {
-            @Override
-            public void disconnected(SelectionKey selectionKey) {
-                super.disconnected(selectionKey);
-                closeSemaphore.release();
-            }
-
             @Override
             public void onServerConnected(SelectionKey selectionKey) {
                 super.onServerConnected(selectionKey);
@@ -411,13 +414,14 @@ public class RpcTest {
         };
 
         // 每个服务端1个连接
-        int connectionsPerServer = 1;
+        int connectionsPerServer = 5;
         resourcePool.init(ConfigBuilder.builder()
                 .workerThreadCount(2)
                 .bossThreadCount(1)
                 .password("1234567f1234567f")
                 .connectionsPerServer(connectionsPerServer)
                 .acquireClientTimeoutSeconds(3)
+                .rpcRequestTimeoutSeconds(2)
                 .serverNodes(Arrays.asList(new ServerNode(host, port)))
                 .build());
 
@@ -428,24 +432,40 @@ public class RpcTest {
             userService.getName("abc");
             throw new RuntimeException();
         } catch (Exception e) {
-            if (!(e instanceof ChannelClosedException || e instanceof IllegalChannelStatusException
-                    || e instanceof NoPreparedClientException)) {
+            if (!(e instanceof RpcException)) {
                 logger.error(e.getMessage(), e);
                 throw e;
             }
         }
-        closeSemaphore.acquire(connectionsPerServer);
+
+        waitAllConnectionClosed(resourcePool, connectionsPerServer);
 
         connectSemaphore.drainPermits();
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 5; i++) {
             logger.info("\n--------------------        restart server       -----------------------");
             server.start();
             connectSemaphore.acquire(connectionsPerServer);
             TestCase.assertEquals("abc001", userService.getName("abc"));
             server.close();
-            closeSemaphore.acquire(connectionsPerServer);
+            waitAllConnectionClosed(resourcePool, connectionsPerServer);
         }
         resourcePool.close();
+    }
+
+    private void waitAllConnectionClosed(ChannelResourcePool resourcePool, int connectionsPerServer) {
+        while (true) {
+            int count = 0;
+            for (ClientChannel channel : resourcePool.getClientChannelList()) {
+                if (channel.getChannelStatus().isInit()) {
+                    count++;
+                }
+            }
+            if (count == connectionsPerServer) {
+                break;
+            } else {
+                LockSupport.parkNanos(10L * 1000 * 1000);
+            }
+        }
     }
 
 }

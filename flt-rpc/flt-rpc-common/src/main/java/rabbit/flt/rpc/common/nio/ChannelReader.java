@@ -7,9 +7,11 @@ import rabbit.flt.rpc.common.GzipUtil;
 import rabbit.flt.rpc.common.RpcException;
 import rabbit.flt.rpc.common.SelectorResetListener;
 import rabbit.flt.rpc.common.Serializer;
+import rabbit.flt.rpc.common.ServerNode;
 import rabbit.flt.rpc.common.exception.BeyondLimitException;
 import rabbit.flt.rpc.common.exception.ChannelClosedException;
 import rabbit.flt.rpc.common.exception.ChannelReadException;
+import rabbit.flt.rpc.common.exception.EndPointClosedException;
 
 import java.io.Closeable;
 import java.net.SocketAddress;
@@ -74,7 +76,11 @@ public abstract class ChannelReader implements ChannelAdaptor {
                 wakeupSelectionKey(selectionKey);
             } catch (ChannelClosedException e) {
                 if (this instanceof AbstractClientChannel) {
-                    logger.info("server[{}] is closed!", ((AbstractClientChannel) this).getClientChannel(selectionKey).getServerNode());
+                    ServerNode serverNode = ((AbstractClientChannel) this).getClientChannel(selectionKey).getServerNode();
+                    logger.info("server[{}] is closed!", serverNode);
+                    if (e instanceof EndPointClosedException) {
+                        serverNodeClosed(serverNode);
+                    }
                 } else {
                     logger.info("client[{}] is closed!", getRemoteAddress(channel));
                 }
@@ -84,6 +90,14 @@ public abstract class ChannelReader implements ChannelAdaptor {
                 disconnected(selectionKey);
             }
         });
+    }
+
+    /**
+     * 服务器节点关闭
+     * @param serverNode
+     */
+    protected void serverNodeClosed(ServerNode serverNode) {
+
     }
 
     /**
@@ -183,8 +197,8 @@ public abstract class ChannelReader implements ChannelAdaptor {
                 throw new ChannelClosedException(e.getMessage());
             }
             if (-1 == read) {
-                // 正常关闭
-                throw new ChannelClosedException();
+                // 对端正常关闭
+                throw new EndPointClosedException();
             }
             if (0 == buffer.remaining()) {
                 break;

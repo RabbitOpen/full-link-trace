@@ -24,6 +24,11 @@ public class SecureChannelResourcePool extends ChannelResourcePool {
                 protected int getMaxRetryTime() {
                     return 0;
                 }
+
+                @Override
+                protected int getRequestTimeoutSeconds() {
+                    return config.getRpcRequestTimeoutSeconds();
+                }
             };
             try {
                 Authentication proxy = factory.proxy(Authentication.class);

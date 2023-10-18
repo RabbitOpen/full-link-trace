@@ -6,6 +6,7 @@ import rabbit.flt.rpc.common.RpcException;
 import rabbit.flt.rpc.common.SelectorResetListener;
 import rabbit.flt.rpc.common.ServerNode;
 import rabbit.flt.rpc.common.exception.NoPreparedClientException;
+import rabbit.flt.rpc.common.exception.RpcTimeoutException;
 import rabbit.flt.rpc.common.exception.UnAuthenticatedException;
 import rabbit.flt.rpc.common.exception.UnRegisteredHandlerException;
 import rabbit.flt.rpc.common.nio.AbstractClientChannel;
@@ -193,13 +194,27 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
             logger.info("server node[{}:{}] is found!", n.getHost(), n.getPort());
             addClientsByServer(n);
         });
-        clientInvalidClients();
+        removeInvalidClients();
+    }
+
+    @Override
+    protected final void serverNodeClosed(ServerNode serverNode) {
+        try {
+            lock.lock();
+            for (ClientChannel channel : getClientChannelList()) {
+                if (channel.getServerNode().isSameNode(serverNode)) {
+                    channel.disconnected(null);
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
      * 删除无效节点的连接
      */
-    private void clientInvalidClients() {
+    private void removeInvalidClients() {
         try {
             lock.lock();
             List<ClientChannel> clients2Remove = new ArrayList<>();
@@ -239,6 +254,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
 
     /**
      * 添加连接
+     *
      * @param serverNode
      */
     private void addClientsByServer(ServerNode serverNode) {
@@ -254,6 +270,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
 
     /**
      * 发起请求
+     *
      * @param request
      * @param timeoutSeconds
      * @param <T>
@@ -266,7 +283,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
             request.increase();
             long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;
             return getClient(timeoutMills).doRequest(request, timeoutSeconds);
-        } catch (NoPreparedClientException | UnRegisteredHandlerException | UnAuthenticatedException e) {
+        } catch (NoPreparedClientException | UnRegisteredHandlerException | UnAuthenticatedException | RpcTimeoutException e) {
             throw e;
         } catch (RpcException e) {
             if (request.getCounter() > request.getMaxRetryTimes()) {
@@ -283,6 +300,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
 
     /**
      * 获取就绪的连接
+     *
      * @param timeoutMills
      * @return
      */
@@ -293,7 +311,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
                 lock.lock();
                 int size = clientChannelList.size();
                 for (int i = cursor; i < cursor + size; i++) {
-                    int index  = i % size;
+                    int index = i % size;
                     ClientChannel client = clientChannelList.get(index);
                     if (isClientPrepared(client)) {
                         cursor = (index + 1) % size;
