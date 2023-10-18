@@ -1,0 +1,5 @@
+rabbit.flt.plugins.reactor.matcher.ReactorConstructorEnhanceMatcher
+rabbit.flt.plugins.reactor.matcher.ReactorFieldEnhanceMatcher
+rabbit.flt.plugins.reactor.matcher.ReactorMapSupportMatcher
+rabbit.flt.plugins.reactor.matcher.ReactorStaticSupportMatcher
+rabbit.flt.plugins.reactor.matcher.ReactorSupportMatcher

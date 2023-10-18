@@ -210,6 +210,20 @@ public class TraceContext {
     }
 
     /**
+     * 设置counter
+     * @param spanId
+     * @param counter
+     */
+    public static void setSpanIdChildCounter(String spanId, AtomicLong counter) {
+        Map<String, AtomicLong> map = spanIdCounter.get();
+        if (null == map) {
+            spanIdCounter.set(new ConcurrentHashMap<>());
+            map = spanIdCounter.get();
+        }
+        map.put(spanId, counter);
+    }
+
+    /**
      * 判断是不是当前对象开启的
      * @param target
      * @return
