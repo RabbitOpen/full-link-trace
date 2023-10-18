@@ -13,6 +13,7 @@
         <module>flt-common</module>
         <module>flt-plugins</module>
         <module>flt-core</module>
+        <module>flt-test-cases</module>
     </modules>
 
     <properties>
@@ -153,6 +154,24 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webflux</artifactId>
                 <version>5.3.22</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>5.3.22</version>
+            </dependency>
+
+            <dependency>
+                <groupId>apache-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>3.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.13</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
