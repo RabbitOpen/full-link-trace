@@ -1,13 +1,19 @@
 package rabbit.flt.core;
 
+import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.description.NamedElement;
 import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.utility.JavaModule;
 import rabbit.flt.common.AbstractConfigFactory;
+import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
 import rabbit.flt.common.utils.ResourceUtil;
 import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.core.factory.DefaultConfigFactory;
+import rabbit.flt.core.transformer.ClassTransformer;
 import rabbit.flt.plugins.common.Matcher;
 import rabbit.flt.plugins.common.MetricsPlugin;
 
@@ -20,6 +26,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 
+import static net.bytebuddy.matcher.ElementMatchers.nameStartsWith;
+import static net.bytebuddy.matcher.ElementMatchers.named;
 import static rabbit.flt.common.AbstractConfigFactory.CLASS_PATH_PREFIX;
 
 /**
@@ -54,6 +62,62 @@ public class AgentEntry {
                 classMatcher = classMatcher.or(matcher.classMatcher());
             }
         }
+        getBasicAgentBuilder().type(classMatcher).transform(new ClassTransformer(matchers))
+                .with(getEmptyListener()).installOn(inst);
+    }
+
+    private static AgentBuilder.Listener getEmptyListener() {
+        return new AgentBuilder.Listener() {
+            @Override
+            public void onDiscovery(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded) {
+
+            }
+
+            @Override
+            public void onTransformation(TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded, DynamicType dynamicType) {
+
+            }
+
+            @Override
+            public void onIgnored(TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded) {
+
+            }
+
+            @Override
+            public void onError(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded, Throwable throwable) {
+
+            }
+
+            @Override
+            public void onComplete(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded) {
+
+            }
+        };
+    }
+
+    public static AgentBuilder getBasicAgentBuilder() {
+        ElementMatcher.Junction<NamedElement> ignoreMatcher = nameStartsWith("org.slf4j.")
+                .or(nameStartsWith("com.intellij."))
+                .or(nameStartsWith("java."))
+                .or(nameStartsWith("javax."));
+        AgentConfig config = AbstractConfigFactory.getConfig();
+        if (null == config) {
+            String ignorePackages = config.getIgnorePackages();
+            if (!StringUtils.isEmpty(ignorePackages)) {
+                for (String pkg : ignorePackages.split(",")) {
+                    ignoreMatcher = ignoreMatcher.or(nameStartsWith(pkg.trim()));
+                    logger.info("ignore package: {}", pkg);
+                }
+            }
+            String ignoreClasses = config.getIgnoreClasses();
+            if (!StringUtils.isEmpty(ignoreClasses)) {
+                for (String clz : ignoreClasses.split(",")) {
+                    ignoreMatcher = ignoreMatcher.or(named(clz.trim()));
+                    logger.info("ignore class: {}", clz);
+                }
+            }
+        }
+        return new AgentBuilder.Default().ignore(ignoreMatcher);
     }
 
     /**

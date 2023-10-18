@@ -1,4 +1,4 @@
 package rabbit.flt.common.trace;
 
-public abstract class Input {
+public interface Input {
 }

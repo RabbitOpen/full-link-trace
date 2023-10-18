@@ -5,7 +5,7 @@ import rabbit.flt.common.trace.Output;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpResponse extends Output {
+public class HttpResponse implements Output {
 
     protected Map<String, Object> headers = new HashMap<>();
 

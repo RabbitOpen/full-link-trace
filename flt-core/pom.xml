@@ -21,6 +21,151 @@
             <groupId>rabbit.flt</groupId>
             <artifactId>plugin-common</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>rabbit.flt</groupId>
+            <artifactId>flt-rpc-client</artifactId>
+        </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <sonar.host.url>http://localhost:9000</sonar.host.url>
+                <sonar.projectName>${project.artifactId}</sonar.projectName>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>rabbit.flt:*:jar:</include>
+                                    <!--需要一起打包的类-->
+                                    <include>net.bytebuddy:byte-buddy:jar:</include>
+                                    <include>net.bytebuddy:byte-buddy-agent:jar:</include>
+                                    <include>com.esotericsoftware:*:jar:</include>
+                                    <include>org.objenesis:*:jar:</include>
+                                    <include>com.fasterxml.uuid:*:jar:</include>
+                                </includes>
+                            </artifactSet>
+
+                            <!-- relocation -->
+                            <relocations>
+                                <relocation>
+                                    <pattern>net.bytebuddy</pattern>
+                                    <shadePattern>rabbit.flt.bytebuddy</shadePattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.esotericsoftware</pattern>
+                                    <shadePattern>rabbit.flt.esotericsoftware</shadePattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.objenesis</pattern>
+                                    <shadePattern>rabbit.flt.objenesis</shadePattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.fasterxml.uuid</pattern>
+                                    <shadePattern>rabbit.flt.uuid</shadePattern>
+                                </relocation>
+                                <!-- 替换logger -->
+                                <relocation>
+                                    <pattern>org.slf4j.Logger</pattern>
+                                    <shadePattern>rabbit.flt.common.log.Logger</shadePattern>
+                                    <excludes>
+                                        <exclude>
+                                            org.slf4j.LoggerFactory
+                                        </exclude>
+                                    </excludes>
+                                </relocation>
+                                <!-- 替换logger factory -->
+                                <relocation>
+                                    <pattern>org.slf4j.LoggerFactory</pattern>
+                                    <shadePattern>rabbit.flt.common.log.AgentLoggerFactory</shadePattern>
+                                </relocation>
+                            </relocations>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Premain-Class>rabbit.flt.core.AgentEntry</Premain-Class>
+                                        <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                                    </manifestEntries>
+                                </transformer>
+
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServiceResourceTransformer"/>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.8</version>
+                <executions>
+                    <execution>
+                        <id>pre-test</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>post-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--使用前面定义的位置-->
+                    <destFile>${sonar.jacoco.reportPaths}</destFile>
+                    <!--重要！用追加的模式-->
+                    <append>true</append>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

@@ -54,6 +54,24 @@
             </dependency>
 
             <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>flt-rpc-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>flt-rpc-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>flt-rpc-server</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>com.esotericsoftware</groupId>
                 <artifactId>kryo</artifactId>
                 <version>5.2.0</version>

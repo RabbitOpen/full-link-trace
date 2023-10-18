@@ -5,7 +5,7 @@ import rabbit.flt.common.trace.Input;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpRequest extends Input {
+public class HttpRequest implements Input {
 
     protected Map<String, Object> headers = new HashMap<>();
 
