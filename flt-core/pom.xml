@@ -32,6 +32,35 @@
             <artifactId>traceable-annotation-plugin</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>rabbit.flt</groupId>
+            <artifactId>spring-mvc-plugin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>rabbit.flt</groupId>
+            <artifactId>http-client3-plugin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>rabbit.flt</groupId>
+            <artifactId>http-client4-plugin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>rabbit.flt</groupId>
+            <artifactId>io-projectreactor-plugin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>rabbit.flt</groupId>
+            <artifactId>spring-webclient-plugin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>rabbit.flt</groupId>
+            <artifactId>spring-webflux-plugin</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -3,28 +3,23 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>full-link-trace</artifactId>
+        <artifactId>flt-plugins</artifactId>
         <groupId>rabbit.flt</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>flt-plugins</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>plugin-common</module>
-        <module>traceable-annotation-plugin</module>
-        <module>spring-mvc-plugin</module>
-        <module>http-client3-plugin</module>
-        <module>http-client4-plugin</module>
-        <module>io-projectreactor-plugin</module>
-        <module>spring-webclient-plugin</module>
-        <module>spring-webflux-plugin</module>
-    </modules>
+    <artifactId>spring-webflux-plugin</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>rabbit.flt</groupId>
+            <artifactId>plugin-common</artifactId>
+        </dependency>
+    </dependencies>
 </project>

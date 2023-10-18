@@ -1,6 +1,5 @@
 package rabbit.flt.plugins.springmvc.plugin;
 
-import com.sun.deploy.trace.Trace;
 import rabbit.flt.common.Key;
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.common.trace.MessageType;
@@ -14,7 +13,6 @@ import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.Enumeration;
 
 import static rabbit.flt.common.trace.TraceData.Status.ERR;

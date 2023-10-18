@@ -84,6 +84,36 @@
             </dependency>
 
             <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>http-client3-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>http-client4-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>io-projectreactor-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>spring-webclient-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>spring-webflux-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>4.0.1</version>
