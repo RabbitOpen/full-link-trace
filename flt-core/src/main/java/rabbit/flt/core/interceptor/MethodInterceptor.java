@@ -1,10 +1,6 @@
 package rabbit.flt.core.interceptor;
 
-import net.bytebuddy.implementation.bind.annotation.AllArguments;
-import net.bytebuddy.implementation.bind.annotation.Morph;
-import net.bytebuddy.implementation.bind.annotation.Origin;
-import net.bytebuddy.implementation.bind.annotation.RuntimeType;
-import net.bytebuddy.implementation.bind.annotation.This;
+import net.bytebuddy.implementation.bind.annotation.*;
 import rabbit.flt.core.AbstractMethodInterceptor;
 import rabbit.flt.core.callback.MethodCallback;
 

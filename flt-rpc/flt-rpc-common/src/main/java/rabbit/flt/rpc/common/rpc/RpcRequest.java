@@ -10,9 +10,7 @@ import rabbit.flt.rpc.common.exception.UnRegisteredHandlerException;
 
 import java.util.concurrent.TimeUnit;
 
-import static rabbit.flt.rpc.common.ResponseCode.CHANNEL_CLOSED;
-import static rabbit.flt.rpc.common.ResponseCode.UN_AUTHENTICATED;
-import static rabbit.flt.rpc.common.ResponseCode.UN_REGISTERED_HANDLER;
+import static rabbit.flt.rpc.common.ResponseCode.*;
 
 public class RpcRequest extends Protocol<Request> {
 

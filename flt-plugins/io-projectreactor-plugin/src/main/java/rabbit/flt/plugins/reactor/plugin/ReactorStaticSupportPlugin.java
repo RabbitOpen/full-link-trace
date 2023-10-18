@@ -1,6 +1,5 @@
 package rabbit.flt.plugins.reactor.plugin;
 
-import com.sun.deploy.trace.Trace;
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.trace.TraceContextData;

@@ -5,11 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import static rabbit.flt.rpc.common.ChannelStatus.AUTHENTICATED;
-import static rabbit.flt.rpc.common.ChannelStatus.CLOSED;
-import static rabbit.flt.rpc.common.ChannelStatus.CONNECTED;
-import static rabbit.flt.rpc.common.ChannelStatus.CONNECTING;
-import static rabbit.flt.rpc.common.ChannelStatus.INIT;
+import static rabbit.flt.rpc.common.ChannelStatus.*;
 
 @RunWith(JUnit4.class)
 public class ChannelStatusTest {

@@ -5,10 +5,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 import rabbit.flt.common.Traceable;
 import rabbit.flt.plugins.common.matcher.PerformanceMatcher;
 
-import static net.bytebuddy.matcher.ElementMatchers.declaresMethod;
-import static net.bytebuddy.matcher.ElementMatchers.isAnnotatedWith;
-import static net.bytebuddy.matcher.ElementMatchers.isInterface;
-import static net.bytebuddy.matcher.ElementMatchers.not;
+import static net.bytebuddy.matcher.ElementMatchers.*;
 
 public class TraceableMatcher extends PerformanceMatcher {
 

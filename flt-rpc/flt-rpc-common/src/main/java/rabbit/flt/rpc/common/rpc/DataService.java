@@ -1,12 +1,6 @@
 package rabbit.flt.rpc.common.rpc;
 
-import rabbit.flt.common.metrics.CpuMetrics;
-import rabbit.flt.common.metrics.DiskIoMetrics;
-import rabbit.flt.common.metrics.DiskSpaceMetrics;
-import rabbit.flt.common.metrics.EnvironmentMetrics;
-import rabbit.flt.common.metrics.GcMetrics;
-import rabbit.flt.common.metrics.MemoryMetrics;
-import rabbit.flt.common.metrics.NetworkMetrics;
+import rabbit.flt.common.metrics.*;
 import rabbit.flt.common.trace.TraceData;
 
 import java.util.List;

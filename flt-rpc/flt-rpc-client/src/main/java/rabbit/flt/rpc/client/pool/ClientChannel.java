@@ -2,13 +2,7 @@ package rabbit.flt.rpc.client.pool;
 
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.client.RequestFactory;
-import rabbit.flt.rpc.common.DataType;
-import rabbit.flt.rpc.common.GzipUtil;
-import rabbit.flt.rpc.common.ResponseCode;
-import rabbit.flt.rpc.common.RpcException;
-import rabbit.flt.rpc.common.SelectorResetListener;
-import rabbit.flt.rpc.common.Serializer;
-import rabbit.flt.rpc.common.ServerNode;
+import rabbit.flt.rpc.common.*;
 import rabbit.flt.rpc.common.exception.IllegalChannelStatusException;
 import rabbit.flt.rpc.common.exception.RpcTimeoutException;
 import rabbit.flt.rpc.common.nio.AbstractClientChannel;
@@ -29,10 +23,7 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static rabbit.flt.rpc.common.Attributes.NIO_CLIENT;
-import static rabbit.flt.rpc.common.ChannelStatus.CLOSED;
-import static rabbit.flt.rpc.common.ChannelStatus.CONNECTED;
-import static rabbit.flt.rpc.common.ChannelStatus.CONNECTING;
-import static rabbit.flt.rpc.common.ChannelStatus.INIT;
+import static rabbit.flt.rpc.common.ChannelStatus.*;
 
 /**
  * 客户端
