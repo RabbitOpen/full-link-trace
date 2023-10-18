@@ -3,6 +3,7 @@ package rabbit.flt.rpc.common.nio;
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
 import rabbit.flt.rpc.common.Hook;
+import rabbit.flt.rpc.common.RpcException;
 import rabbit.flt.rpc.common.Serializer;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class SelectorWrapper {
         try {
             this.selector = Selector.open();
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RpcException(e);
         }
     }
 

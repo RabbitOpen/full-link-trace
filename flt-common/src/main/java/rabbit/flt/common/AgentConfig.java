@@ -1,5 +1,7 @@
 package rabbit.flt.common;
 
+import rabbit.flt.common.exception.AgentException;
+
 import java.lang.reflect.Field;
 
 public class AgentConfig {
@@ -97,7 +99,7 @@ public class AgentConfig {
                 // ignore
             }
             if (null == value) {
-                throw new RuntimeException(annotation.value());
+                throw new AgentException(annotation.value());
             }
         }
     }

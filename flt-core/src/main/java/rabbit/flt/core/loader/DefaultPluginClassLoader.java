@@ -95,7 +95,8 @@ public class DefaultPluginClassLoader extends PluginClassLoader {
             jarFile = new JarFile(getAgentJarFilePath());
         }
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        if ("sun.misc.Launcher$AppClassLoader".equals(getClass().getName())) {
+        String loadName = loader.getClass().getName();
+        if ("sun.misc.Launcher$AppClassLoader".equals(loadName)) {
             return loader.loadClass(name);
         }
         String path = name.replace('.', '/').concat(".class");
