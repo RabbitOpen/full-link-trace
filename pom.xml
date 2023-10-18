@@ -223,6 +223,12 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <!--使用前面定义的位置-->
+                    <destFile>${sonar.jacoco.reportPaths}</destFile>
+                    <!--重要！用追加的模式-->
+                    <append>true</append>
+                </configuration>
             </plugin>
         </plugins>
     </build>
