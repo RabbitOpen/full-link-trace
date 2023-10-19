@@ -14,6 +14,9 @@ public class SpringCloudTest extends BaseCases {
     @Test
     public void springBootTest() throws Exception {
         mybatisPlusTest();
+        pushStackTest();
+        longTraceTest();
+        httpClientTest();
     }
 
 }

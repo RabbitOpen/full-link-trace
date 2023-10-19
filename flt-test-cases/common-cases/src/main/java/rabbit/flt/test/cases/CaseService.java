@@ -11,6 +11,7 @@ import java.io.IOException;
 
 public class CaseService {
 
+    @Traceable
     public int recursivelyAdd(int d) {
         d += 10;
         count();
