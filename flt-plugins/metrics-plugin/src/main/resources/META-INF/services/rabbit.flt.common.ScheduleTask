@@ -1,0 +1,3 @@
+rabbit.flt.plugins.metrics.task.EnvironmentScheduleTask
+rabbit.flt.plugins.metrics.task.GcScheduleTask
+rabbit.flt.plugins.metrics.task.MemoryScheduleTask
