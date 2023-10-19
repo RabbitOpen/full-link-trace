@@ -10,11 +10,26 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>flt-test-cases</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>common-cases</module>
+        <module>spring-cloud-2.7.2</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>common-cases</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

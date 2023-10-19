@@ -23,6 +23,6 @@ public class MappedStatementSupportMatcher extends SupportMatcher {
 
     @Override
     public String getPluginClassName() {
-        return null;
+        return "rabbit.flt.plugins.mybatis.plugin.MappedStatementSupportPlugin";
     }
 }

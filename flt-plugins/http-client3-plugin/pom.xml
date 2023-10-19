@@ -21,6 +21,12 @@
             <groupId>rabbit.flt</groupId>
             <artifactId>plugin-common</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>apache-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

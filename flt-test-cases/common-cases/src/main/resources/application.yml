@@ -1,0 +1,11 @@
+server:
+  port: 8888
+
+spring:
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite::resource:db/app.s3db
+    max-idle: 10
+    max-wait: 10000
+    initial-size: 5
+    maximum-pool-size: 10
