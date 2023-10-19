@@ -8,6 +8,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.utility.JavaModule;
+import rabbit.flt.common.spi.ClassProxyListener;
 import rabbit.flt.core.callback.MethodCallback;
 import rabbit.flt.core.interceptor.ConstructorInterceptor;
 import rabbit.flt.core.interceptor.MethodInterceptor;
@@ -16,7 +17,6 @@ import rabbit.flt.plugins.common.matcher.ConstructorMatcher;
 import rabbit.flt.plugins.common.matcher.FieldEnhanceMatcher;
 import rabbit.flt.plugins.common.matcher.PerformanceMatcher;
 import rabbit.flt.plugins.common.matcher.SupportMatcher;
-import rabbit.flt.common.spi.ClassProxyListener;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
