@@ -10,7 +10,7 @@ import rabbit.flt.common.metrics.EnvironmentMetrics;
 import rabbit.flt.plugins.metrics.task.EnvironmentScheduleTask;
 
 @RunWith(JUnit4.class)
-public class VersionTest {
+public class MetricsTest {
 
     private Logger logger = AgentLoggerFactory.getLogger(getClass());
 
