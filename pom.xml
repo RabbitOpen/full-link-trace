@@ -28,7 +28,6 @@
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <!--将所有jacoco定位到同样的父目录位置-->
         <sonar.jacoco.reportPaths>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPaths>
-        <sonar.language>java</sonar.language>
         <byte.buddy.version>1.11.0</byte.buddy.version>
     </properties>
 
@@ -258,7 +257,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.8</version>
+                <version>0.8.8</version>
                 <executions>
                     <execution>
                         <id>agent</id>
