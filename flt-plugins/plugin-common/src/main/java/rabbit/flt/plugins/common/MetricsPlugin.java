@@ -49,6 +49,8 @@ public abstract class MetricsPlugin {
             }
         });
         Runtime.getRuntime().addShutdownHook(new Thread(() -> close()));
+        thread.setDaemon(true);
+        thread.start();
     }
 
     /**

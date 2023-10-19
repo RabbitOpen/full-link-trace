@@ -1,6 +1,8 @@
 package rabbit.flt.plugins.metrics.task;
 
 import rabbit.flt.common.AgentConfig;
+import rabbit.flt.common.Metrics;
+import rabbit.flt.common.MetricsDataHandler;
 import rabbit.flt.common.ScheduleTask;
 import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.metrics.EnvironmentMetrics;
@@ -49,5 +51,10 @@ public class EnvironmentScheduleTask extends ScheduleTask<EnvironmentMetrics> {
         } finally {
             ResourceUtil.close(resource);
         }
+    }
+
+    @Override
+    public void handle(MetricsDataHandler realHandler, Metrics metrics) {
+        scheduled = realHandler.handle(metrics);
     }
 }

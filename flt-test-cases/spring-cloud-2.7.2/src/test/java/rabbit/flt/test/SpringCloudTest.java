@@ -7,6 +7,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import rabbit.flt.test.cases.BaseCases;
 import rabbit.flt.test.common.SpringBootEntry;
 
+import java.util.concurrent.Semaphore;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringBootEntry.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class SpringCloudTest extends BaseCases {
@@ -17,6 +19,7 @@ public class SpringCloudTest extends BaseCases {
         pushStackTest();
         longTraceTest();
         httpClientTest();
+        new Semaphore(0).acquire();
     }
 
 }

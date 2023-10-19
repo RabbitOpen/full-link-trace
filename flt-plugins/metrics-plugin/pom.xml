@@ -41,6 +41,7 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>*.properties</include>
+                    <include>META-INF/services/*</include>
                 </includes>
             </resource>
         </resources>
