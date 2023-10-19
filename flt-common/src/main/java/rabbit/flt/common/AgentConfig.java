@@ -256,7 +256,7 @@ public class AgentConfig {
         this.maxReportConnections = maxReportConnections;
     }
 
-    public boolean isPrintQueueLength() {
+    public boolean showQueueLength() {
         return printQueueLength;
     }
 

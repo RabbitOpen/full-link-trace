@@ -157,6 +157,10 @@ public class LinkedQueue<T> {
         }
     }
 
+    public int getLength() {
+        return length;
+    }
+
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
