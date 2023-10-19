@@ -53,7 +53,7 @@
             </activation>
             <properties>
                 <agent.config>
-                    -javaagent:"D:\repository\.m2\Repository\rabbit\flt\flt-core\${project.version}\flt-core-${project.version}.jar=classpath:agent.properties"
+                    -javaagent:"${project.basedir}\..\..\flt-core\target\flt-core-${project.version}.jar=classpath:agent.properties"
                 </agent.config>
             </properties>
         </profile>

@@ -7,9 +7,6 @@ import org.springframework.context.annotation.Import;
  * 自动配置
  */
 @Configuration
-@Import({
-        SpringBootInitializer.class,
-        TraceConfiguration.class
-})
+@Import({ SpringBootInitializer.class })
 public class AutoConfiguration {
 }

@@ -7,10 +7,14 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
+import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.log.AgentLoggerFactory;
+import rabbit.flt.common.utils.ResourceUtil;
 import rabbit.flt.core.AgentHelper;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.util.Properties;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class SpringBootStartListener implements ApplicationListener, Ordered {
@@ -28,10 +32,7 @@ public class SpringBootStartListener implements ApplicationListener, Ordered {
             if (!initialized) {
                 initialized = true;
                 try {
-                    final TraceConfiguration defaultConfig = new TraceConfiguration();
-                    defaultConfig.setServers("10.20.30.40:8080");
-                    defaultConfig.setApplicationCode("agent-test");
-                    defaultConfig.setSecurityKey("1234567812345678");
+                    final AgentConfig defaultConfig = getAgentConfig();
                     initLoggerFactory();
                     AbstractConfigFactory.setFactoryLoader(() -> new AbstractConfigFactory() {
                         @Override
@@ -41,11 +42,7 @@ public class SpringBootStartListener implements ApplicationListener, Ordered {
 
                         @Override
                         protected AgentConfig getAgentConfig() {
-                            TraceConfiguration tc = SpringBootInitializer.getBean(TraceConfiguration.class);
-                            if (null == tc) {
-                                return defaultConfig;
-                            }
-                            return tc;
+                            return defaultConfig;
                         }
 
                         @Override
@@ -59,6 +56,26 @@ public class SpringBootStartListener implements ApplicationListener, Ordered {
             }
         } finally {
             lock.unlock();
+        }
+    }
+
+    private AgentConfig getAgentConfig() {
+        AgentConfig defaultConfig = new AgentConfig();
+        InputStream resource = getClass().getClassLoader().getResourceAsStream("agent.properties");
+        try {
+            Properties properties = new Properties();
+            properties.load(resource);
+            for (Object o : properties.keySet()) {
+                String name = o.toString().substring(6);
+                Field declaredField = AgentConfig.class.getDeclaredField(name);
+                declaredField.setAccessible(true);
+                declaredField.set(defaultConfig, properties.get(o.toString().trim()));
+            }
+            return defaultConfig;
+        } catch (Exception e) {
+            throw new AgentException(e);
+        } finally {
+            ResourceUtil.close(resource);
         }
     }
 

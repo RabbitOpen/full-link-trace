@@ -16,7 +16,7 @@ import rabbit.flt.plugins.common.matcher.ConstructorMatcher;
 import rabbit.flt.plugins.common.matcher.FieldEnhanceMatcher;
 import rabbit.flt.plugins.common.matcher.PerformanceMatcher;
 import rabbit.flt.plugins.common.matcher.SupportMatcher;
-import rabbit.flt.plugins.common.spi.ClassProxyListener;
+import rabbit.flt.common.spi.ClassProxyListener;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;

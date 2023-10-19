@@ -62,11 +62,6 @@
 
         <dependency>
             <groupId>rabbit.flt</groupId>
-            <artifactId>plugin-common</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>rabbit.flt</groupId>
             <artifactId>flt-core</artifactId>
             <scope>provided</scope>
         </dependency>

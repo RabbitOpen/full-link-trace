@@ -2,7 +2,7 @@ package rabbit.flt.test.starter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rabbit.flt.plugins.common.spi.ClassProxyListener;
+import rabbit.flt.common.spi.ClassProxyListener;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

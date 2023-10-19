@@ -1,4 +1,4 @@
-package rabbit.flt.plugins.common.spi;
+package rabbit.flt.common.spi;
 
 /**
  * 类增强事件
