@@ -61,6 +61,12 @@
         </dependency>
 
         <dependency>
+            <groupId>rabbit.flt</groupId>
+            <artifactId>flt-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>apache-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
         </dependency>

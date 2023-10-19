@@ -15,6 +15,7 @@
         <module>common-cases</module>
         <module>spring-cloud-2.7.2</module>
         <module>spring-web-flux-2.7.2</module>
+        <module>spring-cloud-2.7.2-starter</module>
     </modules>
 
     <properties>
@@ -30,6 +31,12 @@
             <dependency>
                 <groupId>rabbit.flt</groupId>
                 <artifactId>common-cases</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>rabbit.flt</groupId>
+                <artifactId>spring-cloud-2.7.2</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

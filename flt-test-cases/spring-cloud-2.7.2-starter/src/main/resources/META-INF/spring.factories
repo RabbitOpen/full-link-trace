@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=rabbit.flt.test.starter.AutoConfiguration
+org.springframework.context.ApplicationListener=rabbit.flt.test.starter.SpringBootStartListener

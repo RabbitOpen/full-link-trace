@@ -9,23 +9,14 @@ import rabbit.flt.test.common.SpringBootEntry;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringBootEntry.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class SpringWebFluxTest extends BaseCases {
-
-    private WebClientUtil util = new WebClientUtil();
+public class SpringCloudStarterTest extends BaseCases {
 
     @Test
-    public void webFluxTest() throws Exception {
-        util.init();
+    public void springBootTest() throws Exception {
         mybatisPlusTest();
-        contextStatusTest();
         pushStackTest();
         longTraceTest();
         httpClientTest();
-        WebClientCase webClientCase = new WebClientCase();
-        webClientCase.singleHttpRequestTest(util);
-        webClientCase.cascadedTest(util);
-        util.close();
     }
 
-
- }
+}
