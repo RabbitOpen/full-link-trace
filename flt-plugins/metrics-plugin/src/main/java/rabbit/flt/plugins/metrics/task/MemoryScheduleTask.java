@@ -17,8 +17,6 @@ public class MemoryScheduleTask extends ScheduleTask<MemoryMetrics> {
 
     private final long interval = 15 * 1000L;
 
-    protected final long million = 1024L * 1024;
-
     public MemoryScheduleTask() {
         nextFireTime = System.currentTimeMillis() / interval * interval + interval;
     }
@@ -37,12 +35,12 @@ public class MemoryScheduleTask extends ScheduleTask<MemoryMetrics> {
     public MemoryMetrics getMetrics() {
         MemoryMetrics metrics = new MemoryMetrics();
         MemoryMXBean mxBean = ManagementFactory.getMemoryMXBean();
-        metrics.setMaxHeapMemory(mxBean.getHeapMemoryUsage().getMax() / million);
-        metrics.setUsedHeapMemory(mxBean.getHeapMemoryUsage().getUsed() / million);
+        metrics.setMaxHeapMemory(mxBean.getHeapMemoryUsage().getMax() / M);
+        metrics.setUsedHeapMemory(mxBean.getHeapMemoryUsage().getUsed() / M);
         metrics.setSamplingTime(nextFireTime);
         OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-        metrics.setMaxSystemMemory(osBean.getTotalPhysicalMemorySize() / million);
-        metrics.setUsedSystemMemory((osBean.getTotalPhysicalMemorySize() - osBean.getFreePhysicalMemorySize()) / million);
+        metrics.setMaxSystemMemory(osBean.getTotalPhysicalMemorySize() / M);
+        metrics.setUsedSystemMemory((osBean.getTotalPhysicalMemorySize() - osBean.getFreePhysicalMemorySize()) / M);
         nextFireTime = nextFireTime + interval;
         return metrics;
     }

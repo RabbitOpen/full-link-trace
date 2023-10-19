@@ -72,6 +72,11 @@
             <artifactId>logback-support-plugin</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>rabbit.flt</groupId>
+            <artifactId>metrics-plugin</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

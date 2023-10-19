@@ -131,6 +131,12 @@
 
             <dependency>
                 <groupId>rabbit.flt</groupId>
+                <artifactId>metrics-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>rabbit.flt</groupId>
                 <artifactId>logback-support-plugin</artifactId>
                 <version>${project.version}</version>
             </dependency>
