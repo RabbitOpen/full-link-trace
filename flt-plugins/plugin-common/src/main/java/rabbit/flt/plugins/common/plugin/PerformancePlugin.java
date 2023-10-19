@@ -14,7 +14,7 @@ import static rabbit.flt.common.trace.MessageType.METHOD;
 public class PerformancePlugin extends Plugin {
 
     @Override
-    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) {
+    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) throws Exception {
         traceData.setMessageType(METHOD.name());
     }
 
@@ -39,7 +39,7 @@ public class PerformancePlugin extends Plugin {
     }
 
     @Override
-    public void doFinal(Object objectEnhanced, Method method, Object[] args, Object result) {
+    public void doFinal(Object objectEnhanced, Method method, Object[] args, Object result) throws Exception {
         if (isTraceOpened()) {
             super.doFinal(objectEnhanced, method, args, result);
         }

@@ -69,7 +69,7 @@ public abstract class Plugin {
      * @param args
      * @param result
      */
-    public void doFinal(Object objectEnhanced, Method method, Object[] args, Object result) {
+    public void doFinal(Object objectEnhanced, Method method, Object[] args, Object result) throws Exception {
         MethodStackInfo stackInfo = TraceContext.popStack(method);
         if (null == stackInfo) {
             return;
@@ -148,7 +148,7 @@ public abstract class Plugin {
      * @param args
      * @param result
      */
-    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) {
+    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) throws Exception {
 
     }
 

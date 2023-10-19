@@ -20,6 +20,7 @@
         <module>io-projectreactor-plugin</module>
         <module>spring-webclient-plugin</module>
         <module>spring-webflux-plugin</module>
+        <module>mybatis-plugin</module>
     </modules>
 
     <properties>

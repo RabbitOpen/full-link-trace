@@ -61,6 +61,11 @@
             <groupId>rabbit.flt</groupId>
             <artifactId>spring-webflux-plugin</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>rabbit.flt</groupId>
+            <artifactId>mybatis-plugin</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

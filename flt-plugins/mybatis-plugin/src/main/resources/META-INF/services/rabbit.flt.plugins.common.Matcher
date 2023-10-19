@@ -1,0 +1,3 @@
+rabbit.flt.plugins.mybatis.matcher.MappedStatementSupportMatcher
+rabbit.flt.plugins.mybatis.matcher.MybatisPlus3Matcher
+rabbit.flt.plugins.mybatis.matcher.TkMybatisMatcher
