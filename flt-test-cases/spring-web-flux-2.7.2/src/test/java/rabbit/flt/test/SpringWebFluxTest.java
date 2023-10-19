@@ -33,6 +33,7 @@ public class SpringWebFluxTest extends BaseCases {
         httpClientTest();
         WebClientCase webClientCase = new WebClientCase();
         webClientCase.singleHttpRequestTest(util);
+        webClientCase.cascadedTest(util);
         util.close();
     }
 

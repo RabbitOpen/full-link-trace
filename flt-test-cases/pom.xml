@@ -21,6 +21,8 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <!--    该模块不纳入 sonar 扫描    -->
+        <sonar.skip>true</sonar.skip>
     </properties>
 
     <dependencyManagement>
