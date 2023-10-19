@@ -66,6 +66,12 @@
             <groupId>rabbit.flt</groupId>
             <artifactId>mybatis-plugin</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>rabbit.flt</groupId>
+            <artifactId>logback-support-plugin</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

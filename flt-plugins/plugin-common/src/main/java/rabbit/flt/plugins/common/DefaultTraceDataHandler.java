@@ -58,6 +58,7 @@ public class DefaultTraceDataHandler {
             AgentConfig config = AbstractConfigFactory.getConfig();
             dataQueue.setCapacity(config.getMaxQueueSize());
             initDataHandler();
+            startReportThreads(config);
         } finally {
             lock.unlock();
         }

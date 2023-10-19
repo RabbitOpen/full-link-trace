@@ -23,29 +23,34 @@ public abstract class BaseCases {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private UserMapper userMapper;
+    protected UserMapper userMapper;
 
     protected void mybatisPlusTest() throws Exception {
         Class.forName("org.sqlite.JDBC");
         Connection connection = DriverManager.getConnection("jdbc:sqlite::resource:db/app.s3db");
-        Statement stmt = connection.createStatement();
-        String table = "user";
-        dropTable(stmt, table);
-        createTable(stmt, table);
-        stmt.execute("insert into ".concat(table).concat(" (id, user_name) values('1', 'zhang3')"));
-        Semaphore semaphore = new Semaphore(0);
-        Map<String, TraceData> map = new ConcurrentHashMap<>();
-        TestTraceHandler.setDiscardDataHandler(d -> {
-            logger.info("{}#{}, {}", d.getTraceId(), d.getSpanId(), d.getNodeName());
-            map.put(d.getSpanId(), d);
-            semaphore.release();
-        });
-        TraceContext.openTrace("manual");
-        userMapper.plusGetById("1");
-        TraceContext.clearContext();
-        semaphore.acquire();
-        TestCase.assertEquals("plusGetById", map.get(0).getNodeName());
-        TestTraceHandler.setDiscardDataHandler(null);
+        try {
+            Statement stmt = connection.createStatement();
+            String table = "user";
+            dropTable(stmt, table);
+            createTable(stmt, table);
+            stmt.execute("insert into ".concat(table).concat(" (id, user_name) values('1', 'zhang3')"));
+            Semaphore semaphore = new Semaphore(0);
+            Map<String, TraceData> map = new ConcurrentHashMap<>();
+            TestTraceHandler.setDiscardDataHandler(d -> {
+                logger.info("{}#{}, {}", d.getTraceId(), d.getSpanId(), d.getNodeName());
+                map.put(d.getSpanId(), d);
+                semaphore.release();
+            });
+            TraceContext.openTrace("manual");
+            userMapper.plusGetById("1");
+            TraceContext.clearContext();
+            semaphore.acquire();
+            TestCase.assertEquals("plusGetById", map.get("0").getNodeName());
+            TestTraceHandler.setDiscardDataHandler(null);
+            stmt.close();
+        } finally {
+            connection.close();
+        }
     }
 
     private void dropTable(Statement stmt, String table) {

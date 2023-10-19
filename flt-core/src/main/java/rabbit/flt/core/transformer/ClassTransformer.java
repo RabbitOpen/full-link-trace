@@ -76,8 +76,8 @@ public class ClassTransformer implements AgentBuilder.Transformer {
                         .intercept(MethodDelegation.withDefaultConfiguration()
                                 .withBinders(Morph.Binder.install(MethodCallback.class))
                                 .to(new MethodInterceptor(matcher.getPluginClassName())));
+                support = true;
             }
-            support = true;
         }
         if (support) {
             return builder;

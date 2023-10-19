@@ -21,6 +21,7 @@
         <module>spring-webclient-plugin</module>
         <module>spring-webflux-plugin</module>
         <module>mybatis-plugin</module>
+        <module>logback-support-plugin</module>
     </modules>
 
     <properties>

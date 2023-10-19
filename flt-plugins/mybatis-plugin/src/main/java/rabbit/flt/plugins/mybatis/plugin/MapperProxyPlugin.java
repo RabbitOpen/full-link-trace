@@ -58,8 +58,14 @@ public class MapperProxyPlugin extends PerformancePlugin {
                 return;
             }
             h = getField(mapperProxy.getClass(), "h");
+            if (null == h) {
+                return;
+            }
             h.setAccessible(true);
             mapperInterface = getField(h.get(mapperProxy).getClass(), "mapperInterface");
+            if (null == mapperInterface) {
+                return;
+            }
             mapperInterface.setAccessible(true);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

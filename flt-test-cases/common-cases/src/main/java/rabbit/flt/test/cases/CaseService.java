@@ -42,6 +42,10 @@ public class CaseService {
     @Traceable
     public void doHttp4Request() throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
-        client.execute(new HttpGet("http://localhost:8888/mvc/hello"));
+        try {
+            client.execute(new HttpGet("http://localhost:8888/mvc/hello"));
+        } finally {
+            client.close();
+        }
     }
 }
