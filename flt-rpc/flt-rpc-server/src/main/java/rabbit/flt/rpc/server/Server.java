@@ -17,8 +17,8 @@ import java.net.SocketOption;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 public class Server extends AbstractServerChannel implements Registrar {
@@ -56,7 +56,7 @@ public class Server extends AbstractServerChannel implements Registrar {
     private RequestDispatcher requestDispatcher = new RequestDispatcher();
 
     // socket 参数
-    private Map<SocketOption<Integer>, Integer> options = new HashMap<>();
+    private List<SocketOptionPair> socketOptionPairs = new ArrayList<>();
 
     private boolean started = false;
 
@@ -83,8 +83,8 @@ public class Server extends AbstractServerChannel implements Registrar {
         contextManager = new ContextManager();
         selectorWrapper = new SelectorWrapper();
         serverSocketChannel = ServerSocketChannel.open();
-        for (Map.Entry<SocketOption<Integer>, Integer> entry : options.entrySet()) {
-            serverSocketChannel.setOption(entry.getKey(), entry.getValue());
+        for (SocketOptionPair optionPair : socketOptionPairs) {
+            serverSocketChannel.setOption(optionPair.getKey(), optionPair.getValue());
         }
         serverSocketChannel.configureBlocking(false);
         serverSocketChannel.bind(new InetSocketAddress(getHost(), port), maxPendingConnections);
@@ -121,8 +121,8 @@ public class Server extends AbstractServerChannel implements Registrar {
      * @param key
      * @param value
      */
-    public void setSocketOption(SocketOption<Integer> key, Integer value) {
-        options.put(key, value);
+    public <T> void setSocketOption(SocketOption<T> key, T value) {
+        socketOptionPairs.add(new SocketOptionPair(key, value));
     }
 
     public void setPort(int port) {

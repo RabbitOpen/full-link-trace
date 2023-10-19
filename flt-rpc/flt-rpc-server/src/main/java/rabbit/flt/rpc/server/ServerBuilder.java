@@ -108,7 +108,7 @@ public class ServerBuilder {
      * @param value
      * @return
      */
-    public ServerBuilder socketOption(SocketOption<Integer> key, Integer value) {
+    public <T> ServerBuilder socketOption(SocketOption<T> key, T value) {
         operations.add(s -> s.setSocketOption(key, value));
         return this;
     }

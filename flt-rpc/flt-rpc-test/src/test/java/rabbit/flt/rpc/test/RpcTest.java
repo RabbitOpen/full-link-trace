@@ -84,6 +84,7 @@ public class RpcTest {
                 .workerExecutor(NamedExecutor.fixedThreadsPool(1, "boss-executor-"))
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
+                .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> true)
                 .registerHandler(UserService.class, name -> name + "001")
                 .maxPendingConnections(16 * 1024 * 1024)
@@ -198,6 +199,7 @@ public class RpcTest {
                 .workerThreadCount(1)
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
+                .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> true)
                 .registerHandler(ProtocolService.class, new ProtocolService() {
                     @Override
@@ -265,6 +267,7 @@ public class RpcTest {
                 .bossThreadCount(2)
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
+                .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> {
                     resourcePool.getResourceGuard().wakeup();
                     return true;
@@ -370,6 +373,7 @@ public class RpcTest {
                 .bossThreadCount(1)
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
+                .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> {
                     resourcePool.getResourceGuard().wakeup();
                     return true;
