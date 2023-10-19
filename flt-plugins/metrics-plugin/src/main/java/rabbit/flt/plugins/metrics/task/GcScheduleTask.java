@@ -1,6 +1,7 @@
 package rabbit.flt.plugins.metrics.task;
 
 import com.sun.management.GarbageCollectionNotificationInfo;
+import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.ScheduleTask;
 import rabbit.flt.common.metrics.GcMetrics;
@@ -67,7 +68,12 @@ public class GcScheduleTask extends ScheduleTask<GcMetrics> {
     private void cacheGcMetrics(GcMetrics metrics) {
         if ("end of minor GC".equalsIgnoreCase(metrics.getGcAction())) {
             long now = System.currentTimeMillis();
-            if (now - lastMinorGcTime < 5000L) {
+            int gcReportIntervalSeconds = 5;
+            AgentConfig config = AbstractConfigFactory.getConfig();
+            if (null != config) {
+                gcReportIntervalSeconds = config.getGcReportIntervalSeconds();
+            }
+            if (now - lastMinorGcTime < gcReportIntervalSeconds * 1000L) {
                 return;
             }
             lastMinorGcTime = now;

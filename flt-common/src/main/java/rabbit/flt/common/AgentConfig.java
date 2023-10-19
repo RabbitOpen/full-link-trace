@@ -82,6 +82,14 @@ public class AgentConfig {
     // 超过queue容量的指定百分比时打印队列长度日志
     private double threshold = 0.0;
 
+    // gc 上报最小间隔
+    private int gcReportIntervalSeconds = 5;
+
+    /**
+     * 内存采集最小间隔
+     */
+    private int memoryReportIntervalSeconds = 15;
+
     /**
      * 校验
      */
@@ -278,5 +286,21 @@ public class AgentConfig {
 
     public void setThreshold(double threshold) {
         this.threshold = threshold;
+    }
+
+    public int getGcReportIntervalSeconds() {
+        return gcReportIntervalSeconds;
+    }
+
+    public void setGcReportIntervalSeconds(int gcReportIntervalSeconds) {
+        this.gcReportIntervalSeconds = gcReportIntervalSeconds;
+    }
+
+    public int getMemoryReportIntervalSeconds() {
+        return memoryReportIntervalSeconds;
+    }
+
+    public void setMemoryReportIntervalSeconds(int memoryReportIntervalSeconds) {
+        this.memoryReportIntervalSeconds = memoryReportIntervalSeconds;
     }
 }

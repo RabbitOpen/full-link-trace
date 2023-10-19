@@ -1,6 +1,7 @@
 package rabbit.flt.plugins.metrics.task;
 
 import com.sun.management.OperatingSystemMXBean;
+import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.ScheduleTask;
 import rabbit.flt.common.metrics.MemoryMetrics;
@@ -15,10 +16,18 @@ public class MemoryScheduleTask extends ScheduleTask<MemoryMetrics> {
      */
     protected long nextFireTime;
 
-    private final long interval = 15 * 1000L;
-
     public MemoryScheduleTask() {
+        long interval = getReportIntervalMils();
         nextFireTime = System.currentTimeMillis() / interval * interval + interval;
+    }
+
+    private long getReportIntervalMils() {
+        int interval = 15;
+        AgentConfig config = AbstractConfigFactory.getConfig();
+        if (null != config) {
+            interval = config.getMemoryReportIntervalSeconds();
+        }
+        return interval * 1000L;
     }
 
     @Override
@@ -41,7 +50,7 @@ public class MemoryScheduleTask extends ScheduleTask<MemoryMetrics> {
         OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         metrics.setMaxSystemMemory(osBean.getTotalPhysicalMemorySize() / M);
         metrics.setUsedSystemMemory((osBean.getTotalPhysicalMemorySize() - osBean.getFreePhysicalMemorySize()) / M);
-        nextFireTime = nextFireTime + interval;
+        nextFireTime = nextFireTime + getReportIntervalMils();
         return metrics;
     }
 }
