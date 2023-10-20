@@ -10,9 +10,11 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import rabbit.flt.common.Headers;
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.trace.TraceData;
+import rabbit.flt.common.trace.io.HttpRequest;
 import rabbit.flt.test.common.mybatis.UserMapper;
 import rabbit.flt.test.common.spi.TestTraceHandler;
 
@@ -206,6 +208,9 @@ public abstract class BaseCases {
         TestCase.assertEquals(4, map.size());
         TestCase.assertEquals("hello", map.get("0-0-0-0").getNodeName());
         TestCase.assertEquals("/mvc/hello", map.get("0-0-0").getNodeName());
+        Map<String, Object> headers = ((HttpRequest) map.get("0-0-0").getInput()).getHeaders();
+        TestCase.assertTrue(headers.containsKey(Headers.TRACE_ID.toLowerCase()));
+        TestCase.assertTrue(headers.containsKey(Headers.SPAN_ID.toLowerCase()));
         TestCase.assertEquals("HTTP_CLIENT4", map.get("0-0").getNodeName());
         TestCase.assertEquals("doHttp4Request", map.get("0").getNodeName());
     }

@@ -18,13 +18,6 @@ public class HttpRequest implements Input {
 
     private String contextPath;
 
-    public HttpRequest() {
-    }
-
-    public HttpRequest(String requestUri) {
-        this.requestUri = requestUri;
-    }
-
     public void addHeader(String name, String value) {
         headers.put(name, value);
     }
