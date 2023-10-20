@@ -27,7 +27,7 @@ public class MethodInterceptor extends AbstractMethodInterceptor {
     public Object interceptMemberMethod(@This Object objThis, @Origin Method method,
                                         @AllArguments Object[] args,
                                         @Morph MethodCallback callback) {
-        return intercept(method, args, objThis, params -> callback.call(params));
+        return intercept(method, args, objThis, callback::call);
     }
 
     /**
@@ -40,6 +40,6 @@ public class MethodInterceptor extends AbstractMethodInterceptor {
     @RuntimeType
     public Object interceptStaticMethod(@Origin Method method, @AllArguments Object[] args,
                                         @Morph MethodCallback callback) {
-        return intercept(method, args, null, params -> callback.call(params));
+        return intercept(method, args, null, callback::call);
     }
 }
