@@ -12,7 +12,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.nio.channels.SelectionKey;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class AuthenticationHandler implements InvocationHandler {
 
@@ -35,14 +34,9 @@ public class AuthenticationHandler implements InvocationHandler {
             Object password = request.getParameters()[1];
             boolean result = realHandler.authenticate(StringUtils.toString(applicationCode), StringUtils.toString(password));
             Map<String, Object> attrs = (Map<String, Object>) selectionKey.attachment();
-            if (null == attrs) {
-                attrs = new ConcurrentHashMap<>();
-                selectionKey.attach(attrs);
-            }
             attrs.put(AUTHENTICATE, result);
             return result;
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
             throw new AuthenticationFailedException();
         }
     }

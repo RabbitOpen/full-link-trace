@@ -27,9 +27,6 @@ public class RpcRequestHandler implements InvocationHandler {
     private boolean isAuthenticated() {
         SelectionKey selectionKey = RequestDispatcher.getCurrentSelectionKey();
         Map<String, Object> attrs = (Map<String, Object>) selectionKey.attachment();
-        if (null == attrs) {
-            return false;
-        }
         Object result = attrs.get(AuthenticationHandler.AUTHENTICATE);
         return null == result ? false : (boolean) result;
     }
