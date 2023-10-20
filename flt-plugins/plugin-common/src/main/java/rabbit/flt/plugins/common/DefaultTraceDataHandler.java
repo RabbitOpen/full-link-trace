@@ -122,7 +122,6 @@ public class DefaultTraceDataHandler {
             for (Thread thread : dataHandlerThreads) {
                 thread.join();
             }
-            dataHandler.close();
             logger.info("trace data handler is closed!");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

@@ -22,8 +22,4 @@ public class RpcTraceDataHandler extends DataHandler implements TraceDataHandler
         }
     }
 
-    @Override
-    public void close() {
-        releaseAllConnections();
-    }
 }

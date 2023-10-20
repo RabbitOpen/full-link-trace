@@ -26,13 +26,7 @@ public class AgentRequestFactory extends RequestFactory {
         this.timeoutSeconds = config.getRpcRequestTimeoutSeconds();
         this.maxRetryTime = config.getMaxRetryTime();
         this.resourcePool.init(config);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> this.resourcePool.close()));
     }
 
-    public synchronized void close() {
-        if (!initialized) {
-            return;
-        }
-        initialized = false;
-        this.resourcePool.close();
-    }
 }

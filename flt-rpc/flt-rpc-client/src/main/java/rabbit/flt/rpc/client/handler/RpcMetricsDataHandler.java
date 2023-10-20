@@ -22,7 +22,6 @@ public class RpcMetricsDataHandler extends DataHandler implements MetricsDataHan
     private Map<Class<? extends Metrics>, Consumer<Metrics>> consumerMap = new ConcurrentHashMap<>();
 
     public RpcMetricsDataHandler() {
-        consumerMap.put(EnvironmentMetrics.class, d -> getDataService().handleEnvironmentMetrics((EnvironmentMetrics) d));
         consumerMap.put(GcMetrics.class, d -> getDataService().handleGcMetrics((GcMetrics) d));
         consumerMap.put(MemoryMetrics.class, d -> getDataService().handleMemoryMetrics((MemoryMetrics) d));
         consumerMap.put(CpuMetrics.class, d -> getDataService().handleCpuMetrics((CpuMetrics) d));
@@ -33,6 +32,13 @@ public class RpcMetricsDataHandler extends DataHandler implements MetricsDataHan
 
     @Override
     public boolean handle(Metrics data) {
+        if (data instanceof EnvironmentMetrics) {
+            return getDataService().handleEnvironmentMetrics((EnvironmentMetrics) data);
+        }
+        if (consumerMap.containsKey(data.getClass())) {
+            consumerMap.get(data.getClass()).accept(data);
+            return true;
+        }
         return false;
     }
 
@@ -52,11 +58,6 @@ public class RpcMetricsDataHandler extends DataHandler implements MetricsDataHan
             switchMap.remove(type);
         }
         return aSwitch.isEnable();
-    }
-
-    @Override
-    public void close() {
-        releaseAllConnections();
     }
 
     private class Switch {

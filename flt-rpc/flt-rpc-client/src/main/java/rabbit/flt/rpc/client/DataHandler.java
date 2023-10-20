@@ -28,13 +28,6 @@ public abstract class DataHandler {
 
     private ReentrantLock lock = new ReentrantLock();
 
-    /**
-     * 释放连接资源
-     */
-    protected void releaseAllConnections() {
-        requestFactory.close();
-    }
-
     protected DataService getDataService() {
         if (null != dataService) {
             return dataService;

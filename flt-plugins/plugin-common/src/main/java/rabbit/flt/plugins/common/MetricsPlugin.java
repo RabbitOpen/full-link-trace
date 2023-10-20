@@ -55,6 +55,7 @@ public abstract class MetricsPlugin {
 
     /**
      * 调度任务
+     *
      * @param tasks
      */
     private void scheduleTasks(List<ScheduleTask<? extends Metrics>> tasks) {
@@ -75,12 +76,14 @@ public abstract class MetricsPlugin {
 
     /**
      * 获取任务列表
+     *
      * @return
      */
     protected abstract List<ScheduleTask<? extends Metrics>> getTasks();
 
     /**
      * 判断任务是否就绪
+     *
      * @param config
      * @param task
      * @return
@@ -91,6 +94,7 @@ public abstract class MetricsPlugin {
 
     /**
      * 是否允许上报metrics
+     *
      * @param config
      * @param task
      * @return
@@ -120,21 +124,19 @@ public abstract class MetricsPlugin {
      * 关闭插件
      */
     private void close() {
-        semaphore.release();
         try {
-            if (null != dataHandler) {
-                dataHandler.close();
-            }
+            semaphore.release();
             thread.join();
+            logger.info("{} is closed!", getClass().getSimpleName());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-        logger.info("{} is closed!", getClass().getSimpleName());
     }
 
     protected static boolean isFactoryPrepared() {
         return null != AbstractConfigFactory.getConfig();
     }
+
     /**
      * 尝试启动收集任务
      */

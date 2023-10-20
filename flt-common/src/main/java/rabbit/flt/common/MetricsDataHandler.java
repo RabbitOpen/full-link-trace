@@ -4,7 +4,7 @@ package rabbit.flt.common;
 /**
  * metrics数据处理器
  */
-public interface MetricsDataHandler extends Closeable {
+public interface MetricsDataHandler {
 
     /**
      * 处理数据

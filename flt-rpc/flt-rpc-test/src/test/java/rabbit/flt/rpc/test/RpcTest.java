@@ -6,10 +6,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rabbit.flt.common.AbstractConfigFactory;
+import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.Metrics;
-import rabbit.flt.common.metrics.GcMetrics;
+import rabbit.flt.common.metrics.*;
+import rabbit.flt.common.trace.TraceData;
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.client.RequestFactory;
+import rabbit.flt.rpc.client.handler.RpcMetricsDataHandler;
+import rabbit.flt.rpc.client.handler.RpcTraceDataHandler;
 import rabbit.flt.rpc.client.pool.*;
 import rabbit.flt.rpc.common.NamedExecutor;
 import rabbit.flt.rpc.common.RpcException;
@@ -33,6 +38,8 @@ import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.LockSupport;
 
@@ -468,4 +475,109 @@ public class RpcTest {
         }
     }
 
+
+    @Test
+    public void agentRequestFactoryTest() throws Exception {
+        int port = 12304;
+        Map<String, Object> map = new ConcurrentHashMap<>();
+        Semaphore semaphore = new Semaphore(0);
+        Server server = ServerBuilder.builder()
+                .workerThreadCount(2)
+                .bossThreadCount(1)
+                .host("localhost").port(port)
+                .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
+                .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
+                .registerHandler(Authentication.class, (app, sig) -> true)
+                .registerHandler(ProtocolService.class, new ProtocolService() {
+                    @Override
+                    public List<ServerNode> getServerNodes() {
+                        return Arrays.asList(new ServerNode("localhost", port));
+                    }
+
+                    @Override
+                    public boolean isMetricsEnabled(String applicationCode, Class<? extends Metrics> type) {
+                        return true;
+                    }
+                })
+                .registerHandler(DataService.class, new DataService() {
+                    @Override
+                    public void handleTraceData(List<TraceData> list) {
+                        map.put("trace", list);
+                        semaphore.release();
+                    }
+
+                    @Override
+                    public void handleGcMetrics(GcMetrics metrics) {
+
+                    }
+
+                    @Override
+                    public void handleMemoryMetrics(MemoryMetrics metrics) {
+                        map.put("metrics", metrics);
+                        semaphore.release();
+                    }
+
+                    @Override
+                    public boolean handleEnvironmentMetrics(EnvironmentMetrics metrics) {
+                        map.put("metrics", metrics);
+                        semaphore.release();
+                        return true;
+                    }
+
+                    @Override
+                    public void handleDiskSpaceMetrics(DiskSpaceMetrics metrics) {
+
+                    }
+
+                    @Override
+                    public void handleDiskIoMetrics(DiskIoMetrics metrics) {
+
+                    }
+
+                    @Override
+                    public void handleCpuMetrics(CpuMetrics metrics) {
+
+                    }
+
+                    @Override
+                    public void handleNetworkMetrics(NetworkMetrics metrics) {
+
+                    }
+                })
+                .registerHandler(UserService.class, name -> name + "001")
+                .maxPendingConnections(16 * 1024 * 1024)
+                .maxPendingConnections(1000)
+                .build();
+
+        server.start();
+        AbstractConfigFactory.setFactoryLoader(() -> new AbstractConfigFactory() {
+            @Override
+            public void initialize() {
+
+            }
+
+            @Override
+            protected AgentConfig getAgentConfig() {
+                AgentConfig config = new AgentConfig();
+                config.setServers("localhost:12304");
+                config.setRpcRequestTimeoutSeconds(2);
+                config.setApplicationCode("testApp");
+                config.setSecurityKey("testApp1testApp1");
+                return config;
+            }
+        });
+        RpcMetricsDataHandler metricsDataHandler = new RpcMetricsDataHandler();
+        metricsDataHandler.handle(new EnvironmentMetrics());
+        semaphore.acquire();
+        TestCase.assertTrue(map.get("metrics") instanceof EnvironmentMetrics);
+        MemoryMetrics memoryMetrics = new MemoryMetrics();
+        metricsDataHandler.handle(memoryMetrics);
+        semaphore.acquire();
+        TestCase.assertTrue(map.get("metrics") instanceof MemoryMetrics);
+        RpcTraceDataHandler traceDataHandler = new RpcTraceDataHandler();
+        traceDataHandler.process(Arrays.asList(new TraceData()));
+        semaphore.acquire();
+        TestCase.assertTrue(map.get("trace") instanceof List);
+        server.close();
+    }
 }

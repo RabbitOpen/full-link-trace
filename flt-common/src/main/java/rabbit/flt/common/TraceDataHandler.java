@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * trace 信息收集器
  */
-public interface TraceDataHandler extends Closeable {
+public interface TraceDataHandler  {
 
     /**
      * 处理trace数据
