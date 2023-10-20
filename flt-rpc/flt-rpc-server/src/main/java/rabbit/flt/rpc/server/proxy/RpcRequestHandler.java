@@ -31,6 +31,6 @@ public class RpcRequestHandler implements InvocationHandler {
             return false;
         }
         Object result = attrs.get(AuthenticationHandler.AUTHENTICATE);
-        return null == result ? false : true == (boolean) result;
+        return null == result ? false : (boolean) result;
     }
 }
