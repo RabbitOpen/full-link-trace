@@ -27,6 +27,7 @@ public class MetricsTest {
         EnvironmentMetrics metrics = new EnvironmentScheduleTask().getMetrics();
         logger.info("agent version: {}", metrics.getAgentVersion());
         TestCase.assertNotNull(metrics.getAgentVersion());
+        TestCase.assertFalse(metrics.getAgentVersion().contains("{"));
     }
 
     @Test

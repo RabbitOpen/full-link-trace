@@ -14,7 +14,6 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <agent.config></agent.config>
     </properties>
 
     <dependencies>
@@ -44,20 +43,6 @@
             </exclusions>
         </dependency>
     </dependencies>
-
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <agent.config>
-                    -javaagent:"${project.basedir}\..\..\flt-core\target\flt-core-${project.version}.jar=classpath:agent.properties"
-                </agent.config>
-            </properties>
-        </profile>
-    </profiles>
 
     <build>
         <resources>
