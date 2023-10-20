@@ -38,7 +38,6 @@ public class SpringBootStartListener implements ApplicationListener, Ordered {
 
                         @Override
                         public void initialize() {
-
                         }
 
                         @Override
