@@ -6,7 +6,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
 import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
-import rabbit.flt.common.Key;
+import rabbit.flt.common.Headers;
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.common.trace.MessageType;
 import rabbit.flt.common.trace.MethodStackInfo;
@@ -33,11 +33,11 @@ public class HttpClient4Plugin extends PerformancePlugin {
                 MethodStackInfo stackInfo = TraceContext.getStackInfo(method);
                 TraceData traceData = stackInfo.getTraceData();
                 HttpMessage httpMessage = (HttpMessage) args[1];
-                httpMessage.setHeader(Key.traceIdHeaderName, TraceContext.getTraceId());
-                httpMessage.setHeader(Key.spanIdHeaderName, traceData.getSpanId());
+                httpMessage.setHeader(Headers.TRACE_ID, TraceContext.getTraceId());
+                httpMessage.setHeader(Headers.SPAN_ID, traceData.getSpanId());
                 AgentConfig config = AbstractConfigFactory.getConfig();
                 if (null != config) {
-                    httpMessage.setHeader(Key.sourceAppHeaderName, config.getApplicationCode());
+                    httpMessage.setHeader(Headers.SOURCE_APP, config.getApplicationCode());
                 }
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);

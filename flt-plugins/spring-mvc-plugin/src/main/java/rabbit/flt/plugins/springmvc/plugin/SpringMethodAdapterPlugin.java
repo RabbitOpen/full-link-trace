@@ -1,6 +1,6 @@
 package rabbit.flt.plugins.springmvc.plugin;
 
-import rabbit.flt.common.Key;
+import rabbit.flt.common.Headers;
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.common.trace.MessageType;
 import rabbit.flt.common.trace.TraceData;
@@ -27,12 +27,12 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
         }
         TraceContext.clearContext();
         TraceContext.openTrace(method);
-        String spanId = request.getHeader(Key.spanIdHeaderName);
+        String spanId = request.getHeader(Headers.SPAN_ID);
         if (StringUtils.isEmpty(spanId)) {
             TraceContext.initRootSpanId("0");
         } else {
             TraceContext.initRootSpanId(spanId.concat("-0"));
-            String traceId = request.getHeader(Key.traceIdHeaderName);
+            String traceId = request.getHeader(Headers.TRACE_ID);
             if (!StringUtils.isEmpty(traceId)) {
                 TraceContext.setTraceId(traceId);
             }
@@ -51,7 +51,7 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
      * @param traceData
      */
     private void setSourceApplication(HttpServletRequest request, TraceData traceData) {
-        String sourceApp = request.getHeader(Key.sourceAppHeaderName);
+        String sourceApp = request.getHeader(Headers.SOURCE_APP);
         if (!StringUtils.isEmpty(sourceApp)) {
             traceData.setSourceApplication(StringUtils.toString(sourceApp));
         }

@@ -4,7 +4,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.MultiValueMap;
-import rabbit.flt.common.Key;
+import rabbit.flt.common.Headers;
 import rabbit.flt.common.TraceContextHolder;
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.common.trace.MessageType;
@@ -31,12 +31,12 @@ public class SpringWebFluxPlugin extends PerformancePlugin {
         ServerHttpResponse response = (ServerHttpResponse) args[1];
         TraceContext.clearContext();
         TraceContext.openTrace(method);
-        String spanId = request.getHeaders().getFirst(Key.spanIdHeaderName);
+        String spanId = request.getHeaders().getFirst(Headers.SPAN_ID);
         if (StringUtils.isEmpty(spanId)) {
             TraceContext.initRootSpanId("0");
         } else {
             TraceContext.initRootSpanId(spanId.concat("-0"));
-            String traceId = request.getHeaders().getFirst(Key.traceIdHeaderName);
+            String traceId = request.getHeaders().getFirst(Headers.TRACE_ID);
             if (!StringUtils.isEmpty(traceId)) {
                 TraceContext.setTraceId(traceId);
             }
@@ -59,7 +59,7 @@ public class SpringWebFluxPlugin extends PerformancePlugin {
      * @param traceData
      */
     private void setSourceApplication(ServerHttpRequest request, TraceData traceData) {
-        String sourceApp = request.getHeaders().getFirst(Key.sourceAppHeaderName);
+        String sourceApp = request.getHeaders().getFirst(Headers.SOURCE_APP);
         if (!StringUtils.isEmpty(sourceApp)) {
             traceData.setSourceApplication(StringUtils.toString(sourceApp));
         }

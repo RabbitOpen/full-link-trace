@@ -3,7 +3,7 @@ package rabbit.flt.plugins.webclient.plugin;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
-import rabbit.flt.common.Key;
+import rabbit.flt.common.Headers;
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.common.trace.MessageType;
 import rabbit.flt.common.trace.MethodStackInfo;
@@ -29,13 +29,13 @@ public class WebClientExchangePlugin extends PerformancePlugin {
         ClientRequest clientRequest = (ClientRequest) args[0];
         HttpHeaders httpHeaders = clientRequest.headers();
         TraceContext.pushStack(method, () -> {
-            String traceId = getValueFromHeader(httpHeaders, Key.traceIdHeaderName);
+            String traceId = getValueFromHeader(httpHeaders, Headers.TRACE_ID);
             if (StringUtils.isEmpty(traceId)) {
                 return TraceContext.getOrCreateTraceId();
             }
             return traceId;
         }, () -> {
-            String spanId = getValueFromHeader(httpHeaders, Key.spanIdHeaderName);
+            String spanId = getValueFromHeader(httpHeaders, Headers.SPAN_ID);
             if (StringUtils.isEmpty(spanId)) {
                 return TraceContext.calcCurrentSpanId(method);
             }

@@ -3,7 +3,7 @@ package rabbit.flt.plugins.webclient.plugin;
 import org.springframework.web.reactive.function.client.WebClient;
 import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
-import rabbit.flt.common.Key;
+import rabbit.flt.common.Headers;
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.plugins.common.plugin.SupportPlugin;
 
@@ -36,13 +36,13 @@ public class WebClientSupportPlugin extends SupportPlugin {
      */
     private void addWebClientTraceHeader(WebClient.RequestBodyUriSpec spec, String spanId, String traceId) {
         spec.headers(httpHeaders -> {
-            httpHeaders.set(Key.spanIdHeaderName, spanId);
-            httpHeaders.set(Key.traceIdHeaderName, traceId);
+            httpHeaders.set(Headers.SPAN_ID, spanId);
+            httpHeaders.set(Headers.TRACE_ID, traceId);
         });
         // 添加源app
         AgentConfig config = AbstractConfigFactory.getConfig();
         if (null != config) {
-            spec.headers(httpHeaders -> httpHeaders.set(Key.sourceAppHeaderName, config.getApplicationCode()));
+            spec.headers(httpHeaders -> httpHeaders.set(Headers.SOURCE_APP, config.getApplicationCode()));
         }
     }
 }
