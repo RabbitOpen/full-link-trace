@@ -209,8 +209,8 @@ public abstract class BaseCases {
         TestCase.assertEquals("hello", map.get("0-0-0-0").getNodeName());
         TestCase.assertEquals("/mvc/hello", map.get("0-0-0").getNodeName());
         Map<String, Object> headers = ((HttpRequest) map.get("0-0-0").getInput()).getHeaders();
-        TestCase.assertTrue(headers.containsKey(Headers.TRACE_ID.toLowerCase()));
-        TestCase.assertTrue(headers.containsKey(Headers.SPAN_ID.toLowerCase()));
+        TestCase.assertTrue(headers.containsKey(Headers.TRACE_ID.toLowerCase()) || headers.containsKey(Headers.TRACE_ID));
+        TestCase.assertTrue(headers.containsKey(Headers.SPAN_ID.toLowerCase()) || headers.containsKey(Headers.SPAN_ID));
         TestCase.assertEquals("HTTP_CLIENT4", map.get("0-0").getNodeName());
         TestCase.assertEquals("doHttp4Request", map.get("0").getNodeName());
     }
