@@ -35,11 +35,8 @@ public class RpcMetricsDataHandler extends DataHandler implements MetricsDataHan
         if (data instanceof EnvironmentMetrics) {
             return getDataService().handleEnvironmentMetrics((EnvironmentMetrics) data);
         }
-        if (consumerMap.containsKey(data.getClass())) {
-            consumerMap.get(data.getClass()).accept(data);
-            return true;
-        }
-        return false;
+        consumerMap.get(data.getClass()).accept(data);
+        return true;
     }
 
     @Override

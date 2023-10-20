@@ -56,9 +56,6 @@ public abstract class DataHandler {
 
     private <T> T proxyService(Class<T> clz) {
         AgentConfig config = AbstractConfigFactory.getConfig();
-        if (null == config) {
-            return null;
-        }
         String servers = config.getServers();
         List<ServerNode> nodes = new ArrayList<>();
         for (String server : servers.split(",")) {

@@ -57,7 +57,7 @@ public abstract class AbstractConfigFactory {
     public static AgentConfig getConfig() {
         AbstractConfigFactory factory = getFactory();
         if (null == factory) {
-            return null;
+            throw new AgentException("no factory exception");
         }
         return factory.getAgentConfig();
     }
