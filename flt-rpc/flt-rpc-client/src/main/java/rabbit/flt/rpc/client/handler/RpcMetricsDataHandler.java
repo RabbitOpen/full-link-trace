@@ -53,6 +53,7 @@ public class RpcMetricsDataHandler extends DataHandler implements MetricsDataHan
     }
 
     private class Switch {
+
         private boolean enable;
 
         private long updateTime;
