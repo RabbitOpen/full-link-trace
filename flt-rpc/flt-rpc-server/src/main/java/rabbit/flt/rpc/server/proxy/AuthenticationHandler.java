@@ -1,7 +1,5 @@
 package rabbit.flt.rpc.server.proxy;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.rpc.common.Request;
 import rabbit.flt.rpc.common.exception.AuthenticationFailedException;
@@ -14,8 +12,6 @@ import java.nio.channels.SelectionKey;
 import java.util.Map;
 
 public class AuthenticationHandler implements InvocationHandler {
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final String AUTHENTICATE = "authenticate";
 
