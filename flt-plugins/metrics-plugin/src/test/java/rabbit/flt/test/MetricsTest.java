@@ -15,8 +15,6 @@ import rabbit.flt.plugins.metrics.task.EnvironmentScheduleTask;
 import rabbit.flt.plugins.metrics.task.GcScheduleTask;
 import rabbit.flt.plugins.metrics.task.MemoryScheduleTask;
 
-import java.io.InputStream;
-
 @RunWith(JUnit4.class)
 public class MetricsTest {
 

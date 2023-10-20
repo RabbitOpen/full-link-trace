@@ -26,9 +26,10 @@
         <sonar.jacoco.reportPaths>${project.basedir}/../../target/jacoco.exec</sonar.jacoco.reportPaths>
         <!--    该模块不纳入 sonar 扫描    -->
         <sonar.skip>true</sonar.skip>
-
         <!--   agent 构建目录     -->
-        <agent.config>-javaagent:"${project.basedir}\..\..\flt-core\target\flt-core-${project.version}.jar=classpath:agent.properties"</agent.config>
+        <agent.config>
+            -javaagent:"${project.basedir}\..\..\flt-core\target\flt-core-${project.version}.jar=classpath:agent.properties"
+        </agent.config>
     </properties>
 
     <dependencyManagement>
