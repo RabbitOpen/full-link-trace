@@ -1,0 +1,4 @@
+rabbit.flt.plugins.metrics.jna.task.CpuScheduleTask
+rabbit.flt.plugins.metrics.jna.task.DiskIoScheduleTask
+rabbit.flt.plugins.metrics.jna.task.DiskSpaceScheduleTask
+rabbit.flt.plugins.metrics.jna.task.NetWorkScheduleTask

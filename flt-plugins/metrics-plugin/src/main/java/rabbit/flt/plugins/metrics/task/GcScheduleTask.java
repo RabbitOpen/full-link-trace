@@ -68,12 +68,12 @@ public class GcScheduleTask extends ScheduleTask<GcMetrics> {
     private void cacheGcMetrics(GcMetrics metrics) {
         if ("end of minor GC".equalsIgnoreCase(metrics.getGcAction())) {
             long now = System.currentTimeMillis();
-            int gcReportIntervalSeconds = 5;
+            long gcSampleInterval = 5000L;
             AgentConfig config = AbstractConfigFactory.getConfig();
             if (null != config) {
-                gcReportIntervalSeconds = config.getGcReportIntervalSeconds();
+                gcSampleInterval = config.getGcSampleIntervalSeconds() * 1000L;
             }
-            if (now - lastMinorGcTime < gcReportIntervalSeconds * 1000L) {
+            if (now - lastMinorGcTime < gcSampleInterval) {
                 return;
             }
             lastMinorGcTime = now;

@@ -83,12 +83,32 @@ public class AgentConfig {
     private double threshold = 0.0;
 
     // gc 上报最小间隔
-    private int gcReportIntervalSeconds = 5;
+    private int gcSampleIntervalSeconds = 5;
 
     /**
      * 内存采集最小间隔
      */
-    private int memoryReportIntervalSeconds = 15;
+    private int memorySampleIntervalSeconds = 15;
+
+    /**
+     * cpu采样频率
+     */
+    private int cpuSampleIntervalSeconds = 15;
+
+    /**
+     * 网络采样频率
+     */
+    private int networkSampleIntervalSeconds = 15;
+
+    /**
+     * 磁盘io采样频率
+     */
+    private int diskIoSampleIntervalSeconds = 15;
+
+    /**
+     * 5分钟采样一次
+     */
+    private int diskSpaceSampleIntervalSeconds = 300;
 
     /**
      * 校验
@@ -288,19 +308,51 @@ public class AgentConfig {
         this.threshold = threshold;
     }
 
-    public int getGcReportIntervalSeconds() {
-        return gcReportIntervalSeconds;
+    public int getGcSampleIntervalSeconds() {
+        return gcSampleIntervalSeconds;
     }
 
-    public void setGcReportIntervalSeconds(int gcReportIntervalSeconds) {
-        this.gcReportIntervalSeconds = gcReportIntervalSeconds;
+    public void setGcSampleIntervalSeconds(int gcSampleIntervalSeconds) {
+        this.gcSampleIntervalSeconds = gcSampleIntervalSeconds;
     }
 
-    public int getMemoryReportIntervalSeconds() {
-        return memoryReportIntervalSeconds;
+    public int getMemorySampleIntervalSeconds() {
+        return memorySampleIntervalSeconds;
     }
 
-    public void setMemoryReportIntervalSeconds(int memoryReportIntervalSeconds) {
-        this.memoryReportIntervalSeconds = memoryReportIntervalSeconds;
+    public void setMemorySampleIntervalSeconds(int memorySampleIntervalSeconds) {
+        this.memorySampleIntervalSeconds = memorySampleIntervalSeconds;
+    }
+
+    public int getCpuSampleIntervalSeconds() {
+        return cpuSampleIntervalSeconds;
+    }
+
+    public void setCpuSampleIntervalSeconds(int cpuSampleIntervalSeconds) {
+        this.cpuSampleIntervalSeconds = cpuSampleIntervalSeconds;
+    }
+
+    public int getNetworkSampleIntervalSeconds() {
+        return networkSampleIntervalSeconds;
+    }
+
+    public void setNetworkSampleIntervalSeconds(int networkSampleIntervalSeconds) {
+        this.networkSampleIntervalSeconds = networkSampleIntervalSeconds;
+    }
+
+    public int getDiskIoSampleIntervalSeconds() {
+        return diskIoSampleIntervalSeconds;
+    }
+
+    public void setDiskIoSampleIntervalSeconds(int diskIoSampleIntervalSeconds) {
+        this.diskIoSampleIntervalSeconds = diskIoSampleIntervalSeconds;
+    }
+
+    public int getDiskSpaceSampleIntervalSeconds() {
+        return diskSpaceSampleIntervalSeconds;
+    }
+
+    public void setDiskSpaceSampleIntervalSeconds(int diskSpaceSampleIntervalSeconds) {
+        this.diskSpaceSampleIntervalSeconds = diskSpaceSampleIntervalSeconds;
     }
 }

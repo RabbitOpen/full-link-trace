@@ -1,8 +1,13 @@
 package rabbit.flt.common;
 
+import rabbit.flt.common.log.AgentLoggerFactory;
+import rabbit.flt.common.log.Logger;
+
 import java.lang.reflect.ParameterizedType;
 
 public abstract class ScheduleTask<T extends Metrics> {
+
+    protected Logger logger = AgentLoggerFactory.getLogger(getClass());
 
     protected Class<T> metricsTypeClz;
 

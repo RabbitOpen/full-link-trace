@@ -33,7 +33,7 @@ public class MetricsTest {
     @Test
     public void metricsTest() {
         AgentConfig agentConfig = new AgentConfig();
-        agentConfig.setMemoryReportIntervalSeconds(10);
+        agentConfig.setMemorySampleIntervalSeconds(10);
         AbstractConfigFactory.setFactoryLoader(() -> new AbstractConfigFactory() {
             @Override
             public void doInitialize() {

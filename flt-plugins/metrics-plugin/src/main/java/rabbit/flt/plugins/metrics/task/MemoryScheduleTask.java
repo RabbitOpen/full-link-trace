@@ -25,7 +25,7 @@ public class MemoryScheduleTask extends ScheduleTask<MemoryMetrics> {
         int interval = 15;
         AgentConfig config = AbstractConfigFactory.getConfig();
         if (null != config) {
-            interval = config.getMemoryReportIntervalSeconds();
+            interval = config.getMemorySampleIntervalSeconds();
         }
         return interval * 1000L;
     }

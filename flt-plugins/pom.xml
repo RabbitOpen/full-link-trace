@@ -23,6 +23,7 @@
         <module>mybatis-plugin</module>
         <module>logback-support-plugin</module>
         <module>metrics-plugin</module>
+        <module>metrics-plugin-jna</module>
     </modules>
 
     <properties>
