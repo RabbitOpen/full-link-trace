@@ -159,10 +159,7 @@ public abstract class BaseCases {
         Semaphore semaphore = new Semaphore(0);
         List<TraceData> list = new ArrayList<>();
         TestTraceHandler.setDiscardDataHandler(t -> {
-            if ("recursivelyAdd".equals(t.getNodeName())) {
-                list.add(t);
-                semaphore.release();
-            } else if ("count".equals(t.getNodeName())) {
+            if ("recursivelyAdd".equals(t.getNodeName()) || "count".equals(t.getNodeName())) {
                 list.add(t);
                 semaphore.release();
             }
