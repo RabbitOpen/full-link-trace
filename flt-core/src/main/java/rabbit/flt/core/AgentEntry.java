@@ -14,7 +14,6 @@ import rabbit.flt.common.utils.ResourceUtil;
 import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.core.factory.DefaultConfigFactory;
 import rabbit.flt.core.loader.DefaultPluginClassLoader;
-import rabbit.flt.core.loader.LocalPluginClassLoader;
 import rabbit.flt.core.transformer.ClassTransformer;
 import rabbit.flt.plugins.common.Matcher;
 import rabbit.flt.plugins.common.MetricsPlugin;
