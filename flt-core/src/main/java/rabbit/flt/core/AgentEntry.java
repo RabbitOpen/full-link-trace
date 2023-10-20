@@ -13,6 +13,8 @@ import rabbit.flt.common.log.Logger;
 import rabbit.flt.common.utils.ResourceUtil;
 import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.core.factory.DefaultConfigFactory;
+import rabbit.flt.core.loader.DefaultPluginClassLoader;
+import rabbit.flt.core.loader.LocalPluginClassLoader;
 import rabbit.flt.core.transformer.ClassTransformer;
 import rabbit.flt.plugins.common.Matcher;
 import rabbit.flt.plugins.common.MetricsPlugin;
@@ -41,7 +43,10 @@ public class AgentEntry {
         if (StringUtils.isEmpty(agentConfig)) {
             return;
         }
-        AbstractConfigFactory.setFactoryLoader(() -> new DefaultConfigFactory());
+        AbstractConfigFactory.setFactoryLoader(DefaultConfigFactory::new);
+
+        // 初始化
+        PluginClassLoader.setPluginClassLoader(new DefaultPluginClassLoader());
 
         // 设置配置文件
         AbstractConfigFactory.setAgentConfigFile(agentConfig);

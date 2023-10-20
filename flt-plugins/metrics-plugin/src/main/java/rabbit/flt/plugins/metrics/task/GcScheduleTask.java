@@ -50,9 +50,9 @@ public class GcScheduleTask extends ScheduleTask<GcMetrics> {
                 Map<String, MemoryUsage> beforeGc = info.getGcInfo().getMemoryUsageBeforeGc();
                 for (Map.Entry<String, MemoryUsage> entry : afterGc.entrySet()) {
                     String key = entry.getKey();
-                    StringBuilder sb = new StringBuilder(beforeGc.get(key).getUsed() / million + "M");
-                    sb.append(" --> ").append(entry.getValue().getUsed() / million).append("M");
-                    sb.append(" (max: ").append(entry.getValue().getMax() / million).append("M)");
+                    StringBuilder sb = new StringBuilder(beforeGc.get(key).getUsed() / MILLION + "M");
+                    sb.append(" --> ").append(entry.getValue().getUsed() / MILLION).append("M");
+                    sb.append(" (max: ").append(entry.getValue().getMax() / MILLION).append("M)");
                     detail.put(key, sb.toString());
                 }
                 AtomicLong timeCounter = this.timeCounter.computeIfAbsent(info.getGcName(), k -> new AtomicLong(0));

@@ -1,7 +1,5 @@
 package rabbit.flt.core;
 
-import rabbit.flt.core.loader.DefaultPluginClassLoader;
-
 import java.io.IOException;
 
 /**
@@ -9,7 +7,7 @@ import java.io.IOException;
  */
 public abstract class PluginClassLoader {
 
-    private static PluginClassLoader pluginClassLoader = new DefaultPluginClassLoader();
+    private static PluginClassLoader pluginClassLoader;
 
     public static PluginClassLoader getPluginClassLoader() {
         return pluginClassLoader;

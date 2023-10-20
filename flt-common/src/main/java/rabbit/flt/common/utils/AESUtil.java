@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 public class AESUtil {
 
-    private static final String algorithm = "AES/ECB/PKCS5Padding";
+    private static final String ALGORITHM = "AES/ECB/PKCS5Padding";
 
     /**
      * 加密
@@ -18,7 +18,7 @@ public class AESUtil {
      */
     public static String encrypt(String content, String password) throws Exception {
         SecretKeySpec spec = new SecretKeySpec(password.getBytes(), "AES");
-        Cipher cipher = Cipher.getInstance(algorithm);
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, spec);
         return StringUtils.base64Encode(cipher.doFinal(content.getBytes(StandardCharsets.UTF_8)));
     }
@@ -33,7 +33,7 @@ public class AESUtil {
     public static String decrypt(String encryptData, String password) throws Exception {
         byte[] encryptBytes = StringUtils.base64Decode(encryptData);
         SecretKeySpec spec = new SecretKeySpec(password.getBytes(), "AES");
-        Cipher cipher = Cipher.getInstance(algorithm);
+        Cipher cipher = Cipher.getInstance(ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, spec);
         byte[] decryptBytes = cipher.doFinal(encryptBytes);
         return new String(decryptBytes);

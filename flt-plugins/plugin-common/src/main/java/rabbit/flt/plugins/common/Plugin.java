@@ -163,7 +163,7 @@ public abstract class Plugin {
      */
     protected String truncate(String txt) {
         if (!StringUtils.isEmpty(txt) && txt.length() > 512) {
-            txt = txt.substring(0, 512) + ".....";
+            return txt.substring(0, 512) + ".....";
         }
         return txt;
     }

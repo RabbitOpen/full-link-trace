@@ -5,7 +5,7 @@ import java.util.Collection;
 public class CollectionUtil {
 
     public static boolean isEmpty(Collection<?> collection) {
-        return null == collection || 0 == collection.size();
+        return null == collection || collection.isEmpty();
     }
 
     public static <T> boolean isEmpty(T[] arr) {

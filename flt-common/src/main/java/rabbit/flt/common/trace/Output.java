@@ -1,4 +1,6 @@
 package rabbit.flt.common.trace;
 
-public interface Output {
+import java.io.Serializable;
+
+public interface Output extends Serializable {
 }
