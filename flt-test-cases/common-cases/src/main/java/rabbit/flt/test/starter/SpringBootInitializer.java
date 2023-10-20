@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContextAware;
 
 public class SpringBootInitializer implements BeanPostProcessor, ApplicationContextAware {
 
-    public static ApplicationContext context;
+    private static ApplicationContext context;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
