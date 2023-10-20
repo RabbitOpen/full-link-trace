@@ -35,7 +35,6 @@ public class MethodStackInfo {
      */
     public void pushStack() {
         this.pushStackTimes++;
-        this.traceData.pushStack();
     }
 
     /**

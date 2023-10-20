@@ -7,7 +7,7 @@ public abstract class ScheduleTask<T extends Metrics> {
     protected Class<T> metricsTypeClz;
 
     // 1M
-    protected final long M = 1024L * 1024;
+    protected final static long million = 1024L * 1024;
 
     public ScheduleTask() {
         Class<?> clz = getClass();

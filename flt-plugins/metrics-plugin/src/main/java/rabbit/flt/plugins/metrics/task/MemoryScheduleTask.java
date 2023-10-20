@@ -44,12 +44,12 @@ public class MemoryScheduleTask extends ScheduleTask<MemoryMetrics> {
     public MemoryMetrics getMetrics() {
         MemoryMetrics metrics = new MemoryMetrics();
         MemoryMXBean mxBean = ManagementFactory.getMemoryMXBean();
-        metrics.setMaxHeapMemory(mxBean.getHeapMemoryUsage().getMax() / M);
-        metrics.setUsedHeapMemory(mxBean.getHeapMemoryUsage().getUsed() / M);
+        metrics.setMaxHeapMemory(mxBean.getHeapMemoryUsage().getMax() / million);
+        metrics.setUsedHeapMemory(mxBean.getHeapMemoryUsage().getUsed() / million);
         metrics.setSamplingTime(nextFireTime);
         OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-        metrics.setMaxSystemMemory(osBean.getTotalPhysicalMemorySize() / M);
-        metrics.setUsedSystemMemory((osBean.getTotalPhysicalMemorySize() - osBean.getFreePhysicalMemorySize()) / M);
+        metrics.setMaxSystemMemory(osBean.getTotalPhysicalMemorySize() / million);
+        metrics.setUsedSystemMemory((osBean.getTotalPhysicalMemorySize() - osBean.getFreePhysicalMemorySize()) / million);
         nextFireTime = nextFireTime + getReportIntervalMils();
         return metrics;
     }

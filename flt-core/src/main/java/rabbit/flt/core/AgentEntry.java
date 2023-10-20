@@ -70,27 +70,27 @@ public class AgentEntry {
         return new AgentBuilder.Listener() {
             @Override
             public void onDiscovery(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded) {
-
+                // ignore
             }
 
             @Override
             public void onTransformation(TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded, DynamicType dynamicType) {
-
+                // ignore
             }
 
             @Override
             public void onIgnored(TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded) {
-
+                // ignore
             }
 
             @Override
             public void onError(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded, Throwable throwable) {
-
+                // ignore
             }
 
             @Override
             public void onComplete(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded) {
-
+                // ignore
             }
         };
     }
@@ -144,6 +144,7 @@ public class AgentEntry {
 
     /**
      * 尝试初始化配置工厂
+     *
      * @param agentConfig
      * @throws FileNotFoundException
      */

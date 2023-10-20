@@ -158,11 +158,9 @@ public abstract class BaseCases {
         List<TraceData> list = new ArrayList<>();
         TestTraceHandler.setDiscardDataHandler(t -> {
             if ("recursivelyAdd".equals(t.getNodeName())) {
-                TestCase.assertEquals(5, t.getPushStackTimes());
                 list.add(t);
                 semaphore.release();
             } else if ("count".equals(t.getNodeName())) {
-                TestCase.assertEquals(1, t.getPushStackTimes());
                 list.add(t);
                 semaphore.release();
             }
@@ -172,7 +170,6 @@ public abstract class BaseCases {
         TestCase.assertEquals(53, result);
         semaphore.acquire(6);
         TestCase.assertEquals("0", list.get(5).getSpanId());
-        TestCase.assertEquals(5, list.get(5).getPushStackTimes());
         TestTraceHandler.setDiscardDataHandler(null);
     }
 

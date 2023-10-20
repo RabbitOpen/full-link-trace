@@ -1,19 +1,10 @@
 package rabbit.flt.common.trace;
 
-import java.beans.Transient;
-import java.util.concurrent.atomic.AtomicLong;
+import java.io.Serializable;
 
 import static rabbit.flt.common.trace.TraceData.Status.OK;
 
-public class TraceData {
-
-    // 进栈次数
-    private transient long pushStackTimes = 0L;
-
-    /**
-     * span id counter
-     */
-    private transient AtomicLong spanIdChildCounter;
+public class TraceData implements Serializable {
 
     private String traceId;
 
@@ -80,23 +71,6 @@ public class TraceData {
      * 是否有controller接口承接请求
      */
     private boolean hasMappedController = false;
-
-    public void pushStack() {
-        this.pushStackTimes++;
-    }
-
-    @Transient
-    public long getPushStackTimes() {
-        return pushStackTimes;
-    }
-
-    public void setPushStackTimes(long pushStackTimes) {
-        this.pushStackTimes = pushStackTimes;
-    }
-
-    public void setSpanIdChildCounter(AtomicLong spanIdChildCounter) {
-        this.spanIdChildCounter = spanIdChildCounter;
-    }
 
     public String getTraceId() {
         return traceId;

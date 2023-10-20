@@ -61,8 +61,8 @@ public class DefaultConfigFactory extends AbstractConfigFactory {
             Properties properties = new Properties();
             properties.load(stream);
             Map<String, Object> map = new HashMap<>();
-            for (Object o : properties.keySet()) {
-                map.put(o.toString().substring("agent.".length()), properties.get(o));
+            for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+                map.put(entry.getKey().toString().substring("agent.".length()), entry.getValue());
             }
             Map<Class, Function> functionMap = getFunctionMap();
             config = new AgentConfig();

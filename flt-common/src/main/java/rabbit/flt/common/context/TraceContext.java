@@ -63,7 +63,7 @@ public class TraceContext {
      * @return
      */
     public static MethodStackInfo pushStack(Object method) {
-        return pushStack(method, () -> getOrCreateTraceId(), () -> calcCurrentSpanId(method));
+        return pushStack(method, TraceContext::getOrCreateTraceId, () -> calcCurrentSpanId(method));
     }
 
     /**
@@ -91,14 +91,6 @@ public class TraceContext {
             traceData.setRequestTime(info.getRequestTime());
             traceData.setServerIp(Metrics.getHostIp());
             traceData.setStatus(TraceData.Status.OK);
-            AtomicLong spanIdChildCounter;
-            if (-1 == traceData.getSpanId().indexOf('-')) {
-                spanIdChildCounter = getSpanIdChildCounter(traceData.getSpanId());
-            } else {
-                String spanId = traceData.getSpanId();
-                spanIdChildCounter = getSpanIdChildCounter(spanId.substring(0, spanId.lastIndexOf('-')));
-            }
-            traceData.setSpanIdChildCounter(spanIdChildCounter);
             info.setTraceData(traceData);
             return info;
         });
