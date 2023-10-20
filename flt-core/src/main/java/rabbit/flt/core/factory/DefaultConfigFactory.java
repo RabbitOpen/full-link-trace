@@ -7,12 +7,7 @@ import rabbit.flt.common.utils.ResourceUtil;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Function;
 
 /**
  * 配置工厂
@@ -24,7 +19,7 @@ public class DefaultConfigFactory extends AbstractConfigFactory {
     private AgentConfig config;
 
     @Override
-    public void doInitialize() {
+    public void initialize() {
         InputStream stream = null;
         try {
             lock.lock();
@@ -41,7 +36,7 @@ public class DefaultConfigFactory extends AbstractConfigFactory {
             if (null == stream) {
                 throw new AgentException("[" + configFile + "] is not exist");
             }
-            doInitialize(stream);
+            config = loadConfig(stream);
         } catch (Exception e) {
             throw new AgentException(e);
         } finally {
@@ -55,40 +50,7 @@ public class DefaultConfigFactory extends AbstractConfigFactory {
         return config;
     }
 
-    @Override
-    public void doInitialize(InputStream stream) {
-        try {
-            Properties properties = new Properties();
-            properties.load(stream);
-            Map<String, Object> map = new HashMap<>();
-            for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-                map.put(entry.getKey().toString().substring("agent.".length()), entry.getValue());
-            }
-            Map<Class, Function> functionMap = getFunctionMap();
-            config = new AgentConfig();
-            for (Field field : AgentConfig.class.getDeclaredFields()) {
-                field.setAccessible(true);
-                if (map.containsKey(field.getName())) {
-                    field.set(config, functionMap.get(field.getType()).apply(map.get(field.getName())));
-                }
-            }
-            config.doValidation();
-        } catch (Exception e) {
-            throw new AgentException(e);
-        }
-    }
-
-    private Map<Class, Function> getFunctionMap() {
-        Map<Class, Function> map = new HashMap<>();
-        map.put(String.class, Object::toString);
-        map.put(Boolean.class, s -> Boolean.parseBoolean(s.toString()));
-        map.put(boolean.class, s -> Boolean.parseBoolean(s.toString()));
-        map.put(Integer.class, s -> Integer.parseInt(s.toString()));
-        map.put(int.class, s -> Integer.parseInt(s.toString()));
-        map.put(Long.class, s -> Long.parseLong(s.toString()));
-        map.put(long.class, s -> Long.parseLong(s.toString()));
-        map.put(Double.class, s -> Double.parseDouble(s.toString()));
-        map.put(double.class, s -> Double.parseDouble(s.toString()));
-        return map;
+    public final void setConfig(AgentConfig config) {
+        this.config = config;
     }
 }

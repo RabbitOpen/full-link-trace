@@ -4,6 +4,11 @@ import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.utils.StringUtils;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.function.Function;
 
 /**
  * 抽象配置工厂
@@ -37,7 +42,7 @@ public abstract class AbstractConfigFactory {
     /**
      * 初始化
      */
-    public abstract void doInitialize();
+    public abstract void initialize();
 
     /**
      * 获取配置对象
@@ -58,9 +63,44 @@ public abstract class AbstractConfigFactory {
     }
 
     /**
-     * 初始化
+     * 读取配置
      */
-    public abstract void doInitialize(InputStream stream);
+    public final AgentConfig loadConfig(InputStream stream) {
+        try {
+            Properties properties = new Properties();
+            properties.load(stream);
+            Map<String, Object> map = new HashMap<>();
+            for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+                map.put(entry.getKey().toString().substring("agent.".length()), entry.getValue());
+            }
+            Map<Class, Function> functionMap = getFunctionMap();
+            AgentConfig config = new AgentConfig();
+            for (Field field : AgentConfig.class.getDeclaredFields()) {
+                field.setAccessible(true);
+                if (map.containsKey(field.getName())) {
+                    field.set(config, functionMap.get(field.getType()).apply(map.get(field.getName())));
+                }
+            }
+            config.doValidation();
+            return config;
+        } catch (Exception e) {
+            throw new AgentException(e);
+        }
+    }
+
+    private Map<Class, Function> getFunctionMap() {
+        Map<Class, Function> map = new HashMap<>();
+        map.put(String.class, Object::toString);
+        map.put(Boolean.class, s -> Boolean.parseBoolean(s.toString()));
+        map.put(boolean.class, s -> Boolean.parseBoolean(s.toString()));
+        map.put(Integer.class, s -> Integer.parseInt(s.toString()));
+        map.put(int.class, s -> Integer.parseInt(s.toString()));
+        map.put(Long.class, s -> Long.parseLong(s.toString()));
+        map.put(long.class, s -> Long.parseLong(s.toString()));
+        map.put(Double.class, s -> Double.parseDouble(s.toString()));
+        map.put(double.class, s -> Double.parseDouble(s.toString()));
+        return map;
+    }
 
     public static void setFactoryLoader(ConfigFactoryLoader factoryLoader) {
         AbstractConfigFactory.factoryLoader = factoryLoader;

@@ -162,7 +162,8 @@ public class AgentEntry {
                     .concat("/").concat(agentConfig));
         }
         FileInputStream stream = new FileInputStream(file);
-        AbstractConfigFactory.getFactory().doInitialize(stream);
+        DefaultConfigFactory factory = (DefaultConfigFactory) AbstractConfigFactory.getFactory();
+        factory.setConfig(factory.loadConfig(stream));
         ResourceUtil.close(stream);
     }
 }

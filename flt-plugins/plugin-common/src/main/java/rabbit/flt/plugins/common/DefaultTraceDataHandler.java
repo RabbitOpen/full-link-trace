@@ -54,7 +54,7 @@ public class DefaultTraceDataHandler {
             }
             Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown()));
             AbstractConfigFactory factory = AbstractConfigFactory.getFactory();
-            factory.doInitialize();
+            factory.initialize();
             AgentConfig config = AbstractConfigFactory.getConfig();
             dataQueue.setCapacity(config.getMaxQueueSize());
             initDataHandler();

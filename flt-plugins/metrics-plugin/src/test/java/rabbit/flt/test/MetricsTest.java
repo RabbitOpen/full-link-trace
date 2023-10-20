@@ -35,8 +35,9 @@ public class MetricsTest {
         AgentConfig agentConfig = new AgentConfig();
         agentConfig.setMemorySampleIntervalSeconds(10);
         AbstractConfigFactory.setFactoryLoader(() -> new AbstractConfigFactory() {
+
             @Override
-            public void doInitialize() {
+            public void initialize() {
 
             }
 
@@ -45,10 +46,6 @@ public class MetricsTest {
                 return agentConfig;
             }
 
-            @Override
-            public void doInitialize(InputStream stream) {
-
-            }
         });
 
         GcMetrics gcMetrics = new GcScheduleTask().getMetrics();

@@ -35,8 +35,9 @@ public class SpringBootStartListener implements ApplicationListener, Ordered {
                     final AgentConfig defaultConfig = getAgentConfig();
                     initLoggerFactory();
                     AbstractConfigFactory.setFactoryLoader(() -> new AbstractConfigFactory() {
+
                         @Override
-                        public void doInitialize() {
+                        public void initialize() {
 
                         }
 
@@ -45,9 +46,6 @@ public class SpringBootStartListener implements ApplicationListener, Ordered {
                             return defaultConfig;
                         }
 
-                        @Override
-                        public void doInitialize(InputStream stream) {
-                        }
                     });
                     AgentHelper.installPlugins();
                 } catch (Exception e) {
