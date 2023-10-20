@@ -4,6 +4,7 @@ import rabbit.flt.rpc.common.exception.UnAuthenticatedException;
 import rabbit.flt.rpc.server.RequestDispatcher;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.channels.SelectionKey;
 import java.util.Map;
@@ -21,7 +22,11 @@ public class RpcRequestHandler implements InvocationHandler {
         if (!isAuthenticated()) {
             throw new UnAuthenticatedException();
         }
-        return method.invoke(realHandler, args);
+        try {
+            return method.invoke(realHandler, args);
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
+        }
     }
 
     private boolean isAuthenticated() {

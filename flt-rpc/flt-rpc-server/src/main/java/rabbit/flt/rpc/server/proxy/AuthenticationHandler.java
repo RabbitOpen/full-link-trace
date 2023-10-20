@@ -31,7 +31,10 @@ public class AuthenticationHandler implements InvocationHandler {
             boolean result = realHandler.authenticate(StringUtils.toString(applicationCode), StringUtils.toString(password));
             Map<String, Object> attrs = (Map<String, Object>) selectionKey.attachment();
             attrs.put(AUTHENTICATE, result);
-            return result;
+            if (!result) {
+                throw new AuthenticationFailedException();
+            }
+            return true;
         } catch (Exception e) {
             throw new AuthenticationFailedException();
         }

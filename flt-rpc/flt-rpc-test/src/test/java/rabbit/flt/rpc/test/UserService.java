@@ -9,4 +9,8 @@ public interface UserService {
     default void wait5s() {
         LockSupport.parkNanos(5L * 1000 * 1000 * 1000);
     };
+
+    default void exceptionCall(String msg) {
+        throw new RuntimeException(msg);
+    }
 }

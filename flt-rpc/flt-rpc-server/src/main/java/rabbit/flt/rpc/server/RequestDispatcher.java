@@ -11,10 +11,7 @@ import rabbit.flt.rpc.common.rpc.RpcResponse;
 import rabbit.flt.rpc.server.proxy.AuthenticationHandler;
 import rabbit.flt.rpc.server.proxy.RpcRequestHandler;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -80,7 +77,10 @@ public class RequestDispatcher implements Registrar {
             Object handler = this.handlerCache.get(request.getInterfaceClz());
             response.setData(method.invoke(handler, request.getParameters()));
         } catch (InvocationTargetException e) {
-            throw e.getCause();
+            if (e.getCause() instanceof RpcException) {
+                throw e.getCause();
+            }
+            throw e.getTargetException();
         }
     }
 

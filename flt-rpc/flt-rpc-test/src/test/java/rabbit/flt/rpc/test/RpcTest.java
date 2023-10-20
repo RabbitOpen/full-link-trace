@@ -123,7 +123,7 @@ public class RpcTest {
 
             @Override
             protected int getMaxRetryTime() {
-                return 2;
+                return 0;
             }
 
             @Override
@@ -155,6 +155,12 @@ public class RpcTest {
         }
         TestCase.assertTrue(authService.authenticate("", ""));
         TestCase.assertEquals("hello001", userService.getName("hello"));
+
+        try {
+            userService.exceptionCall("error call");
+        } catch (RpcException e) {
+            logger.info(e.getMessage());
+        }
 
         try {
             // 验证未注册的接口调用
