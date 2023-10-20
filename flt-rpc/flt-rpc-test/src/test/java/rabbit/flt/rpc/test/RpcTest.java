@@ -567,7 +567,7 @@ public class RpcTest {
             }
         });
         RpcMetricsDataHandler metricsDataHandler = new RpcMetricsDataHandler();
-        metricsDataHandler.handle(new EnvironmentMetrics());
+        TestCase.assertTrue(metricsDataHandler.handle(new EnvironmentMetrics()));
         semaphore.acquire();
         TestCase.assertTrue(map.get("metrics") instanceof EnvironmentMetrics);
         MemoryMetrics memoryMetrics = new MemoryMetrics();
