@@ -6,7 +6,6 @@ import rabbit.flt.common.Metrics;
 import rabbit.flt.common.MetricsDataHandler;
 import rabbit.flt.common.metrics.*;
 import rabbit.flt.rpc.client.DataHandler;
-import rabbit.flt.rpc.common.rpc.ProtocolService;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,10 +40,6 @@ public class RpcMetricsDataHandler extends DataHandler implements MetricsDataHan
 
     @Override
     public boolean isMetricsEnabled(Class<? extends Metrics> type) {
-        ProtocolService protocolService = getProtocolService();
-        if (null == protocolService) {
-            return false;
-        }
         Switch aSwitch = switchMap.computeIfAbsent(type, t -> {
             AgentConfig config = AbstractConfigFactory.getConfig();
             boolean enabled = getProtocolService().isMetricsEnabled(config.getApplicationCode(), t);
