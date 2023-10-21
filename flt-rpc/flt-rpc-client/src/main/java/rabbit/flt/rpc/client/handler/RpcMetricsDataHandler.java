@@ -31,6 +31,7 @@ public class RpcMetricsDataHandler extends DataHandler implements MetricsDataHan
 
     @Override
     public boolean handle(Metrics data) {
+        data.setApplicationCode(AbstractConfigFactory.getConfig().getApplicationCode());
         if (data instanceof EnvironmentMetrics) {
             return getDataService().handleEnvironmentMetrics((EnvironmentMetrics) data);
         }
