@@ -7,14 +7,12 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
-import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.utils.ResourceUtil;
 import rabbit.flt.core.AgentHelper;
+import rabbit.flt.core.factory.DefaultConfigFactory;
 
 import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.util.Properties;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class SpringBootStartListener implements ApplicationListener, Ordered {
@@ -57,20 +55,9 @@ public class SpringBootStartListener implements ApplicationListener, Ordered {
     }
 
     private AgentConfig getAgentConfig() {
-        AgentConfig defaultConfig = new AgentConfig();
         InputStream resource = getClass().getClassLoader().getResourceAsStream("agent.properties");
         try {
-            Properties properties = new Properties();
-            properties.load(resource);
-            for (Object o : properties.keySet()) {
-                String name = o.toString().substring(6);
-                Field declaredField = AgentConfig.class.getDeclaredField(name);
-                declaredField.setAccessible(true);
-                declaredField.set(defaultConfig, properties.get(o.toString().trim()));
-            }
-            return defaultConfig;
-        } catch (Exception e) {
-            throw new AgentException(e);
+            return new DefaultConfigFactory().loadConfig(resource);
         } finally {
             ResourceUtil.close(resource);
         }
