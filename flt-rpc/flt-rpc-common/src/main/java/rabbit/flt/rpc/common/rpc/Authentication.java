@@ -1,7 +1,5 @@
 package rabbit.flt.rpc.common.rpc;
 
-import rabbit.flt.rpc.common.exception.AuthenticationException;
-
 public interface Authentication {
 
     /**
@@ -10,5 +8,5 @@ public interface Authentication {
      * @param signature
      * @return
      */
-    void authenticate(String applicationCode, String signature) throws AuthenticationException;
+    void authenticate(String applicationCode, String signature) ;
 }
