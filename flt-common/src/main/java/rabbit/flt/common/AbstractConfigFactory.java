@@ -5,6 +5,7 @@ import rabbit.flt.common.utils.StringUtils;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -76,9 +77,11 @@ public abstract class AbstractConfigFactory {
             Map<Class, Function> functionMap = getFunctionMap();
             AgentConfig config = new AgentConfig();
             for (Field field : AgentConfig.class.getDeclaredFields()) {
-                field.setAccessible(true);
                 if (map.containsKey(field.getName())) {
-                    field.set(config, functionMap.get(field.getType()).apply(map.get(field.getName())));
+                    Object value = functionMap.get(field.getType()).apply(map.get(field.getName()));
+                    String setMethod = "set".concat(field.getName().substring(0, 1).toUpperCase().concat(field.getName().substring(1)));
+                    Method declaredMethod = AgentConfig.class.getDeclaredMethod(setMethod, field.getType());
+                    declaredMethod.invoke(config, value);
                 }
             }
             config.doValidation();
