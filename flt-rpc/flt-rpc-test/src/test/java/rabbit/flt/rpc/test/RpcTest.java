@@ -99,7 +99,7 @@ public class RpcTest {
                     }
                 })
                 .registerHandler(UserService.class, name -> name + "001")
-                .maxPendingConnections(16 * 1024 * 1024)
+                .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
                 .build();
 
@@ -244,7 +244,7 @@ public class RpcTest {
                         return false;
                     }
                 })
-                .maxPendingConnections(16 * 1024 * 1024)
+                .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
                 .build();
 
@@ -312,7 +312,7 @@ public class RpcTest {
                     }
                 })
                 .registerHandler(UserService.class, name -> name + "001")
-                .maxPendingConnections(16 * 1024 * 1024)
+                .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
                 .build();
 
@@ -412,7 +412,7 @@ public class RpcTest {
                     }
                 })
                 .registerHandler(UserService.class, name -> name + "001")
-                .maxPendingConnections(16 * 1024 * 1024)
+                .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
                 .build();
 
@@ -560,7 +560,7 @@ public class RpcTest {
                     }
                 })
                 .registerHandler(UserService.class, name -> name + "001")
-                .maxPendingConnections(16 * 1024 * 1024)
+                .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
                 .build();
 

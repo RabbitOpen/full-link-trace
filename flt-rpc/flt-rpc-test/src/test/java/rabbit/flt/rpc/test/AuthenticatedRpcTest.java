@@ -48,7 +48,7 @@ public class AuthenticatedRpcTest {
                         return false;
                     }
                 })
-                .maxPendingConnections(16 * 1024 * 1024)
+                .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
                 .build();
         server.start();
