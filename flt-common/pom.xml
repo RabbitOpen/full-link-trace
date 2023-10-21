@@ -27,4 +27,16 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <!--打包flt.properties-->
+                    <include>*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 </project>
