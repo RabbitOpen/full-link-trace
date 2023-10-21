@@ -15,8 +15,6 @@ public class EnvironmentScheduleTask extends ScheduleTask<EnvironmentMetrics> {
 
     private boolean scheduled = false;
 
-
-
     @Override
     public boolean isPrepared(AgentConfig config) {
         return !scheduled;
