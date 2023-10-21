@@ -35,7 +35,7 @@ public class AuthenticatedRpcTest {
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .registerHandler(Authentication.class, (app, sig) -> true)
+                .registerHandler(Authentication.class, (app, sig) -> {})
                 .registerHandler(UserService.class, name -> name + "001")
                 .registerHandler(ProtocolService.class, new ProtocolService() {
                     @Override

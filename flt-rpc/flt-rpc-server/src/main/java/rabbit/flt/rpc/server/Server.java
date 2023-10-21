@@ -62,7 +62,7 @@ public class Server extends AbstractServerChannel implements Registrar {
 
     protected Server() {
         // 注册认证，默认通过
-        register(Authentication.class, (applicationCode, signature) -> true);
+        register(Authentication.class, (applicationCode, signature) -> {});
         // 注册心跳
         getRequestDispatcher().registerHandler(KeepAlive.class, (KeepAlive) () -> {
             // do nothing

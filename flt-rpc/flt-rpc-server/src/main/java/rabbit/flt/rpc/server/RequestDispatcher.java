@@ -3,8 +3,7 @@ package rabbit.flt.rpc.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rabbit.flt.rpc.common.*;
-import rabbit.flt.rpc.common.exception.AuthenticationFailedException;
-import rabbit.flt.rpc.common.exception.UnAuthenticatedException;
+import rabbit.flt.rpc.common.exception.AuthenticationException;
 import rabbit.flt.rpc.common.rpc.Authentication;
 import rabbit.flt.rpc.common.rpc.RpcRequest;
 import rabbit.flt.rpc.common.rpc.RpcResponse;
@@ -51,12 +50,12 @@ public class RequestDispatcher implements Registrar {
             requestHolder.set(request);
             callBizMethod(request, response);
             response.setSuccess(true);
-        } catch (UnAuthenticatedException | AuthenticationFailedException e) {
+        } catch (AuthenticationException e) {
             response.setSuccess(false);
             response.setCode(ResponseCode.UN_AUTHENTICATED);
             response.setMsg(e.getMessage());
         } catch (Throwable e) {
-            logger.error(e.getMessage(), e);
+            logger.warn(e.getMessage());
             response.setSuccess(false);
             response.setMsg(e.getMessage());
             response.setCode(ResponseCode.FAILED);
@@ -80,10 +79,7 @@ public class RequestDispatcher implements Registrar {
             Object handler = this.handlerCache.get(request.getInterfaceClz());
             response.setData(method.invoke(handler, request.getParameters()));
         } catch (InvocationTargetException e) {
-            if (e.getCause() instanceof RpcException) {
-                throw e.getCause();
-            }
-            throw e.getTargetException();
+            throw e.getCause();
         }
     }
 
@@ -118,7 +114,7 @@ public class RequestDispatcher implements Registrar {
                 }
             }
         } catch (Exception e) {
-            logger.error("response[{}] error: {}", data.getRequestId(), e.getMessage(), e);
+            logger.warn("response[{}] error: {}", data.getRequestId(), e.getMessage(), e);
         } finally {
             lock.unlock();
         }

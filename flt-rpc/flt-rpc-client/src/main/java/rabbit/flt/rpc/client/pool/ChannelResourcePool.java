@@ -5,9 +5,9 @@ import rabbit.flt.rpc.common.NamedExecutor;
 import rabbit.flt.rpc.common.RpcException;
 import rabbit.flt.rpc.common.SelectorResetListener;
 import rabbit.flt.rpc.common.ServerNode;
+import rabbit.flt.rpc.common.exception.AuthenticationException;
 import rabbit.flt.rpc.common.exception.NoPreparedClientException;
 import rabbit.flt.rpc.common.exception.RpcTimeoutException;
-import rabbit.flt.rpc.common.exception.UnAuthenticatedException;
 import rabbit.flt.rpc.common.exception.UnRegisteredHandlerException;
 import rabbit.flt.rpc.common.nio.AbstractClientChannel;
 import rabbit.flt.rpc.common.nio.ChannelProcessor;
@@ -283,7 +283,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
             request.increase();
             long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;
             return getClient(timeoutMills).doRequest(request, timeoutSeconds);
-        } catch (NoPreparedClientException | UnRegisteredHandlerException | UnAuthenticatedException | RpcTimeoutException e) {
+        } catch (NoPreparedClientException | UnRegisteredHandlerException | AuthenticationException | RpcTimeoutException e) {
             throw e;
         } catch (RpcException e) {
             if (request.getCounter() > request.getMaxRetryTimes()) {

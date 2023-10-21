@@ -11,6 +11,7 @@ import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.Metrics;
 import rabbit.flt.common.metrics.*;
 import rabbit.flt.common.trace.TraceData;
+import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.client.RequestFactory;
 import rabbit.flt.rpc.client.handler.RpcMetricsDataHandler;
@@ -19,9 +20,9 @@ import rabbit.flt.rpc.client.pool.*;
 import rabbit.flt.rpc.common.NamedExecutor;
 import rabbit.flt.rpc.common.RpcException;
 import rabbit.flt.rpc.common.ServerNode;
+import rabbit.flt.rpc.common.exception.AuthenticationException;
 import rabbit.flt.rpc.common.exception.NoPreparedClientException;
 import rabbit.flt.rpc.common.exception.RpcTimeoutException;
-import rabbit.flt.rpc.common.exception.UnAuthenticatedException;
 import rabbit.flt.rpc.common.exception.UnRegisteredHandlerException;
 import rabbit.flt.rpc.common.nio.ChannelProcessor;
 import rabbit.flt.rpc.common.nio.SelectorWrapper;
@@ -92,7 +93,11 @@ public class RpcTest {
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .registerHandler(Authentication.class, (app, sig) -> true)
+                .registerHandler(Authentication.class, (app, sig) -> {
+                    if (StringUtils.isEmpty(sig)) {
+                        throw new RuntimeException();
+                    }
+                })
                 .registerHandler(UserService.class, name -> name + "001")
                 .maxPendingConnections(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
@@ -151,15 +156,25 @@ public class RpcTest {
             userService.getName("hello");
             throw new RuntimeException();
         } catch (Exception e) {
-            TestCase.assertEquals(UnAuthenticatedException.class, e.getClass());
+            TestCase.assertEquals(AuthenticationException.class, e.getClass());
         }
-        TestCase.assertTrue(authService.authenticate("", ""));
+        // 密码为空认证会失败
+        try {
+            authService.authenticate("", "");
+            throw new RuntimeException();
+        } catch (AuthenticationException e) {
+            logger.error(e.getMessage());
+        }
+        String password = "123";
+
+        authService.authenticate("", password);
         TestCase.assertEquals("hello001", userService.getName("hello"));
 
+        String msg = "error call";
         try {
-            userService.exceptionCall("error call");
+            userService.exceptionCall(msg);
         } catch (RpcException e) {
-            logger.info(e.getMessage());
+            TestCase.assertEquals(msg, e.getMessage());
         }
 
         try {
@@ -183,7 +198,7 @@ public class RpcTest {
         server.close();
         serverClosedSemaphore.acquire(1);
         try {
-            authService.authenticate("", "");
+            authService.authenticate("", password);
             throw new RuntimeException();
         } catch (Exception e) {
             TestCase.assertTrue(e instanceof NoPreparedClientException);
@@ -213,7 +228,7 @@ public class RpcTest {
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .registerHandler(Authentication.class, (app, sig) -> true)
+                .registerHandler(Authentication.class, (app, sig) -> {  })
                 .registerHandler(ProtocolService.class, new ProtocolService() {
                     @Override
                     public List<ServerNode> getServerNodes() {
@@ -281,10 +296,7 @@ public class RpcTest {
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .registerHandler(Authentication.class, (app, sig) -> {
-                    resourcePool.getResourceGuard().wakeup();
-                    return true;
-                })
+                .registerHandler(Authentication.class, (app, sig) -> resourcePool.getResourceGuard().wakeup())
                 .registerHandler(ProtocolService.class, new ProtocolService() {
                     @Override
                     public List<ServerNode> getServerNodes() {
@@ -387,10 +399,7 @@ public class RpcTest {
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .registerHandler(Authentication.class, (app, sig) -> {
-                    resourcePool.getResourceGuard().wakeup();
-                    return true;
-                })
+                .registerHandler(Authentication.class, (app, sig) -> resourcePool.getResourceGuard().wakeup())
                 .registerHandler(ProtocolService.class, new ProtocolService() {
                     @Override
                     public List<ServerNode> getServerNodes() {
@@ -493,7 +502,7 @@ public class RpcTest {
                 .host("localhost").port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .registerHandler(Authentication.class, (app, sig) -> true)
+                .registerHandler(Authentication.class, (app, sig) -> {})
                 .registerHandler(ProtocolService.class, new ProtocolService() {
                     @Override
                     public List<ServerNode> getServerNodes() {

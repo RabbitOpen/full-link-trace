@@ -22,19 +22,16 @@ public class AuthenticationHandler implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) {
         try {
             Request request = RequestDispatcher.getCurrentRequest();
             SelectionKey selectionKey = RequestDispatcher.getCurrentSelectionKey();
             Object applicationCode = request.getParameters()[0];
             Object password = request.getParameters()[1];
-            boolean result = realHandler.authenticate(StringUtils.toString(applicationCode), StringUtils.toString(password));
+            realHandler.authenticate(StringUtils.toString(applicationCode), StringUtils.toString(password));
             Map<String, Object> attrs = (Map<String, Object>) selectionKey.attachment();
-            attrs.put(AUTHENTICATE, result);
-            if (!result) {
-                throw new AuthenticationFailedException();
-            }
-            return true;
+            attrs.put(AUTHENTICATE, true);
+            return null;
         } catch (Exception e) {
             throw new AuthenticationFailedException();
         }

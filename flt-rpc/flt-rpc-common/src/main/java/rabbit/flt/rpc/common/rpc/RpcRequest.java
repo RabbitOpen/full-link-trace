@@ -3,9 +3,9 @@ package rabbit.flt.rpc.common.rpc;
 import rabbit.flt.rpc.common.Protocol;
 import rabbit.flt.rpc.common.Request;
 import rabbit.flt.rpc.common.RpcException;
+import rabbit.flt.rpc.common.exception.AuthenticationException;
 import rabbit.flt.rpc.common.exception.ChannelClosedException;
 import rabbit.flt.rpc.common.exception.RpcTimeoutException;
-import rabbit.flt.rpc.common.exception.UnAuthenticatedException;
 import rabbit.flt.rpc.common.exception.UnRegisteredHandlerException;
 
 import java.util.concurrent.TimeUnit;
@@ -50,7 +50,7 @@ public class RpcRequest extends Protocol<Request> {
                 return (T) response.getData();
             }
             if (UN_AUTHENTICATED == response.getCode()) {
-                throw new UnAuthenticatedException(response.getMsg());
+                throw new AuthenticationException(response.getMsg());
             }
             if (UN_REGISTERED_HANDLER == response.getCode()) {
                 throw new UnRegisteredHandlerException(response.getMsg());
