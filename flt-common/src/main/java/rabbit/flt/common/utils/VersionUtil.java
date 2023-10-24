@@ -19,20 +19,20 @@ public class VersionUtil {
         if (!StringUtils.isEmpty(version)) {
             return version;
         }
-        version = getVersion("flt.properties");
+        version = getVersion("flt.properties", "version");
         return version;
     }
 
-    public static String getVersion(String resourceFile) {
-        return new VersionUtil().loadVersion(resourceFile);
+    public static String getVersion(String resourceFile, String propertyName) {
+        return new VersionUtil().loadVersion(resourceFile, propertyName);
     }
 
-    private String loadVersion(String resourceFile) {
+    private String loadVersion(String resourceFile, String propertyName) {
         InputStream resource = getClass().getClassLoader().getResourceAsStream(resourceFile);
         try {
             Properties properties = new Properties();
             properties.load(resource);
-            return StringUtils.toString(properties.get("version"));
+            return StringUtils.toString(properties.get(propertyName));
         } catch (Exception e) {
             throw new AgentException(e);
         } finally {
