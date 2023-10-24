@@ -12,18 +12,23 @@ public class VersionUtil {
 
     private static String version;
 
-    private VersionUtil() {}
+    private VersionUtil() {
+    }
 
     public static String getVersion() {
         if (!StringUtils.isEmpty(version)) {
             return version;
         }
-        version = new VersionUtil().loadVersion();
+        version = getVersion("flt.properties");
         return version;
     }
 
-    private String loadVersion() {
-        InputStream resource = getClass().getClassLoader().getResourceAsStream("flt.properties");
+    public static String getVersion(String resourceFile) {
+        return new VersionUtil().loadVersion(resourceFile);
+    }
+
+    private String loadVersion(String resourceFile) {
+        InputStream resource = getClass().getClassLoader().getResourceAsStream(resourceFile);
         try {
             Properties properties = new Properties();
             properties.load(resource);
