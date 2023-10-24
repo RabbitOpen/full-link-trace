@@ -1,13 +1,13 @@
 package rabbit.flt.common;
 
-public interface Headers {
+public class Headers {
 
     // trace id在 http头中的名称
-    String TRACE_ID = "openApiTraceId";
+    public static final String TRACE_ID = "openApiTraceId";
 
     // span id在 http头中的名称
-    String SPAN_ID = "openApiSpanId";
+    public static final String SPAN_ID = "openApiSpanId";
 
     // 源app在 http头中的名称
-    String SOURCE_APP = "openApiSourceApp";
+    public static final String SOURCE_APP = "openApiSourceApp";
 }
