@@ -285,7 +285,6 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
-
                 </executions>
                 <configuration>
                     <!--使用前面定义的位置-->
