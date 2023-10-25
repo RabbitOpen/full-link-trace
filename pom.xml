@@ -271,6 +271,7 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.8</version>
                 <executions>
+                    <!--          字节增强          -->
                     <execution>
                         <id>agent</id>
                         <goals>
@@ -278,19 +279,13 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>post-test</id>
+                        <id>report-aggregate</id>
                         <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
                     </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
+
                 </executions>
                 <configuration>
                     <!--使用前面定义的位置-->
