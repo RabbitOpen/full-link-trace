@@ -7,6 +7,7 @@ import rabbit.flt.rpc.common.exception.AuthenticationException;
 import rabbit.flt.rpc.common.exception.ChannelClosedException;
 import rabbit.flt.rpc.common.exception.RpcTimeoutException;
 import rabbit.flt.rpc.common.exception.UnRegisteredHandlerException;
+import reactor.core.publisher.Mono;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +26,8 @@ public class RpcRequest extends Protocol<Request> {
     // 最大重试次数
     private transient int maxRetryTimes;
 
+    private transient ResponseHolder<RpcResponse> responseHolder;
+
     public RpcRequest() {
         super(null);
     }
@@ -40,28 +43,56 @@ public class RpcRequest extends Protocol<Request> {
     /**
      * 读取响应信息
      * @param timeoutSeconds
+     * @param finalCallback
      * @param <T>
      * @return
      */
-    public final <T> T getResponse(int timeoutSeconds) {
-        if (responseInTime(timeoutSeconds)) {
-            RpcResponse response = getResponse();
-            if (response.isSuccess()) {
-                return (T) response.getData();
-            }
-            if (UN_AUTHENTICATED == response.getCode()) {
-                throw new AuthenticationException(response.getMsg());
-            }
-            if (UN_REGISTERED_HANDLER == response.getCode()) {
-                throw new UnRegisteredHandlerException(response.getMsg());
-            }
-            if (CHANNEL_CLOSED == response.getCode()) {
-                throw new ChannelClosedException(response.getMsg());
-            }
-            throw new RpcException(response.getMsg());
+    public final <T> T getResponse(int timeoutSeconds, Runnable finalCallback) {
+        if ("reactor.core.publisher.Mono".equals(getReturnTypeName())) {
+            return (T) Mono.create(responseHolder).map(resp -> {
+                try {
+                    return readResponseData(resp);
+                } finally {
+                    finalCallback.run();
+                }
+            });
         }
-        throw new RpcTimeoutException(getRequest().getInterfaceClz().getName().concat(".").concat(getRequest().getMethodName()),
-                getRequestId(), timeoutSeconds);
+        try {
+            if (responseInTime(timeoutSeconds)) {
+                RpcResponse response = getResponse();
+                return readResponseData(response);
+            }
+            throw new RpcTimeoutException(getRequest().getInterfaceClz().getName().concat(".").concat(getRequest().getMethodName()),
+                    getRequestId(), timeoutSeconds);
+        } finally {
+            finalCallback.run();
+        }
+    }
+
+    private <T> T readResponseData(RpcResponse response) {
+        if (response.isSuccess()) {
+            return (T) response.getData();
+        }
+        if (UN_AUTHENTICATED == response.getCode()) {
+            throw new AuthenticationException(response.getMsg());
+        }
+        if (UN_REGISTERED_HANDLER == response.getCode()) {
+            throw new UnRegisteredHandlerException(response.getMsg());
+        }
+        if (CHANNEL_CLOSED == response.getCode()) {
+            throw new ChannelClosedException(response.getMsg());
+        }
+        throw new RpcException(response.getMsg());
+    }
+
+    private String getReturnTypeName() {
+        Request request = getRequest();
+        try {
+            return request.getInterfaceClz().getDeclaredMethod(request.getMethodName(),
+                    request.getParameterTypes()).getReturnType().getName();
+        } catch (Exception e) {
+            throw new RpcException(e);
+        }
     }
 
     private boolean responseInTime(int timeoutSeconds) {
@@ -70,6 +101,12 @@ public class RpcRequest extends Protocol<Request> {
         } catch (Exception e) {
             throw new RpcException(e);
         }
+    }
+
+    @Override
+    public void setRequest(Request request) {
+        responseHolder = new ResponseHolder();
+        super.setRequest(request);
     }
 
     public int getMaxRetryTimes() {
@@ -86,5 +123,8 @@ public class RpcRequest extends Protocol<Request> {
 
     public void setResponse(RpcResponse response) {
         this.response = response;
+        if (null != responseHolder) {
+            responseHolder.setResponse(response);
+        }
     }
 }

@@ -9,6 +9,7 @@ import rabbit.flt.rpc.common.rpc.RpcRequest;
 import rabbit.flt.rpc.common.rpc.RpcResponse;
 import rabbit.flt.rpc.server.proxy.AuthenticationHandler;
 import rabbit.flt.rpc.server.proxy.RpcRequestHandler;
+import reactor.core.publisher.Mono;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -29,6 +30,17 @@ public class RequestDispatcher implements Registrar {
     public static final ThreadLocal<SelectionKey> keyHolder = new ThreadLocal<>();
 
     public static final ThreadLocal<Request> requestHolder = new ThreadLocal<>();
+
+    private static boolean hasMono;
+
+    static {
+        try {
+            Class.forName("reactor.core.publisher.Mono");
+            hasMono = true;
+        } catch (ClassNotFoundException e) {
+            hasMono = false;
+        }
+    }
 
     /**
      * 处理器缓存
@@ -77,7 +89,12 @@ public class RequestDispatcher implements Registrar {
         try {
             Method method = request.getInterfaceClz().getDeclaredMethod(request.getMethodName(), request.getParameterTypes());
             Object handler = this.handlerCache.get(request.getInterfaceClz());
-            response.setData(method.invoke(handler, request.getParameters()));
+            Object data = method.invoke(handler, request.getParameters());
+            if (hasMono && (data instanceof Mono)) {
+                response.setData(((Mono) data).block());
+            } else {
+                response.setData(data);
+            }
         } catch (InvocationTargetException e) {
             throw e.getCause();
         }
@@ -122,6 +139,7 @@ public class RequestDispatcher implements Registrar {
 
     /**
      * 注册处理器
+     *
      * @param clz
      * @param handler
      * @param <T>
@@ -134,15 +152,23 @@ public class RequestDispatcher implements Registrar {
         } else {
             proxyHandler = new RpcRequestHandler(handler);
         }
-        registerHandler(clz, Proxy.newProxyInstance(clz.getClassLoader(), new Class[]{clz}, proxyHandler));
+        registerDirectly(clz, Proxy.newProxyInstance(clz.getClassLoader(), new Class[]{clz}, proxyHandler));
     }
 
     public Object getHandler(Class<?> clz) {
         return handlerCache.get(clz);
     }
 
-    protected <T> void registerHandler(Class<T> clz, Object proxyHandler) {
+    /**
+     * 直接注册（无代理）
+     *
+     * @param clz
+     * @param proxyHandler
+     * @param <T>
+     */
+    public <T> RequestDispatcher registerDirectly(Class<T> clz, Object proxyHandler) {
         this.handlerCache.put(clz, proxyHandler);
+        return this;
     }
 
     public static Request getCurrentRequest() {

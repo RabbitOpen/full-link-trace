@@ -287,7 +287,7 @@ public class RpcTest {
      */
     @Test
     public void epollBugTest() throws Exception {
-        int port = 10001;
+        int port = 10005;
         String host = "localhost";
         ChannelResourcePool resourcePool = new SecureChannelResourcePool();
         Server server = ServerBuilder.builder()

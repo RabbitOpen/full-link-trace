@@ -22,6 +22,7 @@ public class Protocol<T> {
     }
 
     public Protocol(T request) {
+        this();
         this.request = request;
         this.semaphore = new Semaphore(0);
     }

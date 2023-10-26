@@ -183,13 +183,11 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
             lock.unlock();
         }
         try {
-            return request.getResponse(timeoutSeconds);
+            return request.getResponse(timeoutSeconds, () -> signals.remove(request.getRequestId()));
         } catch (RpcTimeoutException e) {
             // 超时断开重连
             disconnected(selectionKey);
             throw e;
-        } finally {
-            signals.remove(request.getRequestId());
         }
     }
 
