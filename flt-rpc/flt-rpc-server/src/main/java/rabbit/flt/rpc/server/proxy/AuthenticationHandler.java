@@ -1,6 +1,6 @@
 package rabbit.flt.rpc.server.proxy;
 
-import rabbit.flt.common.utils.StringUtils;
+import rabbit.flt.common.utils.StringUtil;
 import rabbit.flt.rpc.common.Request;
 import rabbit.flt.rpc.common.exception.AuthenticationFailedException;
 import rabbit.flt.rpc.common.rpc.Authentication;
@@ -28,7 +28,7 @@ public class AuthenticationHandler implements InvocationHandler {
             SelectionKey selectionKey = RequestDispatcher.getCurrentSelectionKey();
             Object applicationCode = request.getParameters()[0];
             Object password = request.getParameters()[1];
-            realHandler.authenticate(StringUtils.toString(applicationCode), StringUtils.toString(password));
+            realHandler.authenticate(StringUtil.toString(applicationCode), StringUtil.toString(password));
             Map<String, Object> attrs = (Map<String, Object>) selectionKey.attachment();
             attrs.put(AUTHENTICATE, true);
             return null;

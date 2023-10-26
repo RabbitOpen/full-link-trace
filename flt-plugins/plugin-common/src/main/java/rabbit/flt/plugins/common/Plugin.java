@@ -6,7 +6,7 @@ import rabbit.flt.common.log.Logger;
 import rabbit.flt.common.trace.MethodStackInfo;
 import rabbit.flt.common.trace.TraceData;
 import rabbit.flt.common.utils.ResourceUtil;
-import rabbit.flt.common.utils.StringUtils;
+import rabbit.flt.common.utils.StringUtil;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
@@ -162,7 +162,7 @@ public abstract class Plugin {
      * @return
      */
     protected String truncate(String txt) {
-        if (!StringUtils.isEmpty(txt) && txt.length() > 512) {
+        if (!StringUtil.isEmpty(txt) && txt.length() > 512) {
             return txt.substring(0, 512) + ".....";
         }
         return txt;

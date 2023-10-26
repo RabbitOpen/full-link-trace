@@ -16,7 +16,7 @@ public class VersionUtil {
     }
 
     public static String getVersion() {
-        if (!StringUtils.isEmpty(version)) {
+        if (!StringUtil.isEmpty(version)) {
             return version;
         }
         version = getVersion("flt.properties", "version");
@@ -32,7 +32,7 @@ public class VersionUtil {
         try {
             Properties properties = new Properties();
             properties.load(resource);
-            return StringUtils.toString(properties.get(propertyName));
+            return StringUtil.toString(properties.get(propertyName));
         } catch (Exception e) {
             throw new AgentException(e);
         } finally {

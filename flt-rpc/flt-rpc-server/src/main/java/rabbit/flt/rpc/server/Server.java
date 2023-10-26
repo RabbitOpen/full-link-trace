@@ -1,6 +1,6 @@
 package rabbit.flt.rpc.server;
 
-import rabbit.flt.common.utils.StringUtils;
+import rabbit.flt.common.utils.StringUtil;
 import rabbit.flt.rpc.common.*;
 import rabbit.flt.rpc.common.nio.AbstractServerChannel;
 import rabbit.flt.rpc.common.nio.ChannelProcessor;
@@ -142,7 +142,7 @@ public class Server extends AbstractServerChannel implements Registrar {
     }
 
     protected String getHost() {
-        return StringUtils.isEmpty(host) ? String.join(".", new String[] {"0", "0", "0", "0"}) : host;
+        return StringUtil.isEmpty(host) ? String.join(".", new String[] {"0", "0", "0", "0"}) : host;
     }
 
     public void setBossExecutor(ExecutorService bossExecutor) {

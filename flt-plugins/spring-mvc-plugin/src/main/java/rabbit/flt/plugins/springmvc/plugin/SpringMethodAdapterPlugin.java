@@ -6,7 +6,7 @@ import rabbit.flt.common.trace.MessageType;
 import rabbit.flt.common.trace.TraceData;
 import rabbit.flt.common.trace.io.HttpRequest;
 import rabbit.flt.common.trace.io.HttpResponse;
-import rabbit.flt.common.utils.StringUtils;
+import rabbit.flt.common.utils.StringUtil;
 import rabbit.flt.plugins.common.plugin.PerformancePlugin;
 
 import javax.servlet.DispatcherType;
@@ -28,12 +28,12 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
         TraceContext.clearContext();
         TraceContext.openTrace(method);
         String spanId = request.getHeader(Headers.SPAN_ID);
-        if (StringUtils.isEmpty(spanId)) {
+        if (StringUtil.isEmpty(spanId)) {
             TraceContext.initRootSpanId("0");
         } else {
             TraceContext.initRootSpanId(spanId.concat("-0"));
             String traceId = request.getHeader(Headers.TRACE_ID);
-            if (!StringUtils.isEmpty(traceId)) {
+            if (!StringUtil.isEmpty(traceId)) {
                 TraceContext.setTraceId(traceId);
             }
         }
@@ -52,8 +52,8 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
      */
     private void setSourceApplication(HttpServletRequest request, TraceData traceData) {
         String sourceApp = request.getHeader(Headers.SOURCE_APP);
-        if (!StringUtils.isEmpty(sourceApp)) {
-            traceData.setSourceApplication(StringUtils.toString(sourceApp));
+        if (!StringUtil.isEmpty(sourceApp)) {
+            traceData.setSourceApplication(StringUtil.toString(sourceApp));
         }
     }
 
@@ -78,7 +78,7 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
     @Override
     protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) {
         HttpServletRequest request = (HttpServletRequest) args[0];
-        if (StringUtils.isEmpty(traceData.getNodeName())) {
+        if (StringUtil.isEmpty(traceData.getNodeName())) {
             traceData.setNodeName(request.getRequestURI());
         } else {
             // 如果下游填充了path，则补全context path

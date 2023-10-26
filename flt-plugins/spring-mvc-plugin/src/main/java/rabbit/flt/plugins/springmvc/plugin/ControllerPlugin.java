@@ -5,7 +5,7 @@ import rabbit.flt.common.trace.Input;
 import rabbit.flt.common.trace.TraceData;
 import rabbit.flt.common.trace.io.HttpRequest;
 import rabbit.flt.common.utils.CollectionUtil;
-import rabbit.flt.common.utils.StringUtils;
+import rabbit.flt.common.utils.StringUtil;
 import rabbit.flt.plugins.common.plugin.PerformancePlugin;
 
 import java.lang.annotation.Annotation;
@@ -73,7 +73,7 @@ public class ControllerPlugin extends PerformancePlugin {
                 annotation = getMethodAnnotationFromSupperClz(method, controllerClz);
             }
             String value = getPathFromAnnotation(annotation);
-            if (!StringUtils.isEmpty(value)) {
+            if (!StringUtil.isEmpty(value)) {
                 value = getBaseRequestPath(controllerClz).concat(value);
                 logger.info("method: {}, path: {}",  method.getName(), value);
                 return value;
@@ -106,8 +106,8 @@ public class ControllerPlugin extends PerformancePlugin {
                 return value[0];
             }
             m = annotation.getClass().getDeclaredMethod("name");
-            String name = StringUtils.toString(m.invoke(annotation));
-            if (!StringUtils.isEmpty(name)) {
+            String name = StringUtil.toString(m.invoke(annotation));
+            if (!StringUtil.isEmpty(name)) {
                 return name;
             }
             m = annotation.getClass().getDeclaredMethod("path");
@@ -115,10 +115,10 @@ public class ControllerPlugin extends PerformancePlugin {
             if (null != result) {
                 if (result.getClass().isArray()) {
                     Object[] paths = (Object[]) result;
-                    return CollectionUtil.isEmpty(paths) ? "" : StringUtils.toString(paths[0]);
+                    return CollectionUtil.isEmpty(paths) ? "" : StringUtil.toString(paths[0]);
                 } else {
-                    String path = StringUtils.toString(result);
-                    if (!StringUtils.isEmpty(path)) {
+                    String path = StringUtil.toString(result);
+                    if (!StringUtil.isEmpty(path)) {
                         return path;
                     }
                 }

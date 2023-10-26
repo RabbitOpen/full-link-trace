@@ -11,7 +11,7 @@ import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
 import rabbit.flt.common.utils.ResourceUtil;
-import rabbit.flt.common.utils.StringUtils;
+import rabbit.flt.common.utils.StringUtil;
 import rabbit.flt.core.factory.DefaultConfigFactory;
 import rabbit.flt.core.loader.DefaultPluginClassLoader;
 import rabbit.flt.core.transformer.ClassTransformer;
@@ -39,7 +39,7 @@ public class AgentEntry {
     private static final Logger logger = AgentLoggerFactory.getLogger(AgentEntry.class);
 
     public static void premain(String agentConfig, Instrumentation inst) throws Exception {
-        if (StringUtils.isEmpty(agentConfig)) {
+        if (StringUtil.isEmpty(agentConfig)) {
             return;
         }
         AbstractConfigFactory.setFactoryLoader(DefaultConfigFactory::new);
@@ -107,14 +107,14 @@ public class AgentEntry {
         AgentConfig config = AbstractConfigFactory.getConfig();
         if (null != config) {
             String ignorePackages = config.getIgnorePackages();
-            if (!StringUtils.isEmpty(ignorePackages)) {
+            if (!StringUtil.isEmpty(ignorePackages)) {
                 for (String pkg : ignorePackages.split(",")) {
                     ignoreMatcher = ignoreMatcher.or(nameStartsWith(pkg.trim()));
                     logger.info("ignore package: {}", pkg);
                 }
             }
             String ignoreClasses = config.getIgnoreClasses();
-            if (!StringUtils.isEmpty(ignoreClasses)) {
+            if (!StringUtil.isEmpty(ignoreClasses)) {
                 for (String clz : ignoreClasses.split(",")) {
                     ignoreMatcher = ignoreMatcher.or(named(clz.trim()));
                     logger.info("ignore class: {}", clz);

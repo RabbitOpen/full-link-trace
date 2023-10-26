@@ -2,7 +2,7 @@ package rabbit.flt.common.log;
 
 
 import rabbit.flt.common.exception.AgentException;
-import rabbit.flt.common.utils.StringUtils;
+import rabbit.flt.common.utils.StringUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -73,15 +73,15 @@ public class AgentLogger implements InvocationHandler {
             return;
         }
         if (1 == args.length) {
-            System.out.println(StringUtils.toString(args[0]));
+            System.out.println(StringUtil.toString(args[0]));
             return;
         }
-        String result = StringUtils.toString(args[0]);
+        String result = StringUtil.toString(args[0]);
         for (int i = 1; i < args.length; i++) {
             if (args[i] instanceof Object[]) {
                 Object[] arr = (Object[]) args[i];
                 for (int j = 0; j < arr.length; j++) {
-                    String errorMsg = StringUtils.toString(arr[j]);
+                    String errorMsg = StringUtil.toString(arr[j]);
                     if (arr[j] instanceof Exception) {
                         result = result.concat(", ").concat(errorMsg);
                     } else {
@@ -89,7 +89,7 @@ public class AgentLogger implements InvocationHandler {
                     }
                 }
             } else {
-                String errorMsg = StringUtils.toString(args[i]);
+                String errorMsg = StringUtil.toString(args[i]);
                 if (args[i] instanceof Exception) {
                     result = result.concat(", ").concat(errorMsg);
                 } else {

@@ -3,7 +3,7 @@ package rabbit.flt.common.context;
 import rabbit.flt.common.Metrics;
 import rabbit.flt.common.trace.MethodStackInfo;
 import rabbit.flt.common.trace.TraceData;
-import rabbit.flt.common.utils.StringUtils;
+import rabbit.flt.common.utils.StringUtil;
 import rabbit.flt.common.utils.UUIDUtil;
 
 import java.lang.reflect.Method;
@@ -96,7 +96,7 @@ public class TraceContext {
         });
         stackInfo.pushStack();
         openTrace(method);
-        if (StringUtils.isEmpty(getTraceId()) || StringUtils.isEmpty(spanIdContext.get())) {
+        if (StringUtil.isEmpty(getTraceId()) || StringUtil.isEmpty(spanIdContext.get())) {
             TraceData traceData = stackInfo.getTraceData();
             setTraceId(traceData.getTraceId());
             String spanId = traceData.getSpanId();
@@ -308,7 +308,7 @@ public class TraceContext {
      */
     public static String getOrCreateTraceId() {
         if (null == traceIdContext.get()) {
-            traceIdContext.set(StringUtils.toString(UUIDUtil.uuid()));
+            traceIdContext.set(StringUtil.toString(UUIDUtil.uuid()));
         }
         return traceIdContext.get();
     }

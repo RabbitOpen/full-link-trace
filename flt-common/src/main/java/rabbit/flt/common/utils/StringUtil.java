@@ -5,7 +5,7 @@ import sun.misc.BASE64Encoder;
 
 import java.io.IOException;
 
-public class StringUtils {
+public class StringUtil {
 
     public static boolean isEmpty(Object obj) {
         return null == obj || "".equals(obj.toString().trim());
