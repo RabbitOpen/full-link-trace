@@ -2,7 +2,7 @@ package rabbit.flt.plugins.logback.plugin;
 
 import ch.qos.logback.classic.spi.CallerData;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import rabbit.flt.common.utils.CollectionUtil;
+import rabbit.flt.common.utils.CollectionUtils;
 import rabbit.flt.plugins.common.plugin.SupportPlugin;
 
 import java.lang.reflect.Method;
@@ -26,7 +26,7 @@ public class LineNumberPlugin extends SupportPlugin {
 
         ILoggingEvent le = (ILoggingEvent) args[0];
         StackTraceElement[] cda = le.getCallerData();
-        if (!CollectionUtil.isEmpty(cda)) {
+        if (!CollectionUtils.isEmpty(cda)) {
             for (StackTraceElement stackTraceElement : cda) {
                 String className = stackTraceElement.getClassName();
                 if (ignoreClass.containsKey(className) || className.startsWith("com.sun.proxy.$Proxy")

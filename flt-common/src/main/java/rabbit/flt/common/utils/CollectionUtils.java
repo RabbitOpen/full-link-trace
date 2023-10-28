@@ -2,7 +2,7 @@ package rabbit.flt.common.utils;
 
 import java.util.Collection;
 
-public class CollectionUtil {
+public class CollectionUtils {
 
     public static boolean isEmpty(Collection<?> collection) {
         return null == collection || collection.isEmpty();

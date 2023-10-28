@@ -2,7 +2,7 @@ package rabbit.flt.common.utils;
 
 import java.io.Closeable;
 
-public class ResourceUtil {
+public class ResourceUtils {
 
     public static void close(Closeable resource) {
         try {

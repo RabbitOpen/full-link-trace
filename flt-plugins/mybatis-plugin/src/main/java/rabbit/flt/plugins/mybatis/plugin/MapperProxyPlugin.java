@@ -3,7 +3,7 @@ package rabbit.flt.plugins.mybatis.plugin;
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.common.trace.MethodStackInfo;
 import rabbit.flt.common.trace.TraceData;
-import rabbit.flt.common.utils.StringUtil;
+import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.plugins.common.plugin.PerformancePlugin;
 import rabbit.flt.plugins.mybatis.MybatisTraceContext;
 
@@ -48,7 +48,7 @@ public class MapperProxyPlugin extends PerformancePlugin {
         }
         Object realMapperProxy = h.get(mapperProxy);
         Class<?> clz = (Class<?>) mapperInterface.get(realMapperProxy);
-        traceData.setNodeDesc(StringUtil.toString(clz.getName()) + ".".concat(interfaceMethod.getName()));
+        traceData.setNodeDesc(StringUtils.toString(clz.getName()) + ".".concat(interfaceMethod.getName()));
     }
 
     private void initFields(Object mapperProxy) {

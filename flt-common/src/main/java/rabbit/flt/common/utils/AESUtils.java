@@ -4,7 +4,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 
-public class AESUtil {
+public class AESUtils {
 
     private static final String ALGORITHM = "AES/ECB/PKCS5Padding";
 
@@ -20,7 +20,7 @@ public class AESUtil {
         SecretKeySpec spec = new SecretKeySpec(password.getBytes(), "AES");
         Cipher cipher = Cipher.getInstance(ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, spec);
-        return StringUtil.base64Encode(cipher.doFinal(content.getBytes(StandardCharsets.UTF_8)));
+        return StringUtils.base64Encode(cipher.doFinal(content.getBytes(StandardCharsets.UTF_8)));
     }
 
     /**
@@ -31,7 +31,7 @@ public class AESUtil {
      * @throws Exception
      */
     public static String decrypt(String encryptData, String password) throws Exception {
-        byte[] encryptBytes = StringUtil.base64Decode(encryptData);
+        byte[] encryptBytes = StringUtils.base64Decode(encryptData);
         SecretKeySpec spec = new SecretKeySpec(password.getBytes(), "AES");
         Cipher cipher = Cipher.getInstance(ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, spec);

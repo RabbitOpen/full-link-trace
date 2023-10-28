@@ -10,8 +10,8 @@ import rabbit.flt.common.trace.MethodStackInfo;
 import rabbit.flt.common.trace.TraceData;
 import rabbit.flt.common.trace.io.HttpRequest;
 import rabbit.flt.common.trace.io.HttpResponse;
-import rabbit.flt.common.utils.CollectionUtil;
-import rabbit.flt.common.utils.StringUtil;
+import rabbit.flt.common.utils.CollectionUtils;
+import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.plugins.common.plugin.PerformancePlugin;
 import reactor.core.publisher.Mono;
 
@@ -30,13 +30,13 @@ public class WebClientExchangePlugin extends PerformancePlugin {
         HttpHeaders httpHeaders = clientRequest.headers();
         TraceContext.pushStack(method, () -> {
             String traceId = getValueFromHeader(httpHeaders, Headers.TRACE_ID);
-            if (StringUtil.isEmpty(traceId)) {
+            if (StringUtils.isEmpty(traceId)) {
                 return TraceContext.getOrCreateTraceId();
             }
             return traceId;
         }, () -> {
             String spanId = getValueFromHeader(httpHeaders, Headers.SPAN_ID);
-            if (StringUtil.isEmpty(spanId)) {
+            if (StringUtils.isEmpty(spanId)) {
                 return TraceContext.calcCurrentSpanId(method);
             }
             return spanId;
@@ -60,13 +60,13 @@ public class WebClientExchangePlugin extends PerformancePlugin {
                 httpRequest.addHeader(name, truncate(value.toString()));
             }
         });
-        httpRequest.setRequestUri(StringUtil.toString(clientRequest.url()));
+        httpRequest.setRequestUri(StringUtils.toString(clientRequest.url()));
         TraceContext.getStackInfo(method).getTraceData().setInput(httpRequest);
     }
 
     private String getValueFromHeader(HttpHeaders httpHeaders, String key) {
         List<String> values = httpHeaders.get(key);
-        if (!CollectionUtil.isEmpty(values)) {
+        if (!CollectionUtils.isEmpty(values)) {
             return values.get(0);
         }
         return null;
@@ -103,7 +103,7 @@ public class WebClientExchangePlugin extends PerformancePlugin {
             traceData.setNodeName("WebClient");
             traceData.setMessageType(MessageType.WEBCLIENT.name());
             ClientRequest clientRequest = (ClientRequest) args[0];
-            String uri = StringUtil.toString(clientRequest.url());
+            String uri = StringUtils.toString(clientRequest.url());
             traceData.setNodeDesc(uri);
             // 发送数据
             super.handleTraceData(traceData);

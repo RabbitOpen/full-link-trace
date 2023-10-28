@@ -7,7 +7,7 @@ import rabbit.flt.common.exception.AgentException;
 
 import java.util.UUID;
 
-public class UUIDUtil {
+public class UUIDUtils {
 
     private static final TimeBasedGenerator generator = Generators.timeBasedGenerator(EthernetAddress.fromInterface());
 

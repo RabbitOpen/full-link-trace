@@ -3,7 +3,7 @@ package rabbit.flt.core.loader;
 import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
-import rabbit.flt.common.utils.ResourceUtil;
+import rabbit.flt.common.utils.ResourceUtils;
 import rabbit.flt.core.AgentEntry;
 import rabbit.flt.core.PluginClassLoader;
 
@@ -117,8 +117,8 @@ public class DefaultPluginClassLoader extends PluginClassLoader {
             }
             data = os.toByteArray();
         } finally {
-            ResourceUtil.close(is);
-            ResourceUtil.close(os);
+            ResourceUtils.close(is);
+            ResourceUtils.close(os);
         }
         return (Class<?>) defineClassMethod.invoke(loader, name, data, 0, data.length);
     }

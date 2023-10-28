@@ -11,7 +11,7 @@ import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.Metrics;
 import rabbit.flt.common.metrics.*;
 import rabbit.flt.common.trace.TraceData;
-import rabbit.flt.common.utils.StringUtil;
+import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.client.RequestFactory;
 import rabbit.flt.rpc.client.handler.RpcMetricsDataHandler;
@@ -94,7 +94,7 @@ public class RpcTest {
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> {
-                    if (StringUtil.isEmpty(sig)) {
+                    if (StringUtils.isEmpty(sig)) {
                         throw new RuntimeException();
                     }
                 })

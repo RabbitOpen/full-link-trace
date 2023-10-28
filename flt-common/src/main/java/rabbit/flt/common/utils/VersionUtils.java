@@ -8,15 +8,15 @@ import java.util.Properties;
 /**
  * 版本工具
  */
-public class VersionUtil {
+public class VersionUtils {
 
     private static String version;
 
-    private VersionUtil() {
+    private VersionUtils() {
     }
 
     public static String getVersion() {
-        if (!StringUtil.isEmpty(version)) {
+        if (!StringUtils.isEmpty(version)) {
             return version;
         }
         version = getVersion("flt.properties", "version");
@@ -24,7 +24,7 @@ public class VersionUtil {
     }
 
     public static String getVersion(String resourceFile, String propertyName) {
-        return new VersionUtil().loadVersion(resourceFile, propertyName);
+        return new VersionUtils().loadVersion(resourceFile, propertyName);
     }
 
     private String loadVersion(String resourceFile, String propertyName) {
@@ -32,11 +32,11 @@ public class VersionUtil {
         try {
             Properties properties = new Properties();
             properties.load(resource);
-            return StringUtil.toString(properties.get(propertyName));
+            return StringUtils.toString(properties.get(propertyName));
         } catch (Exception e) {
             throw new AgentException(e);
         } finally {
-            ResourceUtil.close(resource);
+            ResourceUtils.close(resource);
         }
     }
 }

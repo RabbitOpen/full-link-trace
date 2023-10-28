@@ -8,7 +8,7 @@ import org.springframework.core.Ordered;
 import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.log.AgentLoggerFactory;
-import rabbit.flt.common.utils.ResourceUtil;
+import rabbit.flt.common.utils.ResourceUtils;
 import rabbit.flt.core.AgentHelper;
 import rabbit.flt.core.factory.DefaultConfigFactory;
 
@@ -59,7 +59,7 @@ public class SpringBootStartListener implements ApplicationListener, Ordered {
         try {
             return new DefaultConfigFactory().loadConfig(resource);
         } finally {
-            ResourceUtil.close(resource);
+            ResourceUtils.close(resource);
         }
     }
 

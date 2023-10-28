@@ -5,8 +5,8 @@ import rabbit.flt.common.Metrics;
 import rabbit.flt.common.MetricsDataHandler;
 import rabbit.flt.common.ScheduleTask;
 import rabbit.flt.common.metrics.EnvironmentMetrics;
-import rabbit.flt.common.utils.StringUtil;
-import rabbit.flt.common.utils.VersionUtil;
+import rabbit.flt.common.utils.StringUtils;
+import rabbit.flt.common.utils.VersionUtils;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -29,8 +29,8 @@ public class EnvironmentScheduleTask extends ScheduleTask<EnvironmentMetrics> {
     public EnvironmentMetrics getMetrics() {
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
         EnvironmentMetrics metrics = new EnvironmentMetrics();
-        metrics.setAgentVersion(VersionUtil.getVersion());
-        metrics.setStartArgs(StringUtil.toString(runtimeMXBean.getInputArguments()));
+        metrics.setAgentVersion(VersionUtils.getVersion());
+        metrics.setStartArgs(StringUtils.toString(runtimeMXBean.getInputArguments()));
         metrics.setProcessName(runtimeMXBean.getName());
         metrics.setJdkVersion(runtimeMXBean.getSpecVersion());
         metrics.setOnlineTime(runtimeMXBean.getStartTime());

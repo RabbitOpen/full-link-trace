@@ -3,7 +3,7 @@ package rabbit.flt.core.factory;
 import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.exception.AgentException;
-import rabbit.flt.common.utils.ResourceUtil;
+import rabbit.flt.common.utils.ResourceUtils;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -40,7 +40,7 @@ public class DefaultConfigFactory extends AbstractConfigFactory {
         } catch (Exception e) {
             throw new AgentException(e);
         } finally {
-            ResourceUtil.close(stream);
+            ResourceUtils.close(stream);
             lock.unlock();
         }
     }

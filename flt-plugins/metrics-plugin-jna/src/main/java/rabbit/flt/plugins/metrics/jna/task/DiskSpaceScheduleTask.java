@@ -4,7 +4,7 @@ import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.ScheduleTask;
 import rabbit.flt.common.metrics.DiskSpaceMetrics;
 import rabbit.flt.common.metrics.info.SpaceInfo;
-import rabbit.flt.common.utils.StringUtil;
+import rabbit.flt.common.utils.StringUtils;
 
 import java.io.File;
 
@@ -18,7 +18,7 @@ public class DiskSpaceScheduleTask extends ScheduleTask<DiskSpaceMetrics> {
     public boolean isPrepared(AgentConfig config) {
         if (null == this.diskDirs) {
             String diskSpaceMetricsDirs = config.getDiskSpaceMetricsDirs();
-            if (StringUtil.isEmpty(diskSpaceMetricsDirs)) {
+            if (StringUtils.isEmpty(diskSpaceMetricsDirs)) {
                 return false;
             }
             this.diskDirs = diskSpaceMetricsDirs;
