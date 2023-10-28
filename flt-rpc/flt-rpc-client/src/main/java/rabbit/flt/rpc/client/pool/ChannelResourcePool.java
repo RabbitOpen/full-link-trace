@@ -324,7 +324,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
             if (System.currentTimeMillis() - start > timeoutMills) {
                 throw new NoPreparedClientException();
             }
-            LockSupport.parkNanos(1000L * 1000);
+            LockSupport.parkNanos(3L * 1000 * 1000);
         }
     }
 
