@@ -1,11 +1,14 @@
 package rabbit.flt.rpc.common;
 
+import rabbit.flt.common.exception.GZipException;
+import rabbit.flt.common.utils.ResourceUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-public class GzipUtil {
+public class GZipUtils {
 
     /**
      * 压缩
@@ -22,7 +25,7 @@ public class GzipUtil {
             gzipOs.close();
             return out.toByteArray();
         } catch (Exception e) {
-            throw new RpcException(e);
+            throw new GZipException(e);
         } finally {
             Serializer.close(out);
         }
@@ -50,9 +53,40 @@ public class GzipUtil {
             gzipIs.close();
             return result;
         } catch (Exception e) {
-            throw new RpcException(e);
+            throw new GZipException(e);
         } finally {
             Serializer.close(is);
+        }
+    }
+
+    /**
+     * 解压缩
+     * @param data
+     * @param stepSize
+     * @return
+     */
+    public static byte[] decompressIgnoreOriginalLength(byte[] data, int stepSize) {
+        ByteArrayInputStream is = new ByteArrayInputStream(data);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        GZIPInputStream gzipIs = null;
+        try {
+            gzipIs = new GZIPInputStream(is);
+            byte[] bytes = new byte[stepSize];
+            while (true) {
+                int read = gzipIs.read(bytes, 0, bytes.length);
+                if (read > 0) {
+                    os.write(bytes, 0, read);
+                } else {
+                    break;
+                }
+            }
+            return os.toByteArray();
+        } catch (Exception e) {
+            throw new GZipException(e);
+        } finally {
+            ResourceUtils.close(gzipIs);
+            ResourceUtils.close(os);
+            ResourceUtils.close(is);
         }
     }
 }

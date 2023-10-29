@@ -157,7 +157,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
             boolean compress = false;
             int originalSize = bytes.length;
             if (originalSize > 1024 * 256) {
-                bytes = GzipUtil.compress(bytes);
+                bytes = GZipUtils.compress(bytes);
                 compress = true;
             }
             ByteBuffer buffer = ByteBuffer.allocate(12 + bytes.length);
