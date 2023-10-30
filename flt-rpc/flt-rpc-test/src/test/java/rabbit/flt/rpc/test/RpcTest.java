@@ -11,6 +11,7 @@ import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.Metrics;
 import rabbit.flt.common.metrics.*;
 import rabbit.flt.common.trace.TraceData;
+import rabbit.flt.common.utils.ReflectUtils;
 import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.client.RequestFactory;
@@ -357,8 +358,7 @@ public class RpcTest {
                     if (100 == j) {
                         resourcePool.getWrapper().addHookJob(() -> {
                             Field processorField = ChannelResourcePool.class.getDeclaredField("channelProcessor");
-                            processorField.setAccessible(true);
-                            Object processor = processorField.get(resourcePool);
+                            Object processor = ReflectUtils.getValue(resourcePool, processorField);
                             Method method = processor.getClass().getDeclaredMethod("rebuildSelectorWhenEpollBugFound");
                             method.setAccessible(true);
                             method.invoke(processor);

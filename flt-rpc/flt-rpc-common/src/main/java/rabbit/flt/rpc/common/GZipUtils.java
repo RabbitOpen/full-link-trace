@@ -10,6 +10,9 @@ import java.util.zip.GZIPOutputStream;
 
 public class GZipUtils {
 
+    private GZipUtils() {
+    }
+
     /**
      * 压缩
      *
@@ -33,6 +36,7 @@ public class GZipUtils {
 
     /**
      * 解压缩
+     *
      * @param data
      * @param originalSize
      * @return
@@ -61,6 +65,7 @@ public class GZipUtils {
 
     /**
      * 解压缩
+     *
      * @param data
      * @param stepSize
      * @return
