@@ -50,6 +50,9 @@ public class UtilTest {
         Field field = User.class.getDeclaredField("name");
         ReflectUtils.setValue(user, field, name);
         TestCase.assertEquals(name, ReflectUtils.getValue(user, field));
+
+        TestCase.assertTrue(ReflectUtils.hasClass(User.class.getName()));
+        TestCase.assertFalse(ReflectUtils.hasClass(User.class.getName().concat("abc#")));
     }
 
 }
