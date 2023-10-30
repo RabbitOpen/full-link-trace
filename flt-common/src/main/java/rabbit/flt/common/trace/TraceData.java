@@ -3,11 +3,9 @@ package rabbit.flt.common.trace;
 import rabbit.flt.common.trace.io.HttpRequest;
 import rabbit.flt.common.trace.io.HttpResponse;
 
-import java.io.Serializable;
-
 import static rabbit.flt.common.trace.TraceData.Status.OK;
 
-public class TraceData implements Serializable {
+public class TraceData {
 
     private String traceId;
 
