@@ -1,7 +1,6 @@
 package rabbit.flt.plugins.springmvc.plugin;
 
 import rabbit.flt.common.context.TraceContext;
-import rabbit.flt.common.trace.Input;
 import rabbit.flt.common.trace.TraceData;
 import rabbit.flt.common.trace.io.HttpRequest;
 import rabbit.flt.common.utils.CollectionUtils;
@@ -47,10 +46,9 @@ public class ControllerPlugin extends PerformancePlugin {
         }
         String path = getAndCacheMethodPath(method, controller.getClass());
         supportTraceData.setNodeName(path);
-        Input input = supportTraceData.getInput();
-        if (null != input) {
+        HttpRequest request = supportTraceData.getHttpRequest();
+        if (null != request) {
             // 兼容web flux
-            HttpRequest request = (HttpRequest) input;
             if (!"/".equals(request.getContextPath())) {
                 supportTraceData.setNodeName(request.getContextPath().concat(path));
             }

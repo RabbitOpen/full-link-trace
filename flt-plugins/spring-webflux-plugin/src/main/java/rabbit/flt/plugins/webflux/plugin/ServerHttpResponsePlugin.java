@@ -37,7 +37,7 @@ public class ServerHttpResponsePlugin extends SupportPlugin {
             responseInfo.setStatusCode(response.getRawStatusCode());
         }
         response.getHeaders().forEach((name, value) -> responseInfo.addHeader(name, truncate(value.toString())));
-        traceData.setOutput(responseInfo);
+        traceData.setHttpResponse(responseInfo);
         super.handleTraceData(traceData);
     }
 

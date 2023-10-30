@@ -42,14 +42,14 @@ public class RpcRequest extends Protocol<Request> {
 
     /**
      * 读取响应信息
+     *
      * @param timeoutSeconds
      * @param finalCallback
-     * @param <T>
      * @return
      */
-    public final <T> T getResponse(int timeoutSeconds, Runnable finalCallback) {
+    public final Object getResponse(int timeoutSeconds, Runnable finalCallback) {
         if ("reactor.core.publisher.Mono".equals(getReturnTypeName())) {
-            return (T) Mono.create(responseHolder).map(resp -> {
+            return Mono.create(responseHolder).map(resp -> {
                 try {
                     return readResponseData(resp);
                 } finally {

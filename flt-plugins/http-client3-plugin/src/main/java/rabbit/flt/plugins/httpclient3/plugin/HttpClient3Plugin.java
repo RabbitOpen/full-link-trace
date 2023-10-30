@@ -65,13 +65,13 @@ public class HttpClient3Plugin extends PerformancePlugin {
             for (Header header : httpMethod.getRequestHeaders()) {
                 request.addHeader(header.getName(), truncate(header.getValue()));
             }
-            traceData.setInput(request);
+            traceData.setHttpRequest(request);
             HttpResponse response = new HttpResponse();
             for (Header header : httpMethod.getResponseHeaders()) {
                 response.addHeader(header.getName(), truncate(header.getValue()));
             }
             response.setStatusCode(httpMethod.getStatusCode());
-            traceData.setOutput(response);
+            traceData.setHttpResponse(response);
         }
     }
 }

@@ -14,7 +14,6 @@ import rabbit.flt.common.Headers;
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.trace.TraceData;
-import rabbit.flt.common.trace.io.HttpRequest;
 import rabbit.flt.test.common.mybatis.UserMapper;
 import rabbit.flt.test.common.spi.TestTraceHandler;
 
@@ -205,7 +204,7 @@ public abstract class BaseCases {
         TestCase.assertEquals(4, map.size());
         TestCase.assertEquals("hello", map.get("0-0-0-0").getNodeName());
         TestCase.assertEquals("/mvc/hello", map.get("0-0-0").getNodeName());
-        Map<String, Object> headers = ((HttpRequest) map.get("0-0-0").getInput()).getHeaders();
+        Map<String, Object> headers = map.get("0-0-0").getHttpRequest().getHeaders();
         TestCase.assertTrue(headers.containsKey(Headers.TRACE_ID.toLowerCase()) || headers.containsKey(Headers.TRACE_ID));
         TestCase.assertTrue(headers.containsKey(Headers.SPAN_ID.toLowerCase()) || headers.containsKey(Headers.SPAN_ID));
         TestCase.assertEquals("HTTP_CLIENT4", map.get("0-0").getNodeName());

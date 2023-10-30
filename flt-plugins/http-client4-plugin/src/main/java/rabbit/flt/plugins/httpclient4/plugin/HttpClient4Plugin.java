@@ -66,7 +66,7 @@ public class HttpClient4Plugin extends PerformancePlugin {
             for (Header header : httpRequest.getAllHeaders()) {
                 request.addHeader(header.getName(), truncate(header.getValue()));
             }
-            traceData.setInput(request);
+            traceData.setHttpRequest(request);
             HttpResponse httpResponse = (HttpResponse) result;
             if (null != httpResponse) {
                 rabbit.flt.common.trace.io.HttpResponse response = new rabbit.flt.common.trace.io.HttpResponse();
@@ -74,7 +74,7 @@ public class HttpClient4Plugin extends PerformancePlugin {
                     response.addHeader(header.getName(), truncate(header.getValue()));
                 }
                 response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
-                traceData.setOutput(response);
+                traceData.setHttpResponse(response);
             }
         }
     }

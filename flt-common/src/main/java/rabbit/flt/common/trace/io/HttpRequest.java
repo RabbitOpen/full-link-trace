@@ -1,11 +1,9 @@
 package rabbit.flt.common.trace.io;
 
-import rabbit.flt.common.trace.Input;
-
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpRequest implements Input {
+public class HttpRequest {
 
     protected Map<String, Object> headers = new HashMap<>();
 

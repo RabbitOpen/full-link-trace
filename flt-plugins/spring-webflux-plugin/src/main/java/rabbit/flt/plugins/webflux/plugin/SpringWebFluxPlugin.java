@@ -89,6 +89,6 @@ public class SpringWebFluxPlugin extends PerformancePlugin {
         headers.forEach((name, values) -> requestInfo.addHeader(name, truncate(values.toString())));
         MultiValueMap<String, String> params = request.getQueryParams();
         params.forEach((name, values) -> requestInfo.addParameter(name, values.get(0)));
-        traceData.setInput(requestInfo);
+        traceData.setHttpRequest(requestInfo);
     }
 }

@@ -1,11 +1,9 @@
 package rabbit.flt.common.trace.io;
 
-import rabbit.flt.common.trace.Output;
-
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpResponse implements Output {
+public class HttpResponse {
 
     protected Map<String, Object> headers = new HashMap<>();
 

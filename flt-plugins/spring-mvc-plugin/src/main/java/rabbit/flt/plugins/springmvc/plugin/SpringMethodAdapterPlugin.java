@@ -112,7 +112,7 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
                 String name = names.nextElement();
                 requestInfo.addParameter(name, truncate(request.getParameter(name)));
             }
-            traceData.setInput(requestInfo);
+            traceData.setHttpRequest(requestInfo);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -135,7 +135,7 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
             for (String name : response.getHeaderNames()) {
                 responseInfo.addHeader(name, truncate(response.getHeader(name)));
             }
-            traceData.setOutput(responseInfo);
+            traceData.setHttpResponse(responseInfo);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

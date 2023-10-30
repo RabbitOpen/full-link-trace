@@ -61,7 +61,7 @@ public class WebClientExchangePlugin extends PerformancePlugin {
             }
         });
         httpRequest.setRequestUri(StringUtils.toString(clientRequest.url()));
-        TraceContext.getStackInfo(method).getTraceData().setInput(httpRequest);
+        TraceContext.getStackInfo(method).getTraceData().setHttpRequest(httpRequest);
     }
 
     private String getValueFromHeader(HttpHeaders httpHeaders, String key) {
@@ -90,12 +90,12 @@ public class WebClientExchangePlugin extends PerformancePlugin {
                 }
             });
             httpResponse.setStatusCode(response.statusCode().value());
-            traceData.setOutput(httpResponse);
+            traceData.setHttpResponse(httpResponse);
             return resp;
         }).onErrorMap(t -> {
             HttpResponse httpResponse = new HttpResponse();
             httpResponse.setStatusCode(500);
-            traceData.setOutput(httpResponse);
+            traceData.setHttpResponse(httpResponse);
             return t;
         });
         return mono.doFinally(t -> {

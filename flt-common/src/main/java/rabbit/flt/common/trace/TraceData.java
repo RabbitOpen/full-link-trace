@@ -1,5 +1,8 @@
 package rabbit.flt.common.trace;
 
+import rabbit.flt.common.trace.io.HttpRequest;
+import rabbit.flt.common.trace.io.HttpResponse;
+
 import java.io.Serializable;
 
 import static rabbit.flt.common.trace.TraceData.Status.OK;
@@ -45,12 +48,12 @@ public class TraceData implements Serializable {
     /**
      * 输入
      */
-    private Input input;
+    private HttpRequest httpRequest;
 
     /**
      * 输出
      */
-    private Output output;
+    private HttpResponse httpResponse;
 
     /**
      * 消息类型
@@ -152,20 +155,20 @@ public class TraceData implements Serializable {
         this.status = status;
     }
 
-    public Input getInput() {
-        return input;
+    public HttpRequest getHttpRequest() {
+        return httpRequest;
     }
 
-    public void setInput(Input input) {
-        this.input = input;
+    public void setHttpRequest(HttpRequest httpRequest) {
+        this.httpRequest = httpRequest;
     }
 
-    public Output getOutput() {
-        return output;
+    public HttpResponse getHttpResponse() {
+        return httpResponse;
     }
 
-    public void setOutput(Output output) {
-        this.output = output;
+    public void setHttpResponse(HttpResponse httpResponse) {
+        this.httpResponse = httpResponse;
     }
 
     public String getMessageType() {
