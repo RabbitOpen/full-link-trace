@@ -4,6 +4,8 @@ import java.io.Closeable;
 
 public class ResourceUtils {
 
+    private ResourceUtils() {}
+
     public static void close(Closeable resource) {
         try {
             if (null == resource) {

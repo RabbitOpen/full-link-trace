@@ -1,6 +1,8 @@
 package rabbit.flt.common;
 
-public class Headers {
+public final class Headers {
+
+    private Headers() {}
 
     // trace id在 http头中的名称
     public static final String TRACE_ID = "openApiTraceId";

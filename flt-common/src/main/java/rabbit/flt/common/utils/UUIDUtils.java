@@ -9,10 +9,14 @@ import java.util.UUID;
 
 public class UUIDUtils {
 
-    private static final TimeBasedGenerator generator = Generators.timeBasedGenerator(EthernetAddress.fromInterface());
+    private static final UUIDUtils inst = new UUIDUtils();
+
+    private UUIDUtils() {}
+
+    private TimeBasedGenerator generator = Generators.timeBasedGenerator(EthernetAddress.fromInterface());
 
     public static UUID uuid() {
-        return generator.generate();
+        return inst.generator.generate();
     }
 
     public static long timestamp(String uuid) {

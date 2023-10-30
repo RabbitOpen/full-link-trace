@@ -1,5 +1,7 @@
 package rabbit.flt.rpc.common;
 
+import rabbit.flt.common.utils.ReflectUtils;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
@@ -41,19 +43,15 @@ public class ChannelStatus {
 
     /**
      * 获取状态的名字
+     *
      * @return
      */
     public String getName() {
         for (Field field : getClass().getDeclaredFields()) {
             if (Modifier.isStatic(field.getModifiers()) && ChannelStatus.class == field.getType()) {
-                try {
-                    field.setAccessible(true);
-                    ChannelStatus status  = (ChannelStatus) field.get(null);
-                    if (value == status.value) {
-                        return field.getName();
-                    }
-                } catch (Exception e) {
-                    throw new RpcException(e);
+                ChannelStatus status = ReflectUtils.getValue(null, field);
+                if (value == status.value) {
+                    return field.getName();
                 }
             }
         }

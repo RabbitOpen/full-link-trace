@@ -6,16 +6,14 @@ import com.esotericsoftware.kryo.SerializerFactory;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.util.Pool;
-import rabbit.flt.common.log.AgentLoggerFactory;
-import rabbit.flt.common.log.Logger;
+import rabbit.flt.common.utils.ResourceUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 
 public class Serializer {
 
-    private static Logger logger = AgentLoggerFactory.getLogger(Serializer.class);
+    private Serializer() {}
 
     /**
      * 池对象
@@ -57,7 +55,7 @@ public class Serializer {
             return bos.toByteArray();
         } finally {
             kryoPool.free(kryo);
-            close(bos);
+            ResourceUtils.close(bos);
         }
     }
 
@@ -75,18 +73,8 @@ public class Serializer {
             return (T) kryo.readClassAndObject(input);
         } finally {
             kryoPool.free(kryo);
-            close(is);
+            ResourceUtils.close(is);
         }
     }
 
-    public static void close(Closeable resource) {
-        try {
-            if (null == resource) {
-                return;
-            }
-            resource.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
 }

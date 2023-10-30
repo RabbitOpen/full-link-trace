@@ -3,6 +3,7 @@ package rabbit.flt.core;
 import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
+import rabbit.flt.common.utils.ReflectUtils;
 import rabbit.flt.core.callback.MethodCallback;
 import rabbit.flt.plugins.common.Plugin;
 
@@ -88,7 +89,7 @@ public abstract class AbstractMethodInterceptor implements Interceptor {
             }
             try {
                 Class<?> clz = PluginClassLoader.getPluginClassLoader().loadClassByName(this.pluginClassName);
-                plugin = (Plugin) clz.getDeclaredConstructor().newInstance();
+                plugin = (Plugin) ReflectUtils.newInstance(clz);
                 return plugin;
             } catch (Exception e) {
                 throw new AgentException(e);

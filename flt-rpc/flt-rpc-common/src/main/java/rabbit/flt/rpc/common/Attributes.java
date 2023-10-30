@@ -1,8 +1,10 @@
 package rabbit.flt.rpc.common;
 
-public interface Attributes {
+public final class Attributes {
 
-    String NIO_CLIENT = "NIO_CLIENT";
+    private Attributes() {}
 
-    String WRITE_LOCK = "WRITE_LOCK";
+    public static final String NIO_CLIENT = "NIO_CLIENT";
+
+    public static final String WRITE_LOCK = "WRITE_LOCK";
 }

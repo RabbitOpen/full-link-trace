@@ -7,10 +7,14 @@ import java.lang.reflect.Proxy;
  */
 public class AgentLoggerFactory {
 
+    private static final AgentLoggerFactory inst = new AgentLoggerFactory();
+
+    private AgentLoggerFactory() {}
+
     /**
      * 日志工具对象
      */
-    private static LoggerFactory factory = new LoggerFactory() {
+    private LoggerFactory factory = new LoggerFactory() {
         @Override
         public Logger getLogger(String name) {
             return (Logger) Proxy.newProxyInstance(AgentLoggerFactory.class.getClassLoader(),
@@ -29,7 +33,7 @@ public class AgentLoggerFactory {
      * @return
      */
     public static Logger getLogger(String name) {
-        return factory.getLogger(name);
+        return inst.factory.getLogger(name);
     }
 
     /**
@@ -38,7 +42,7 @@ public class AgentLoggerFactory {
      * @return
      */
     public static Logger getLogger(Class<?> clz) {
-        return factory.getLogger(clz);
+        return inst.factory.getLogger(clz);
     }
 
     /**
@@ -46,6 +50,6 @@ public class AgentLoggerFactory {
      * @param factory
      */
     public static void setFactory(LoggerFactory factory) {
-        AgentLoggerFactory.factory = factory;
+        inst.factory = factory;
     }
 }

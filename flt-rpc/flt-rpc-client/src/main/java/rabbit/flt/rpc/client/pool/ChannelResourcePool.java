@@ -1,5 +1,6 @@
 package rabbit.flt.rpc.client.pool;
 
+import rabbit.flt.common.utils.CollectionUtils;
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.common.NamedExecutor;
 import rabbit.flt.rpc.common.RpcException;
@@ -70,7 +71,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
     public void init(PoolConfig config) {
         try {
             this.poolConfig = config;
-            if (null == poolConfig.getServerNodes() || 0 == poolConfig.getServerNodes().size()) {
+            if (CollectionUtils.isEmpty(poolConfig.getServerNodes())) {
                 throw new RpcException("server nodes can't be empty");
             }
             resourceGuard = new ResourceGuard(this);
@@ -108,7 +109,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
             lock.lock();
             channelProcessor.close();
             // 关闭所有连接
-            this.clientChannelList.forEach(clientChannel -> clientChannel.close());
+            this.clientChannelList.forEach(ClientChannel::close);
             bossExecutor.shutdown();
             workerExecutor.shutdown();
             callbackExecutor.shutdown();

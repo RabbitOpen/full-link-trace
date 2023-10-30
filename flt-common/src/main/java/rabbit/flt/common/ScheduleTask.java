@@ -12,7 +12,7 @@ public abstract class ScheduleTask<T extends Metrics> {
     protected Class<T> metricsTypeClz;
 
     // 1M
-    protected final static long MILLION = 1024L * 1024;
+    protected static final long MILLION = 1024L * 1024;
 
     public ScheduleTask() {
         Class<?> clz = getClass();
@@ -28,6 +28,7 @@ public abstract class ScheduleTask<T extends Metrics> {
 
     /**
      * 任务是否已经就绪
+     *
      * @param config
      * @return
      */
@@ -35,6 +36,7 @@ public abstract class ScheduleTask<T extends Metrics> {
 
     /**
      * 是否允许上报
+     *
      * @param config
      * @return
      */
@@ -42,12 +44,14 @@ public abstract class ScheduleTask<T extends Metrics> {
 
     /**
      * 获取需要上报的metrics
+     *
      * @return
      */
     public abstract T getMetrics();
 
     /**
      * 处理指标数据
+     *
      * @param realHandler
      * @param metrics
      */
@@ -57,6 +61,7 @@ public abstract class ScheduleTask<T extends Metrics> {
 
     /**
      * 获取数据类型
+     *
      * @return
      */
     public Class<T> getMetricsType() {

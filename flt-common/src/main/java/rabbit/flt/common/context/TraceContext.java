@@ -17,6 +17,8 @@ import java.util.function.Supplier;
  */
 public class TraceContext {
 
+    private TraceContext() {}
+
     /**
      * trace id context
      */

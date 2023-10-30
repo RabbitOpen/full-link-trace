@@ -62,7 +62,9 @@ public class Server extends AbstractServerChannel implements Registrar {
 
     protected Server() {
         // 注册认证，默认通过
-        register(Authentication.class, (applicationCode, signature) -> {});
+        register(Authentication.class, (applicationCode, signature) -> {
+            // do nothing
+        });
         // 注册心跳
         getRequestDispatcher().registerDirectly(KeepAlive.class, (KeepAlive) () -> {
             // do nothing
@@ -142,7 +144,8 @@ public class Server extends AbstractServerChannel implements Registrar {
     }
 
     protected String getHost() {
-        return StringUtils.isEmpty(host) ? String.join(".", new String[] {"0", "0", "0", "0"}) : host;
+        String[] ip = {"0", "0", "0", "0"};
+        return StringUtils.isEmpty(host) ? String.join(".", ip) : host;
     }
 
     public void setBossExecutor(ExecutorService bossExecutor) {

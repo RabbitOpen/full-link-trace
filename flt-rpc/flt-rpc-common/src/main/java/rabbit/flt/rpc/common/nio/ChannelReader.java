@@ -2,6 +2,7 @@ package rabbit.flt.rpc.common.nio;
 
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
+import rabbit.flt.common.utils.ResourceUtils;
 import rabbit.flt.rpc.common.*;
 import rabbit.flt.rpc.common.exception.BeyondLimitException;
 import rabbit.flt.rpc.common.exception.ChannelClosedException;
@@ -80,7 +81,7 @@ public abstract class ChannelReader implements ChannelAdaptor {
                     logger.info("client[{}] is closed!", getRemoteAddress(channel));
                 }
                 disconnected(selectionKey);
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 disconnected(selectionKey);
             }
@@ -116,11 +117,11 @@ public abstract class ChannelReader implements ChannelAdaptor {
                 throw new BeyondLimitException(maxRealSize, getRemoteAddress(channel));
             }
         }
-        buffer = ByteBuffer.allocateDirect(frameLength);
-        readInputData(channel, buffer);
+        ByteBuffer buf = ByteBuffer.allocateDirect(frameLength);
+        readInputData(channel, buf);
         byte[] array = new byte[frameLength];
-        buffer.position(0);
-        buffer.get(array);
+        buf.position(0);
+        buf.get(array);
         if (gzipped) {
             array = GZipUtils.decompress(array, originalSize);
         }
@@ -133,7 +134,7 @@ public abstract class ChannelReader implements ChannelAdaptor {
      * @param resource
      */
     protected void close(Closeable resource) {
-        Serializer.close(resource);
+        ResourceUtils.close(resource);
     }
 
     /**
@@ -158,7 +159,7 @@ public abstract class ChannelReader implements ChannelAdaptor {
                 selectionKey.interestOps(SelectionKey.OP_READ);
             }
             selectorWrapper.wakeup();
-        } catch (Throwable t) {
+        } catch (Exception t) {
             logger.error(t.getMessage(), t);
         }
     }

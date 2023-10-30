@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Protocol<T> {
 
-    private transient static final AtomicLong counter = new AtomicLong(0);
+    private static final transient AtomicLong counter = new AtomicLong(0);
 
     /**
      * 请求id

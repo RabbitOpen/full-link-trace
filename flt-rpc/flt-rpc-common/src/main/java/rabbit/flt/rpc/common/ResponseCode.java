@@ -1,15 +1,18 @@
 package rabbit.flt.rpc.common;
 
-public interface ResponseCode {
+public final class ResponseCode {
 
-    int SUCCESS = 0;
+    private ResponseCode() {
+    }
 
-    int FAILED = 1;
+    public static final int SUCCESS = 0;
 
-    int UN_AUTHENTICATED = 2;
+    public static final int FAILED = 1;
+
+    public static final int UN_AUTHENTICATED = 2;
 
     // 未注册的接口
-    int UN_REGISTERED_HANDLER = 3;
+    public static final int UN_REGISTERED_HANDLER = 3;
 
-    int CHANNEL_CLOSED = 4;
+    public static final int CHANNEL_CLOSED = 4;
 }

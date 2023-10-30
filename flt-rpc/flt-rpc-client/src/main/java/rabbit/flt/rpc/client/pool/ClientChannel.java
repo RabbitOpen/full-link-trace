@@ -230,9 +230,9 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
     @Override
     public void onServerConnected(SelectionKey selectionKey) {
         setChannelStatus(CONNECTED);
-        ServerNode serverNode = getServerNode();
+        ServerNode node = getServerNode();
         resetLastConnectTime();
-        logger.info("server[{}:{}] is connected", serverNode.getHost(), serverNode.getPort());
+        logger.info("server[{}:{}] is connected", node.getHost(), node.getPort());
         callbackExecutor.submit(() -> channelListener.afterCreated(this));
     }
 
@@ -253,7 +253,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
                 request.setResponse(response);
                 request.getSemaphore().release();
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
 

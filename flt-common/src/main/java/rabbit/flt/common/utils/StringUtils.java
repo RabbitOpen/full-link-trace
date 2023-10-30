@@ -7,6 +7,8 @@ import java.io.IOException;
 
 public class StringUtils {
 
+    private StringUtils() {}
+
     public static boolean isEmpty(Object obj) {
         return null == obj || "".equals(obj.toString().trim());
     }

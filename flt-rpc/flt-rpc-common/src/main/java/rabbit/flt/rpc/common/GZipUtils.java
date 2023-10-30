@@ -27,7 +27,7 @@ public class GZipUtils {
         } catch (Exception e) {
             throw new GZipException(e);
         } finally {
-            Serializer.close(out);
+            ResourceUtils.close(out);
         }
     }
 
@@ -55,7 +55,7 @@ public class GZipUtils {
         } catch (Exception e) {
             throw new GZipException(e);
         } finally {
-            Serializer.close(is);
+            ResourceUtils.close(is);
         }
     }
 

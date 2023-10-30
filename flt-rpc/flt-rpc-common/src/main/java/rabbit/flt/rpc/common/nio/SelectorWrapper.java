@@ -2,9 +2,9 @@ package rabbit.flt.rpc.common.nio;
 
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
+import rabbit.flt.common.utils.ResourceUtils;
 import rabbit.flt.rpc.common.Hook;
 import rabbit.flt.rpc.common.RpcException;
-import rabbit.flt.rpc.common.Serializer;
 
 import java.io.IOException;
 import java.nio.channels.Selector;
@@ -49,7 +49,7 @@ public class SelectorWrapper {
             }
             try {
                 hook.run();
-            } catch (Throwable t) {
+            } catch (Exception t) {
                 logger.error(t.getMessage(), t);
             }
         }
@@ -64,6 +64,6 @@ public class SelectorWrapper {
     }
 
     public void close() {
-        Serializer.close(selector);
+        ResourceUtils.close(selector);
     }
 }

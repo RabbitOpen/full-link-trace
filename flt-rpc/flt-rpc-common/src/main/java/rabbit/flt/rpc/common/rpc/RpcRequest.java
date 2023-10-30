@@ -59,8 +59,7 @@ public class RpcRequest extends Protocol<Request> {
         }
         try {
             if (responseInTime(timeoutSeconds)) {
-                RpcResponse response = getResponse();
-                return readResponseData(response);
+                return readResponseData(getResponse());
             }
             throw new RpcTimeoutException(getRequest().getInterfaceClz().getName().concat(".").concat(getRequest().getMethodName()),
                     getRequestId(), timeoutSeconds);

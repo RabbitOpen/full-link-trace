@@ -38,7 +38,7 @@ public class PoolConfig {
      * 事件监听器
      */
     private ChannelListener channelListener = channel -> {
-
+        // do nothing
     };
 
     /**

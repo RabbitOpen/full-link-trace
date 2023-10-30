@@ -95,7 +95,7 @@ public class ChannelProcessor extends Thread {
             } else if (selectionKey.isReadable()) {
                 channelReader.readChannelData(selectionKey);
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }
