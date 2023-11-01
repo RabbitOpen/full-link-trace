@@ -1,7 +1,6 @@
 package rabbit.flt.common.utils;
 
 import rabbit.flt.common.exception.GZipException;
-import rabbit.flt.common.utils.ResourceUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
