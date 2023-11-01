@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rabbit.flt.rpc.common.GZipUtils;
+import rabbit.flt.common.utils.GZipUtils;
 import rabbit.flt.rpc.common.Serializer;
 
 @RunWith(JUnit4.class)

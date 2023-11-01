@@ -2,6 +2,7 @@ package rabbit.flt.rpc.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rabbit.flt.common.utils.GZipUtils;
 import rabbit.flt.rpc.common.*;
 import rabbit.flt.rpc.common.exception.AuthenticationException;
 import rabbit.flt.rpc.common.rpc.Authentication;

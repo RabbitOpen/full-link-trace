@@ -1,5 +1,6 @@
 package rabbit.flt.rpc.client.pool;
 
+import rabbit.flt.common.utils.GZipUtils;
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.client.RequestFactory;
 import rabbit.flt.rpc.common.*;

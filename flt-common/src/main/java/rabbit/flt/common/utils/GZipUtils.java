@@ -1,4 +1,4 @@
-package rabbit.flt.rpc.common;
+package rabbit.flt.common.utils;
 
 import rabbit.flt.common.exception.GZipException;
 import rabbit.flt.common.utils.ResourceUtils;

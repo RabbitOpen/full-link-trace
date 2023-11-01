@@ -2,6 +2,7 @@ package rabbit.flt.rpc.common.nio;
 
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
+import rabbit.flt.common.utils.GZipUtils;
 import rabbit.flt.common.utils.ResourceUtils;
 import rabbit.flt.rpc.common.*;
 import rabbit.flt.rpc.common.exception.BeyondLimitException;
