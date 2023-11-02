@@ -55,7 +55,7 @@ public class HttpClient4Plugin extends PerformancePlugin {
     }
 
     @Override
-    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) throws Exception {
+    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result)  {
         super.fillTraceData(traceData, objectEnhanced, method, args, result);
         if (shouldEnhance(args)) {
             traceData.setMessageType(MessageType.HTTP_CLIENT4.name());

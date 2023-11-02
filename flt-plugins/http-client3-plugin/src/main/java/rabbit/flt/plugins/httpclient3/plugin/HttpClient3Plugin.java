@@ -2,10 +2,12 @@ package rabbit.flt.plugins.httpclient3.plugin;
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.URIException;
 import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.Headers;
 import rabbit.flt.common.context.TraceContext;
+import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.trace.MessageType;
 import rabbit.flt.common.trace.MethodStackInfo;
 import rabbit.flt.common.trace.TraceData;
@@ -54,13 +56,17 @@ public class HttpClient3Plugin extends PerformancePlugin {
     }
 
     @Override
-    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) throws Exception {
+    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) {
         super.fillTraceData(traceData, objectEnhanced, method, args, result);
         if (shouldEnhance(args)) {
             traceData.setMessageType(MessageType.HTTP_CLIENT3.name());
             traceData.setNodeName(MessageType.HTTP_CLIENT3.name());
             HttpMethod httpMethod = (HttpMethod) args[1];
-            traceData.setNodeDesc(httpMethod.getURI().toString());
+            try {
+                traceData.setNodeDesc(httpMethod.getURI().toString());
+            } catch (URIException e) {
+                throw new AgentException(e);
+            }
             HttpRequest request = new HttpRequest();
             for (Header header : httpMethod.getRequestHeaders()) {
                 request.addHeader(header.getName(), truncate(header.getValue()));

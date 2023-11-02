@@ -4,6 +4,7 @@ import rabbit.flt.common.*;
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.Semaphore;
@@ -24,7 +25,7 @@ public abstract class MetricsPlugin {
     private static final MetricsPlugin inst = new MetricsPlugin() {
         @Override
         protected List<ScheduleTask<Metrics>> getTasks() {
-            return null;
+            return new ArrayList<>();
         }
     };
 

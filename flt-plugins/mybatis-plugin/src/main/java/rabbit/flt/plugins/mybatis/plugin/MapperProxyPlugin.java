@@ -3,6 +3,7 @@ package rabbit.flt.plugins.mybatis.plugin;
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.common.trace.MethodStackInfo;
 import rabbit.flt.common.trace.TraceData;
+import rabbit.flt.common.utils.ReflectUtils;
 import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.plugins.common.plugin.PerformancePlugin;
 import rabbit.flt.plugins.mybatis.MybatisTraceContext;
@@ -37,7 +38,7 @@ public class MapperProxyPlugin extends PerformancePlugin {
     }
 
     @Override
-    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) throws Exception {
+    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) {
         // dao 接口方法对象
         // org.apache.ibatis.binding.MapperProxy.invoke方法
         Method interfaceMethod = (Method) args[1];
@@ -46,8 +47,8 @@ public class MapperProxyPlugin extends PerformancePlugin {
         if (null == h || null == mapperInterface) {
             initFields(mapperProxy);
         }
-        Object realMapperProxy = h.get(mapperProxy);
-        Class<?> clz = (Class<?>) mapperInterface.get(realMapperProxy);
+        Object realMapperProxy = ReflectUtils.getValue(mapperProxy, h);
+        Class<?> clz = ReflectUtils.getValue(realMapperProxy, mapperInterface);
         traceData.setNodeDesc(StringUtils.toString(clz.getName()) + ".".concat(interfaceMethod.getName()));
     }
 

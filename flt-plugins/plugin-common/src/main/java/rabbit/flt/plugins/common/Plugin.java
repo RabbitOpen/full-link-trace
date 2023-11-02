@@ -149,7 +149,7 @@ public abstract class Plugin {
      * @param args
      * @param result
      */
-    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) throws Exception {
+    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) {
 
     }
 
