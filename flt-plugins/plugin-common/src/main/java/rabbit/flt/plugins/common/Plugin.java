@@ -70,7 +70,7 @@ public abstract class Plugin {
      * @param args
      * @param result
      */
-    public void doFinal(Object objectEnhanced, Method method, Object[] args, Object result) throws Exception {
+    public void doFinal(Object objectEnhanced, Method method, Object[] args, Object result) {
         MethodStackInfo stackInfo = TraceContext.popStack(method);
         if (null == stackInfo) {
             return;

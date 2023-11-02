@@ -39,7 +39,7 @@ public class PerformancePlugin extends Plugin {
     }
 
     @Override
-    public void doFinal(Object objectEnhanced, Method method, Object[] args, Object result) throws Exception {
+    public void doFinal(Object objectEnhanced, Method method, Object[] args, Object result) {
         if (isTraceOpened()) {
             super.doFinal(objectEnhanced, method, args, result);
         }

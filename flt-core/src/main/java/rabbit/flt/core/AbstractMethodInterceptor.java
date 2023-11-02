@@ -67,16 +67,12 @@ public abstract class AbstractMethodInterceptor implements Interceptor {
         safeRun(() -> getPlugin().onException(objectEnhanced, method, args, t));
     }
 
-    private void safeRun(Job job) {
+    private void safeRun(Runnable job) {
         try {
             job.run();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-    }
-
-    private interface Job {
-        void run() throws Exception;
     }
 
     protected Plugin getPlugin() {

@@ -32,7 +32,7 @@ public class MapperProxyPlugin extends PerformancePlugin {
     }
 
     @Override
-    public void doFinal(Object objectEnhanced, Method method, Object[] args, Object result) throws Exception {
+    public void doFinal(Object objectEnhanced, Method method, Object[] args, Object result) {
         MybatisTraceContext.remove();
         super.doFinal(objectEnhanced, method, args, result);
     }
