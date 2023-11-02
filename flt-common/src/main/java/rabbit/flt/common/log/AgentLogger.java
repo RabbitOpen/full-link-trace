@@ -73,7 +73,7 @@ public class AgentLogger implements InvocationHandler {
             return;
         }
         if (1 == args.length) {
-            System.out.println(StringUtils.toString(args[0]));
+            logWithConsole(StringUtils.toString(args[0]));
             return;
         }
         String result = StringUtils.toString(args[0]);
@@ -97,6 +97,14 @@ public class AgentLogger implements InvocationHandler {
                 }
             }
         }
+        logWithConsole(result);
+    }
+
+    /**
+     * 通过控制台输出
+     * @param result
+     */
+    private void logWithConsole(String result) {
         System.out.println(result);
     }
 }
