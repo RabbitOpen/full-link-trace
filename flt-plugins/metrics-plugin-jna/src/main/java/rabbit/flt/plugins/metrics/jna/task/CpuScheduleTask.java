@@ -16,7 +16,7 @@ public class CpuScheduleTask extends ScheduleTask<CpuMetrics> {
         if (null == cpuRateLoader) {
             try {
                 cpuRateLoader = new CpuRateLoader();
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 return false;
             }

@@ -11,8 +11,8 @@ import java.util.ServiceLoader;
 public class DefaultMetricsPlugin extends MetricsPlugin {
 
     @Override
-    protected List<ScheduleTask<? extends Metrics>> getTasks() {
-        List<ScheduleTask<? extends Metrics>> scheduleTasks = new ArrayList<>();
+    protected List<ScheduleTask<Metrics>> getTasks() {
+        List<ScheduleTask<Metrics>> scheduleTasks = new ArrayList<>();
         ServiceLoader<ScheduleTask> loader = ServiceLoader.load(ScheduleTask.class);
         for (ScheduleTask task : loader) {
             scheduleTasks.add(task);

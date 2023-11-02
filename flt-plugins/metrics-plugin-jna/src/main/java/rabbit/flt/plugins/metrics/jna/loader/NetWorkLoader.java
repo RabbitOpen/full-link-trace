@@ -69,7 +69,7 @@ public class NetWorkLoader extends AbstractLoader {
         }
 
         private NetFlowInfo delta(NetDetail old) {
-            double delta = new Double(getSampleTime() - old.getSampleTime()) / 1000;
+            double delta = (getSampleTime() - old.getSampleTime()) / 1000.0;
             NetFlowInfo flowInfo = new NetFlowInfo();
             flowInfo.setTxPktPerSec(roundHalfUp((getTxPks() - old.getTxPks()) / delta, 2));
             flowInfo.setRxPktPerSec(roundHalfUp((getRxPks() - old.getRxPks()) / delta, 2));

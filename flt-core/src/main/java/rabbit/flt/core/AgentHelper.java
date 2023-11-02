@@ -12,6 +12,8 @@ import java.util.List;
 
 public class AgentHelper {
 
+    private AgentHelper() {}
+
     /**
      * 安装插件
      *

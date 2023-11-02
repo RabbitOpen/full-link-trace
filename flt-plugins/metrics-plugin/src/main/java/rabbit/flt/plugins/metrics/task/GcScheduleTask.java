@@ -55,10 +55,10 @@ public class GcScheduleTask extends ScheduleTask<GcMetrics> {
                     sb.append(" (max: ").append(entry.getValue().getMax() / MILLION).append("M)");
                     detail.put(key, sb.toString());
                 }
-                AtomicLong timeCounter = this.timeCounter.computeIfAbsent(info.getGcName(), k -> new AtomicLong(0));
-                metrics.setTotal(timeCounter.incrementAndGet());
-                AtomicLong costCounter = this.costCounter.computeIfAbsent(info.getGcName(), k -> new AtomicLong(0));
-                metrics.setTotal(costCounter.addAndGet(metrics.getCost()));
+                AtomicLong tCounter = this.timeCounter.computeIfAbsent(info.getGcName(), k -> new AtomicLong(0));
+                metrics.setTotal(tCounter.incrementAndGet());
+                AtomicLong cCounter = this.costCounter.computeIfAbsent(info.getGcName(), k -> new AtomicLong(0));
+                metrics.setTotal(cCounter.addAndGet(metrics.getCost()));
                 metrics.setDetail(detail);
                 cacheGcMetrics(metrics);
             }, null, mxBean.getName());
@@ -87,7 +87,7 @@ public class GcScheduleTask extends ScheduleTask<GcMetrics> {
 
     @Override
     public boolean isPrepared(AgentConfig config) {
-        return gcList.size() > 0;
+        return !gcList.isEmpty();
     }
 
     @Override

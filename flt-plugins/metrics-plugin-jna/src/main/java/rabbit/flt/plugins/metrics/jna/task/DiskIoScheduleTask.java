@@ -16,7 +16,7 @@ public class DiskIoScheduleTask extends ScheduleTask<DiskIoMetrics> {
         if (null == diskIoLoader) {
             try {
                 diskIoLoader = new DiskIoLoader();
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 return false;
             }

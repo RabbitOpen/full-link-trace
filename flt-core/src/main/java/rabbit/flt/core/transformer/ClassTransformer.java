@@ -51,11 +51,12 @@ public class ClassTransformer implements AgentBuilder.Transformer {
 
     @Override
     public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule module) {
+        DynamicType.Builder<?> typeBuilder = builder;
         listeners.forEach(l -> l.onProxy(typeDescription.getCanonicalName()));
         for (Matcher matcher : fieldEnhanceMatchers) {
             if (matcher.classMatcher().matches(typeDescription)) {
                 FieldEnhanceMatcher fm = (FieldEnhanceMatcher) matcher;
-                builder = builder.defineField(fm.getFiledName(), fm.getFieldTypeClass(), Modifier.PRIVATE)
+                typeBuilder = typeBuilder.defineField(fm.getFiledName(), fm.getFieldTypeClass(), Modifier.PRIVATE)
                         .implement(fm.getAccessorClass())
                         .intercept(FieldAccessor.ofBeanProperty());
             }
@@ -63,7 +64,7 @@ public class ClassTransformer implements AgentBuilder.Transformer {
 
         for (Matcher matcher : constructorMatchers) {
             if (matcher.classMatcher().matches(typeDescription)) {
-                builder = builder.constructor(matcher.methodMatcher(typeDescription))
+                typeBuilder = typeBuilder.constructor(matcher.methodMatcher(typeDescription))
                         .intercept(SuperMethodCall.INSTANCE.andThen((MethodDelegation.withDefaultConfiguration()
                                 .to(new ConstructorInterceptor(matcher.getPluginClassName())))));
             }
@@ -72,7 +73,7 @@ public class ClassTransformer implements AgentBuilder.Transformer {
         boolean support = false;
         for (Matcher matcher : supportMatchers) {
             if (matcher.classMatcher().matches(typeDescription)) {
-                builder = builder.method(matcher.methodMatcher(typeDescription))
+                typeBuilder = typeBuilder.method(matcher.methodMatcher(typeDescription))
                         .intercept(MethodDelegation.withDefaultConfiguration()
                                 .withBinders(Morph.Binder.install(MethodCallback.class))
                                 .to(new MethodInterceptor(matcher.getPluginClassName())));
@@ -80,17 +81,17 @@ public class ClassTransformer implements AgentBuilder.Transformer {
             }
         }
         if (support) {
-            return builder;
+            return typeBuilder;
         }
 
         for (Matcher matcher : performanceMatchers) {
             if (matcher.classMatcher().matches(typeDescription)) {
-                builder = builder.method(matcher.methodMatcher(typeDescription))
+                typeBuilder = typeBuilder.method(matcher.methodMatcher(typeDescription))
                         .intercept(MethodDelegation.withDefaultConfiguration()
                                 .withBinders(Morph.Binder.install(MethodCallback.class))
                                 .to(new MethodInterceptor(matcher.getPluginClassName())));
             }
         }
-        return builder;
+        return typeBuilder;
     }
 }

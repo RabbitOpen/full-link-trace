@@ -29,7 +29,7 @@ public class NetWorkScheduleTask extends ScheduleTask<NetworkMetrics> {
         if (null == netWorkLoader) {
             try {
                 netWorkLoader = new NetWorkLoader();
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 return false;
             }

@@ -3,7 +3,6 @@ package rabbit.flt.core.loader;
 import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
-import rabbit.flt.common.utils.ResourceUtils;
 import rabbit.flt.core.AgentEntry;
 import rabbit.flt.core.PluginClassLoader;
 
@@ -11,6 +10,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Map;
@@ -43,7 +43,7 @@ public class DefaultPluginClassLoader extends PluginClassLoader {
     }
 
     @Override
-    public Class<?> loadClassByName(String name) throws Exception {
+    public Class<?> loadClassByName(String name) throws IOException, ClassNotFoundException, InvocationTargetException, IllegalAccessException {
         if (clzMap.containsKey(name)) {
             return clzMap.get(name);
         }
@@ -60,9 +60,10 @@ public class DefaultPluginClassLoader extends PluginClassLoader {
 
     /**
      * 加载基类
+     *
      * @throws Exception
      */
-    private void tryLoadBaseClass() throws Exception {
+    private void tryLoadBaseClass() throws IOException, ClassNotFoundException, InvocationTargetException, IllegalAccessException {
         String performancePlugin = "rabbit.flt.plugins.common.plugin.PerformancePlugin";
         if (!clzMap.containsKey(performancePlugin)) {
             clzMap.put(performancePlugin, findClass(performancePlugin));
@@ -77,7 +78,7 @@ public class DefaultPluginClassLoader extends PluginClassLoader {
         }
     }
 
-    protected Class<?> findClass(String name) throws Exception {
+    protected Class<?> findClass(String name) throws IOException, ClassNotFoundException, InvocationTargetException, IllegalAccessException {
         Class<?> clz = loadClassFromJar(name);
         logger.info("load class[{}] with class loader[{}]", name, clz.getClassLoader().getClass().getName());
         return clz;
@@ -85,12 +86,13 @@ public class DefaultPluginClassLoader extends PluginClassLoader {
 
     /**
      * 从jar file中加载指定类
+     *
      * @param name
      * @return
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private Class<?> loadClassFromJar(String name) throws Exception {
+    private Class<?> loadClassFromJar(String name) throws IOException, ClassNotFoundException, InvocationTargetException, IllegalAccessException {
         if (null == jarFile) {
             jarFile = new JarFile(getAgentJarFilePath());
         }
@@ -106,19 +108,15 @@ public class DefaultPluginClassLoader extends PluginClassLoader {
         }
         URL classFileUrl = new URL("jar:file:".concat(getAgentJarFilePath()).concat("!/").concat(path));
         byte[] data;
-        BufferedInputStream is = null;
-        ByteArrayOutputStream os = null;
-        try {
-            is = new BufferedInputStream(classFileUrl.openStream());
-            os = new ByteArrayOutputStream();
+
+        try (BufferedInputStream is = new BufferedInputStream(classFileUrl.openStream());
+             ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ) {
             int ch;
             while (-1 != (ch = is.read())) {
                 os.write(ch);
             }
             data = os.toByteArray();
-        } finally {
-            ResourceUtils.close(is);
-            ResourceUtils.close(os);
         }
         return (Class<?>) defineClassMethod.invoke(loader, name, data, 0, data.length);
     }

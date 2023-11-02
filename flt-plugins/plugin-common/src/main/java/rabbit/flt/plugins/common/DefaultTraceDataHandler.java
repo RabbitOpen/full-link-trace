@@ -40,9 +40,8 @@ public class DefaultTraceDataHandler {
 
     public DefaultTraceDataHandler() {
         ServiceLoader<TraceInterceptor> loader = ServiceLoader.load(TraceInterceptor.class);
-        for (TraceInterceptor traceInterceptor : loader) {
-            interceptor = traceInterceptor;
-            return;
+        if (loader.iterator().hasNext()) {
+            interceptor = loader.iterator().next();
         }
     }
 
@@ -52,7 +51,7 @@ public class DefaultTraceDataHandler {
             if (!dataHandlerThreads.isEmpty()) {
                 return;
             }
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown()));
+            Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
             AbstractConfigFactory factory = AbstractConfigFactory.getFactory();
             factory.initialize();
             AgentConfig config = AbstractConfigFactory.getConfig();
@@ -84,32 +83,40 @@ public class DefaultTraceDataHandler {
      */
     private Runnable getRunnable(AgentConfig config) {
         return () -> {
-            long threshold = (long) (config.getMaxQueueSize() * config.getThreshold());
             while (true) {
                 try {
                     if (semaphore.tryAcquire(1, 10, TimeUnit.MILLISECONDS)) {
                         break;
                     }
-                    while (true) {
-                        List<TraceData> list = new ArrayList<>();
-                        dataQueue.drainTo(list, config.getMaxTransportBatchSize(), 200);
-                        if (list.isEmpty()) {
-                            break;
-                        }
-                        int left = dataQueue.getLength();
-                        if (config.showQueueLength() && left > threshold) {
-                            logger.info("queue capacity is [{}], left data size is [{}], batch size is [{}]",
-                                    config.getMaxQueueSize(), left, list.size());
-                        }
-                        list.forEach(t -> t.setApplicationCode(config.getApplicationCode()));
-                        dataHandler.process(list);
-                        dataHandler.discard(list);
-                    }
+                    fetchAndSend(config);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                 }
             }
         };
+    }
+
+    /**
+     * 从队列获取数据然后发送
+     * @param config
+     */
+    private void fetchAndSend(AgentConfig config) {
+        long threshold = (long) (config.getMaxQueueSize() * config.getThreshold());
+        while (true) {
+            List<TraceData> list = new ArrayList<>();
+            dataQueue.drainTo(list, config.getMaxTransportBatchSize(), 200);
+            if (list.isEmpty()) {
+                break;
+            }
+            int left = dataQueue.getLength();
+            if (config.showQueueLength() && left > threshold) {
+                logger.info("queue capacity is [{}], left data size is [{}], batch size is [{}]",
+                        config.getMaxQueueSize(), left, list.size());
+            }
+            list.forEach(t -> t.setApplicationCode(config.getApplicationCode()));
+            dataHandler.process(list);
+            dataHandler.discard(list);
+        }
     }
 
     /**

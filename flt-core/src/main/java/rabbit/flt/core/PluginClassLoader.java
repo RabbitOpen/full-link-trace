@@ -1,6 +1,7 @@
 package rabbit.flt.core;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * 插件类加载器
@@ -24,7 +25,7 @@ public abstract class PluginClassLoader {
      * @throws ClassNotFoundException
      * @throws IOException
      */
-    public abstract Class<?> loadClassByName(String name) throws Exception;
+    public abstract Class<?> loadClassByName(String name) throws IOException, ClassNotFoundException, InvocationTargetException, IllegalAccessException;
 
     /**
      * 获取代理类路径

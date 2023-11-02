@@ -19,17 +19,16 @@ public class GZipUtils {
      * @return
      */
     public static byte[] compress(byte[] data) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            GZIPOutputStream gzipOs = new GZIPOutputStream(out);
+        try (
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                GZIPOutputStream gzipOs = new GZIPOutputStream(out);
+        ) {
             gzipOs.write(data);
             gzipOs.flush();
             gzipOs.close();
             return out.toByteArray();
         } catch (Exception e) {
             throw new GZipException(e);
-        } finally {
-            ResourceUtils.close(out);
         }
     }
 
@@ -41,10 +40,11 @@ public class GZipUtils {
      * @return
      */
     public static byte[] decompress(byte[] data, int originalSize) {
-        ByteArrayInputStream is = new ByteArrayInputStream(data);
-        try {
+        try (
+                ByteArrayInputStream is = new ByteArrayInputStream(data);
+                GZIPInputStream gzipIs = new GZIPInputStream(is);
+        ) {
             byte[] result = new byte[originalSize];
-            GZIPInputStream gzipIs = new GZIPInputStream(is);
             int length = 0;
             while (true) {
                 int read = gzipIs.read(result, length, originalSize - length);
@@ -53,12 +53,9 @@ public class GZipUtils {
                     break;
                 }
             }
-            gzipIs.close();
             return result;
         } catch (Exception e) {
             throw new GZipException(e);
-        } finally {
-            ResourceUtils.close(is);
         }
     }
 
@@ -70,11 +67,13 @@ public class GZipUtils {
      * @return
      */
     public static byte[] decompressIgnoreOriginalLength(byte[] data, int stepSize) {
-        ByteArrayInputStream is = new ByteArrayInputStream(data);
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        GZIPInputStream gzipIs = null;
-        try {
-            gzipIs = new GZIPInputStream(is);
+
+        try (
+                ByteArrayInputStream is = new ByteArrayInputStream(data);
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                GZIPInputStream gzipIs = new GZIPInputStream(is);
+        ) {
+
             byte[] bytes = new byte[stepSize];
             while (true) {
                 int read = gzipIs.read(bytes, 0, bytes.length);
@@ -87,10 +86,6 @@ public class GZipUtils {
             return os.toByteArray();
         } catch (Exception e) {
             throw new GZipException(e);
-        } finally {
-            ResourceUtils.close(gzipIs);
-            ResourceUtils.close(os);
-            ResourceUtils.close(is);
         }
     }
 }

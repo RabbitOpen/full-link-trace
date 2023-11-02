@@ -21,7 +21,14 @@ public abstract class MetricsPlugin {
 
     private Semaphore semaphore = new Semaphore(0);
 
-    protected static MetricsDataHandler dataHandler;
+    private static final MetricsPlugin inst = new MetricsPlugin() {
+        @Override
+        protected List<ScheduleTask<Metrics>> getTasks() {
+            return null;
+        }
+    };
+
+    protected MetricsDataHandler dataHandler;
 
     private static volatile boolean started = false;
 
@@ -33,7 +40,7 @@ public abstract class MetricsPlugin {
     public void start() {
         initDataHandler();
         thread = new Thread(() -> {
-            List<ScheduleTask<? extends Metrics>> tasks = getTasks();
+            List<ScheduleTask<Metrics>> tasks = getTasks();
             while (true) {
                 try {
                     if (semaphore.tryAcquire(1, 2, TimeUnit.SECONDS)) {
@@ -43,12 +50,12 @@ public abstract class MetricsPlugin {
                             scheduleTasks(tasks);
                         }
                     }
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
             }
         });
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> close()));
+        Runtime.getRuntime().addShutdownHook(new Thread(this::close));
         thread.setDaemon(true);
         thread.start();
     }
@@ -58,17 +65,17 @@ public abstract class MetricsPlugin {
      *
      * @param tasks
      */
-    private void scheduleTasks(List<ScheduleTask<? extends Metrics>> tasks) {
+    private void scheduleTasks(List<ScheduleTask<Metrics>> tasks) {
         AgentConfig config = AbstractConfigFactory.getConfig();
-        for (ScheduleTask<? extends Metrics> task : tasks) {
+        for (ScheduleTask<Metrics> task : tasks) {
             if (!isMetricsEnabled(config, task) || !isPrepared(config, task)) {
                 continue;
             }
-            if (dataHandler.isMetricsEnabled(task.getMetricsType())) {
+            if (inst.dataHandler.isMetricsEnabled(task.getMetricsType())) {
                 // 远端允许上报才上报
                 Metrics metrics = task.getMetrics();
                 if (null != metrics) {
-                    task.handle(dataHandler, metrics);
+                    task.handle(inst.dataHandler, metrics);
                 }
             }
         }
@@ -79,7 +86,7 @@ public abstract class MetricsPlugin {
      *
      * @return
      */
-    protected abstract List<ScheduleTask<? extends Metrics>> getTasks();
+    protected abstract List<ScheduleTask<Metrics>> getTasks();
 
     /**
      * 判断任务是否就绪
@@ -107,14 +114,14 @@ public abstract class MetricsPlugin {
      * 初始化数据处理器
      */
     protected void initDataHandler() {
-        if (null == dataHandler) {
+        if (null == inst.dataHandler) {
             ServiceLoader<MetricsDataHandler> loader = ServiceLoader.load(MetricsDataHandler.class);
             for (MetricsDataHandler metricsDataHandler : loader) {
-                if (null == dataHandler) {
-                    dataHandler = metricsDataHandler;
+                if (null == inst.dataHandler) {
+                    inst.dataHandler = metricsDataHandler;
                 }
-                if (metricsDataHandler.getPriority() < dataHandler.getPriority()) {
-                    dataHandler = metricsDataHandler;
+                if (metricsDataHandler.getPriority() < inst.dataHandler.getPriority()) {
+                    inst.dataHandler = metricsDataHandler;
                 }
             }
         }

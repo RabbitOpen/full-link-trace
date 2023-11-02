@@ -64,6 +64,7 @@ public abstract class Plugin {
 
     /**
      * final增强
+     *
      * @param objectEnhanced
      * @param method
      * @param args
@@ -83,6 +84,7 @@ public abstract class Plugin {
 
     /**
      * 异常兜底
+     *
      * @param objectEnhanced
      * @param method
      * @param args
@@ -105,6 +107,7 @@ public abstract class Plugin {
 
     /**
      * 读取堆栈文本
+     *
      * @param t
      * @return
      */
@@ -119,15 +122,12 @@ public abstract class Plugin {
         while (true) {
             try {
                 String line = br.readLine();
-                if (null == line) {
-                    break;
-                }
-                sb.append(line).append("\r");
-                if (30 == ++lineCount) {
+                sb.append(null == line ? "" : line).append("\r");
+                if (null == line || 30 == ++lineCount) {
                     break;
                 }
             } catch (Exception e) {
-
+                // ignore
             }
         }
         ResourceUtils.close(writer);
@@ -142,6 +142,7 @@ public abstract class Plugin {
 
     /**
      * 填充trace数据
+     *
      * @param traceData
      * @param objectEnhanced
      * @param method
@@ -158,6 +159,7 @@ public abstract class Plugin {
 
     /**
      * 截断数据
+     *
      * @param txt
      * @return
      */

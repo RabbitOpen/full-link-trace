@@ -36,9 +36,13 @@ import static rabbit.flt.common.AbstractConfigFactory.CLASS_PATH_PREFIX;
  */
 public class AgentEntry {
 
-    private static final Logger logger = AgentLoggerFactory.getLogger(AgentEntry.class);
+    private final Logger logger = AgentLoggerFactory.getLogger(getClass());
 
-    public static void premain(String agentConfig, Instrumentation inst) throws Exception {
+    private static final AgentEntry inst = new AgentEntry();
+
+    private AgentEntry() {}
+
+    public static void premain(String agentConfig, Instrumentation inst) throws FileNotFoundException {
         if (StringUtils.isEmpty(agentConfig)) {
             return;
         }
@@ -110,14 +114,14 @@ public class AgentEntry {
             if (!StringUtils.isEmpty(ignorePackages)) {
                 for (String pkg : ignorePackages.split(",")) {
                     ignoreMatcher = ignoreMatcher.or(nameStartsWith(pkg.trim()));
-                    logger.info("ignore package: {}", pkg);
+                    inst.logger.info("ignore package: {}", pkg);
                 }
             }
             String ignoreClasses = config.getIgnoreClasses();
             if (!StringUtils.isEmpty(ignoreClasses)) {
                 for (String clz : ignoreClasses.split(",")) {
                     ignoreMatcher = ignoreMatcher.or(named(clz.trim()));
-                    logger.info("ignore class: {}", clz);
+                    inst.logger.info("ignore class: {}", clz);
                 }
             }
         }
@@ -142,7 +146,7 @@ public class AgentEntry {
                 }
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            inst.logger.error(e.getMessage());
         }
     }
 

@@ -13,7 +13,8 @@ import java.io.ByteArrayOutputStream;
 
 public class Serializer {
 
-    private Serializer() {}
+    private Serializer() {
+    }
 
     /**
      * 池对象
@@ -42,25 +43,26 @@ public class Serializer {
 
     /**
      * 序列化
+     *
      * @param data
      * @return
      */
     public static byte[] serialize(Object data) {
         Kryo kryo = kryoPool.obtain();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            Output output = new Output(bos);
+        try (Output output = new Output(bos)) {
             kryo.writeClassAndObject(output, data);
             output.flush();
+            output.close();
             return bos.toByteArray();
         } finally {
             kryoPool.free(kryo);
-            ResourceUtils.close(bos);
         }
     }
 
     /**
      * 反序列化
+     *
      * @param data
      * @param <T>
      * @return

@@ -39,7 +39,7 @@ public abstract class AbstractMethodInterceptor implements Interceptor {
             Object[] params = before(objectEnhance, method, args);
             result = after(objectEnhance, method, args, callback.call(params));
             return result;
-        } catch (Throwable t) {
+        } catch (Exception t) {
             onException(objectEnhance, method, args, t);
             throw t;
         } finally {
@@ -70,13 +70,13 @@ public abstract class AbstractMethodInterceptor implements Interceptor {
     private void safeRun(Job job) {
         try {
             job.run();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }
 
     private interface Job {
-        void run() throws Throwable;
+        void run() throws Exception;
     }
 
     protected Plugin getPlugin() {

@@ -4,17 +4,21 @@ import rabbit.flt.common.trace.TraceData;
 
 public class MybatisTraceContext {
 
-    private static ThreadLocal<TraceData> traceDataContext = new ThreadLocal<>();
+    private static final MybatisTraceContext inst = new MybatisTraceContext();
+
+    private ThreadLocal<TraceData> traceDataContext = new ThreadLocal<>();
+
+    private MybatisTraceContext() {}
 
     public static void setTraceData(TraceData traceData) {
-        traceDataContext.set(traceData);
+        inst.traceDataContext.set(traceData);
     }
 
     public static TraceData getTraceData() {
-        return traceDataContext.get();
+        return inst.traceDataContext.get();
     }
 
     public static void remove() {
-        traceDataContext.remove();
+        inst.traceDataContext.remove();
     }
 }

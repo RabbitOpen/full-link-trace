@@ -14,6 +14,7 @@ public class ReactorSupportPlugin extends SupportPlugin {
 
     /**
      * 订阅前写入trace context
+     *
      * @param objectEnhanced
      * @param method
      * @param args
@@ -42,10 +43,8 @@ public class ReactorSupportPlugin extends SupportPlugin {
         if (null == holderData) {
             return;
         }
-        if (0 == holderData.popStack()) {
-            if (TraceContext.isTraceOpenedBy(objectEnhanced)) {
-                TraceContext.clearContext();
-            }
+        if (0 == holderData.popStack() && TraceContext.isTraceOpenedBy(objectEnhanced)) {
+            TraceContext.clearContext();
         }
     }
 

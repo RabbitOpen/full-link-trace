@@ -69,7 +69,7 @@ public class DiskIoLoader extends AbstractLoader {
 
     private long secondRate(long cur, long pre, long deltaMils) {
         long delta = cur - pre;
-        double delSec = deltaMils / new Double(1000);
+        double delSec = deltaMils / 1000.0;
         return (long) (roundHalfUp(delta / delSec / 10, 1) * 10);
     }
 }
