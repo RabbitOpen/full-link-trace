@@ -23,6 +23,12 @@
         <spring-cloud.version>2021.0.6</spring-cloud.version>
         <spring.version>5.3.22</spring.version>
 
+        <!--   是否执行shading操作，sonar扫描时忽略一切shading     -->
+        <shading.ignore>true</shading.ignore>
+
+        <!--     sonar扫描专用   -->
+        <sonar.scan.ignore>false</sonar.scan.ignore>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>

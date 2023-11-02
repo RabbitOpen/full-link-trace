@@ -14,7 +14,6 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <sonar.skip>true</sonar.skip>
     </properties>
 
     <dependencies>
@@ -96,14 +95,50 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.4.1</version>
                 <executions>
+                    <execution>
+                        <!--              sonar 扫描          -->
+                        <id>sonar-scan</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${sonar.scan.ignore}</skip>
+                            <artifactSet>
+                                <includes>
+                                    <include>rabbit.flt:*:jar:</include>
+                                    <!--需要一起打包的类-->
+                                    <include>net.bytebuddy:byte-buddy:jar:</include>
+                                    <include>net.bytebuddy:byte-buddy-agent:jar:</include>
+                                    <include>com.esotericsoftware:*:jar:</include>
+                                    <include>org.objenesis:*:jar:</include>
+                                    <include>com.fasterxml.uuid:*:jar:</include>
+                                </includes>
+                            </artifactSet>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Premain-Class>rabbit.flt.core.AgentEntry</Premain-Class>
+                                        <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                                    </manifestEntries>
+                                </transformer>
+                                <!--合并 spi 接口-->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer">
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <skip>${shading.ignore}</skip>
                             <artifactSet>
                                 <includes>
                                     <include>rabbit.flt:*:jar:</include>
