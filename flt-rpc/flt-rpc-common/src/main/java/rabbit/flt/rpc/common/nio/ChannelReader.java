@@ -74,26 +74,38 @@ public abstract class ChannelReader implements ChannelAdaptor {
                 byte[] dataBytes = readByteData(channel, buffer, frameLength);
                 handleData(selectionKey, dataBytes, frameLength);
                 wakeupSelectionKey(selectionKey);
-            } catch (ChannelClosedException e) {
-                if (this instanceof AbstractClientChannel) {
+            } catch (EndPointClosedException e) {
+                channelClosed(selectionKey, () -> {
                     ServerNode serverNode = ((AbstractClientChannel) this).getClientChannel(selectionKey).getServerNode();
-                    logger.info("server[{}] is closed!", serverNode);
-                    if (e instanceof EndPointClosedException) {
-                        serverNodeClosed(serverNode);
-                    }
-                } else {
-                    logger.info("client[{}] is closed!", getRemoteAddress(channel));
-                }
+                    serverNodeClosed(serverNode);
+                });
+                disconnected(selectionKey);
+            } catch (ChannelClosedException e) {
+                channelClosed(selectionKey, () -> {
+                    // do nothing
+                });
                 disconnected(selectionKey);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 disconnected(selectionKey);
             }
+
         });
+    }
+
+    private void channelClosed(SelectionKey selectionKey, Runnable clientCallBack) {
+        if (this instanceof AbstractClientChannel) {
+            ServerNode serverNode = ((AbstractClientChannel) this).getClientChannel(selectionKey).getServerNode();
+            logger.info("server[{}] is closed!", serverNode);
+            clientCallBack.run();
+        } else {
+            logger.info("client[{}] is closed!", getRemoteAddress((SocketChannel) selectionKey.channel()));
+        }
     }
 
     /**
      * 服务器节点关闭
+     *
      * @param serverNode
      */
     protected void serverNodeClosed(ServerNode serverNode) {
