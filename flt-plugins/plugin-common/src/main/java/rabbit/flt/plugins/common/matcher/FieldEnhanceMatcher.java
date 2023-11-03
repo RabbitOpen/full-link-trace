@@ -5,7 +5,7 @@ import rabbit.flt.plugins.common.Matcher;
 /**
  * 字段扩展
  */
-public abstract class FieldEnhanceMatcher extends Matcher {
+public abstract class FieldEnhanceMatcher implements Matcher {
 
     /**
      * 增强的字段名

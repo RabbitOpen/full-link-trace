@@ -41,12 +41,22 @@ public class SpringWebFluxTest extends BaseCases {
             TestCase.assertFalse(TraceContext.isTraceOpened());
             return Mono.just(1);
         }).subscribe();
+        Mono.fromCallable(() -> {
+            TestCase.assertFalse(TraceContext.isTraceOpened());
+            return Mono.just(1);
+        }).subscribe();
+        Mono.fromRunnable(() -> TestCase.assertFalse(TraceContext.isTraceOpened())).subscribe();
         TraceContext.openTrace("defer");
         TraceContext.initRootSpanId();
         Mono.defer(() -> {
             TestCase.assertTrue(TraceContext.isTraceOpened());
             return Mono.just(1);
         }).subscribe();
+        Mono.fromCallable(() -> {
+            TestCase.assertTrue(TraceContext.isTraceOpened());
+            return Mono.just(1);
+        }).subscribe();
+        Mono.fromRunnable(() -> TestCase.assertTrue(TraceContext.isTraceOpened())).subscribe();
     }
 
 

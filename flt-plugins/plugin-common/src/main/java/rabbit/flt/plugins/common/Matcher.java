@@ -12,20 +12,22 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
 /**
  * 匹配定义
  */
-public abstract class Matcher {
+public interface Matcher {
 
     /**
      * 定义哪些class可以被增强
+     *
      * @return
      */
-    public abstract ElementMatcher.Junction<TypeDescription> classMatcher();
+    ElementMatcher.Junction<TypeDescription> classMatcher();
 
     /**
      * 声明哪些方法可以被增强
+     *
      * @param typeDescription
      * @return
      */
-    public ElementMatcher.Junction methodMatcher(TypeDescription typeDescription) {
+    default ElementMatcher.Junction methodMatcher(TypeDescription typeDescription) {
         return isPublic().and(not(named("toString").or(named("hashCode")).or(named("equal"))));
     }
 
@@ -33,13 +35,13 @@ public abstract class Matcher {
      * 插件class名
      * @return
      */
-    public abstract String getPluginClassName();
+    String getPluginClassName();
 
     /**
      * 获取已经定义的matcher
      * @return
      */
-    public static List<Matcher> loadMatchers() {
+    static List<Matcher> loadMatchers() {
         List<Matcher> matchers = new ArrayList<>();
         ServiceLoader<Matcher> loader = ServiceLoader.load(Matcher.class);
         for (Matcher matcher : loader) {

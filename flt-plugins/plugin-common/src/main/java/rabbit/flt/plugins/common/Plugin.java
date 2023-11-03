@@ -136,6 +136,10 @@ public abstract class Plugin {
         return sb.toString();
     }
 
+    /**
+     * 处理trace数据
+     * @param traceData
+     */
     protected void handleTraceData(TraceData traceData) {
         dataHandler.process(traceData);
     }
@@ -150,7 +154,7 @@ public abstract class Plugin {
      * @param result
      */
     protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) {
-
+        // do nothing
     }
 
     protected boolean isTraceOpened() {

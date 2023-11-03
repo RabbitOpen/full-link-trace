@@ -33,21 +33,30 @@ public class ReactorStaticSupportPlugin extends SupportPlugin {
         for (int i = 0; i < args.length; i++) {
             Object arg = args[i];
             if (arg instanceof Runnable) {
-                Runnable runnable = () -> tryExecuteWithTrace(data, () -> {
-                    ((Runnable) arg).run();
-                    return null;
-                });
-                args[i] = runnable;
+                args[i] = getRunnable(data, (Runnable) arg);
             }
             if (arg instanceof Callable) {
-                Callable callable = () -> tryExecuteWithTrace(data, ((Callable) arg)::call);
-                args[i] = callable;
+                args[i] = getCallable(data, (Callable) arg);
             }
             if (arg instanceof Supplier) {
-                Supplier supplier = () -> tryExecuteWithTrace(data, ((Supplier) arg)::get);
-                args[i] = supplier;
+                args[i] = getSupplier(data, (Supplier) arg);
             }
         }
+    }
+
+    private Supplier getSupplier(TraceContextData data, Supplier arg) {
+        return () -> tryExecuteWithTrace(data, arg::get);
+    }
+
+    private Callable getCallable(TraceContextData data, Callable arg) {
+        return () -> tryExecuteWithTrace(data, arg::call);
+    }
+
+    private Runnable getRunnable(TraceContextData data, Runnable arg) {
+        return () -> tryExecuteWithTrace(data, () -> {
+            arg.run();
+            return null;
+        });
     }
 
     private Object tryExecuteWithTrace(TraceContextData contextData, Callable task) {
