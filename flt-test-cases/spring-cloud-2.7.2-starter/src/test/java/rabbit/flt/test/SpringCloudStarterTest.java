@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import rabbit.flt.test.cases.BaseCases;
-import rabbit.flt.test.common.SpringBootEntry;
 import rabbit.flt.test.common.ignore.IgnorePackage;
 import rabbit.flt.test.common.service.IgnoreService;
 import rabbit.flt.test.starter.ClassProxyLogger;
@@ -16,7 +15,7 @@ import rabbit.flt.test.starter.ClassProxyLogger;
 public class SpringCloudStarterTest extends BaseCases {
 
     @Test
-    public void springBootTest() throws Exception {
+    public void springCloudStarterTest() throws Exception {
         mybatisPlusTest();
         pushStackTest();
         longTraceTest();
