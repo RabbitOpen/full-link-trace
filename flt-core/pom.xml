@@ -126,6 +126,7 @@
                                     <include>net.bytebuddy:byte-buddy-agent:jar:</include>
                                 </includes>
                             </artifactSet>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
