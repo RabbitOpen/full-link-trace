@@ -7,7 +7,7 @@ import rabbit.flt.plugins.common.matcher.SupportMatcher;
 import static net.bytebuddy.matcher.ElementMatchers.isPublic;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
-public class ServerHttpResponseMatcher extends SupportMatcher {
+public class ServerHttpResponseMatcher implements SupportMatcher {
 
     @Override
     public ElementMatcher.Junction<TypeDescription> classMatcher() {

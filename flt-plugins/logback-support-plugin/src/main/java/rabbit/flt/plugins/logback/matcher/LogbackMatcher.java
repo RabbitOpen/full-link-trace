@@ -6,7 +6,7 @@ import rabbit.flt.plugins.common.matcher.SupportMatcher;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
-public class LogbackMatcher extends SupportMatcher {
+public class LogbackMatcher implements SupportMatcher {
 
     @Override
     public ElementMatcher.Junction<TypeDescription> classMatcher() {

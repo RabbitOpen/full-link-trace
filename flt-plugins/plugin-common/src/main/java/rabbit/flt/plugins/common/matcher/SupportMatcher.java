@@ -5,5 +5,5 @@ import rabbit.flt.plugins.common.Matcher;
 /**
  * 服务支持类的matcher
  */
-public abstract class SupportMatcher implements Matcher {
+public interface SupportMatcher extends Matcher {
 }

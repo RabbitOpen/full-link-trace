@@ -9,7 +9,7 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
 /**
  * tk mybatis， mybatis plus 公共插件
  */
-public class MappedStatementSupportMatcher extends SupportMatcher {
+public class MappedStatementSupportMatcher implements SupportMatcher {
 
     @Override
     public ElementMatcher.Junction<TypeDescription> classMatcher() {

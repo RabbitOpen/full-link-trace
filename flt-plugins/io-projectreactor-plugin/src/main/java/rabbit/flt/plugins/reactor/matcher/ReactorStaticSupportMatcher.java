@@ -7,7 +7,7 @@ import rabbit.flt.plugins.common.matcher.SupportMatcher;
 import static net.bytebuddy.matcher.ElementMatchers.isStatic;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
-public class ReactorStaticSupportMatcher extends SupportMatcher {
+public class ReactorStaticSupportMatcher implements SupportMatcher {
 
     @Override
     public ElementMatcher.Junction<TypeDescription> classMatcher() {
