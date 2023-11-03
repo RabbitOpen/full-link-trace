@@ -105,7 +105,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <skip>${sonar.scan.ignore}</skip>
+                            <skip>${sonar.scan.skip}</skip>
                             <artifactSet>
                                 <includes>
                                     <include>rabbit.flt:*:jar:</include>
@@ -136,7 +136,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <skip>${shading.ignore}</skip>
+                            <skip>${shading.skip}</skip>
                             <artifactSet>
                                 <includes>
                                     <include>rabbit.flt:*:jar:</include>

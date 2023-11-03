@@ -24,10 +24,10 @@
         <spring.version>5.3.22</spring.version>
 
         <!--   是否执行shading操作，sonar扫描时忽略一切shading     -->
-        <shading.ignore>true</shading.ignore>
+        <shading.skip>true</shading.skip>
 
         <!--     sonar扫描专用   -->
-        <sonar.scan.ignore>false</sonar.scan.ignore>
+        <sonar.scan.skip>false</sonar.scan.skip>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -274,8 +274,8 @@
             <properties>
                 <sonar.host.url>http://localhost:9000</sonar.host.url>
                 <sonar.projectName>${project.artifactId}</sonar.projectName>
-                <shading.ignore>false</shading.ignore>
-                <sonar.scan.ignore>true</sonar.scan.ignore>
+                <shading.skip>false</shading.skip>
+                <sonar.scan.skip>true</sonar.scan.skip>
             </properties>
         </profile>
     </profiles>
