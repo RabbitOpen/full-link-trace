@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Map;
@@ -131,6 +132,8 @@ public class RequestDispatcher implements Registrar {
                     LockSupport.park(2L * 1000 * 1000);
                 }
             }
+        } catch (ClosedChannelException e) {
+            logger.warn("response[{}] error, client channel is closed!", data.getRequestId());
         } catch (Exception e) {
             logger.warn("response[{}] error: {}", data.getRequestId(), e.getMessage(), e);
         } finally {

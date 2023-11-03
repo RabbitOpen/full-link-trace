@@ -58,8 +58,9 @@ public class ContextManager {
             key.cancel();
             key.channel().close();
         } catch (Exception e) {
-            lock.unlock();
             logger.error(e.getMessage(), e);
+        } finally {
+            lock.unlock();
         }
     }
 

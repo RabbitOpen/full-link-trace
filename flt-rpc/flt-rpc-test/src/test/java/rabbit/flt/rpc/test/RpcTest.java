@@ -90,7 +90,7 @@ public class RpcTest {
         int port = 10001;
         String host = "localhost";
         Server server = ServerBuilder.builder()
-                .workerExecutor(NamedExecutor.fixedThreadsPool(1, "boss-executor-"))
+                .workerExecutor(NamedExecutor.fixedThreadsPool(1, "worker-executor-"))
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
