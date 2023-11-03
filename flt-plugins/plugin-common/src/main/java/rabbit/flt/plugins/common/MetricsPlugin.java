@@ -72,14 +72,22 @@ public abstract class MetricsPlugin {
             if (!isMetricsEnabled(config, task) || !isPrepared(config, task)) {
                 continue;
             }
-            if (inst.dataHandler.isMetricsEnabled(task.getMetricsType())) {
+            if (getMetricsDataHandler().isMetricsEnabled(task.getMetricsType())) {
                 // 远端允许上报才上报
                 Metrics metrics = task.getMetrics();
                 if (null != metrics) {
-                    task.handle(inst.dataHandler, metrics);
+                    task.handle(getMetricsDataHandler(), metrics);
                 }
             }
         }
+    }
+
+    /**
+     * 获取数据处理器
+     * @return
+     */
+    protected MetricsDataHandler getMetricsDataHandler() {
+        return inst.dataHandler;
     }
 
     /**
