@@ -203,7 +203,7 @@ public class Server extends AbstractServerChannel implements Registrar {
 
     @Override
     public void disconnected(SelectionKey selectionKey) {
-        // do nothing
+        contextManager.inActive(selectionKey);
     }
 
     @Override
