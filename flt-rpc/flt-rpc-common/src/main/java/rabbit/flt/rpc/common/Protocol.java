@@ -2,11 +2,8 @@ package rabbit.flt.rpc.common;
 
 import java.beans.Transient;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class Protocol<T> {
-
-    private static final transient AtomicLong counter = new AtomicLong(0);
 
     /**
      * 请求id
@@ -33,7 +30,7 @@ public class Protocol<T> {
     }
 
     public void increaseRequestId() {
-        setRequestId(counter.addAndGet(1L));
+        setRequestId(RequestCounter.nextId());
     }
 
     public long getRequestId() {
