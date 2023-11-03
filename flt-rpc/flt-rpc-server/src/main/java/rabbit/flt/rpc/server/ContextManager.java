@@ -3,6 +3,7 @@ package rabbit.flt.rpc.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rabbit.flt.rpc.common.Attributes;
 
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ContextManager {
 
@@ -46,13 +48,17 @@ public class ContextManager {
     }
 
     protected void closeKey(SelectionKey key) {
+        if (null == key) {
+            return;
+        }
+        Map<String, Object> attrs = (Map<String, Object>) key.attachment();
+        ReentrantLock lock = (ReentrantLock) attrs.get(Attributes.WRITE_LOCK);
         try {
-            if (null == key) {
-                return;
-            }
+            lock.lock();
             key.cancel();
             key.channel().close();
         } catch (Exception e) {
+            lock.unlock();
             logger.error(e.getMessage(), e);
         }
     }
