@@ -39,11 +39,11 @@ public class ReactorStaticSupportPlugin extends SupportPlugin {
                 args[i] = runnable;
             }
             if (arg instanceof Callable) {
-                Callable callable = () -> tryExecuteWithTrace(data, () -> ((Callable<?>) arg).call());
+                Callable callable = () -> tryExecuteWithTrace(data, ((Callable) arg)::call);
                 args[i] = callable;
             }
             if (arg instanceof Supplier) {
-                Supplier supplier = () -> tryExecuteWithTrace(data, () -> ((Supplier<?>) arg).get());
+                Supplier supplier = () -> tryExecuteWithTrace(data, ((Supplier) arg)::get);
                 args[i] = supplier;
             }
         }
