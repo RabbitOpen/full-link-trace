@@ -1,7 +1,5 @@
 package rabbit.flt.rpc.common.nio;
 
-import rabbit.flt.common.log.AgentLoggerFactory;
-import rabbit.flt.common.log.Logger;
 import rabbit.flt.common.utils.ResourceUtils;
 import rabbit.flt.rpc.common.RpcException;
 
@@ -10,8 +8,6 @@ import java.nio.channels.Selector;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class SelectorWrapper {
-
-    private Logger logger = AgentLoggerFactory.getLogger(getClass());
 
     private Selector selector;
 
