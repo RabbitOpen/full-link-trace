@@ -6,6 +6,7 @@ import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.utils.ResourceUtils;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -27,21 +28,27 @@ public class DefaultConfigFactory extends AbstractConfigFactory {
                 return;
             }
             String configFile = AbstractConfigFactory.getAgentConfigFile();
-            if (configFile.toLowerCase().startsWith(CLASS_PATH_PREFIX)) {
-                String filePath = configFile.substring(CLASS_PATH_PREFIX.length());
-                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
-            } else {
-                stream = new FileInputStream(configFile);
-            }
+            stream = getConfigResource(configFile);
             if (null == stream) {
                 throw new AgentException("[" + configFile + "] is not exist");
             }
             config = loadConfig(stream);
-        } catch (Exception e) {
-            throw new AgentException(e);
         } finally {
             ResourceUtils.close(stream);
             lock.unlock();
+        }
+    }
+
+    private InputStream getConfigResource(String configFile) {
+        if (configFile.toLowerCase().startsWith(CLASS_PATH_PREFIX)) {
+            String filePath = configFile.substring(CLASS_PATH_PREFIX.length());
+            return Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
+        } else {
+            try {
+                return  new FileInputStream(configFile);
+            } catch (FileNotFoundException e) {
+                return null;
+            }
         }
     }
 

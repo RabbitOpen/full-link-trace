@@ -45,14 +45,14 @@ public class ChannelProcessor extends Thread {
                     if (100 == emptyEpollCount) {
                         rebuildSelectorWhenEpollBugFound();
                     }
-                    continue;
-                }
-                emptyEpollCount = 0;
-                Iterator<SelectionKey> iterator = keys.iterator();
-                while (iterator.hasNext()) {
-                    SelectionKey selectionKey = iterator.next();
-                    iterator.remove();
-                    handleSelectionEvent(selectionKey);
+                } else {
+                    emptyEpollCount = 0;
+                    Iterator<SelectionKey> iterator = keys.iterator();
+                    while (iterator.hasNext()) {
+                        SelectionKey selectionKey = iterator.next();
+                        iterator.remove();
+                        handleSelectionEvent(selectionKey);
+                    }
                 }
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
