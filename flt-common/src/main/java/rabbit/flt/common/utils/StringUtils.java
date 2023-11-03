@@ -1,13 +1,11 @@
 package rabbit.flt.common.utils;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
-import java.io.IOException;
+import java.util.Base64;
 
 public class StringUtils {
 
-    private StringUtils() {}
+    private StringUtils() {
+    }
 
     public static boolean isEmpty(Object obj) {
         return null == obj || "".equals(obj.toString().trim());
@@ -24,7 +22,7 @@ public class StringUtils {
      * @return
      */
     public static String base64Encode(byte[] bytes) {
-        return new BASE64Encoder().encode(bytes);
+        return new String(Base64.getEncoder().encode(bytes));
     }
 
     /**
@@ -33,7 +31,7 @@ public class StringUtils {
      * @param data
      * @return
      */
-    public static byte[] base64Decode(String data) throws IOException {
-        return new BASE64Decoder().decodeBuffer(data);
+    public static byte[] base64Decode(String data) {
+        return Base64.getDecoder().decode(data);
     }
 }

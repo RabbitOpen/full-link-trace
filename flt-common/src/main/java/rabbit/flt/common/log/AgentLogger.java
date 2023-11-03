@@ -79,25 +79,41 @@ public class AgentLogger implements InvocationHandler {
         String result = StringUtils.toString(args[0]);
         for (int i = 1; i < args.length; i++) {
             if (args[i] instanceof Object[]) {
-                Object[] arr = (Object[]) args[i];
-                for (int j = 0; j < arr.length; j++) {
-                    String errorMsg = StringUtils.toString(arr[j]);
-                    if (arr[j] instanceof Exception) {
-                        result = result.concat(", ").concat(errorMsg);
-                    } else {
-                        result = result.replaceFirst("\\{\\}", Matcher.quoteReplacement(errorMsg));
-                    }
-                }
+                result = appendArrayParameter((Object[]) args[i], result);
             } else {
-                String errorMsg = StringUtils.toString(args[i]);
-                if (args[i] instanceof Exception) {
-                    result = result.concat(", ").concat(errorMsg);
-                } else {
-                    result = result.replaceFirst("\\{\\}", Matcher.quoteReplacement(errorMsg));
-                }
+                result = appendSimpleParameter(args[i], result);
             }
         }
         logWithConsole(result);
+    }
+
+    /**
+     * 整合简单参数
+     * @param args
+     * @param result
+     * @return
+     */
+    private String appendSimpleParameter(Object args, String result) {
+        String errorMsg = StringUtils.toString(args);
+        if (args instanceof Exception) {
+            result = result.concat(", ").concat(errorMsg);
+        } else {
+            result = result.replaceFirst("\\{\\}", Matcher.quoteReplacement(errorMsg));
+        }
+        return result;
+    }
+
+    /**
+     * 整合数组参数
+     * @param arr
+     * @param result
+     * @return
+     */
+    private String appendArrayParameter(Object[] arr, String result) {
+        for (int i = 0; i < arr.length; i++) {
+            result = appendSimpleParameter(arr[i], result);
+        }
+        return result;
     }
 
     /**
