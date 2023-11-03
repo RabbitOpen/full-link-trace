@@ -1,5 +1,7 @@
 package rabbit.flt.plugins.common.matcher;
 
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 import rabbit.flt.plugins.common.Matcher;
 
 /**
@@ -19,6 +21,11 @@ public abstract class FieldEnhanceMatcher implements Matcher {
      */
     public Class<?> getFieldTypeClass() {
         return Object.class;
+    }
+
+    @Override
+    public ElementMatcher.Junction methodMatcher(TypeDescription typeDescription) {
+        throw new UnsupportedOperationException();
     }
 
     /**
