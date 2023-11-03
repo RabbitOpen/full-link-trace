@@ -1,6 +1,7 @@
 package rabbit.flt.rpc.common;
 
-import java.beans.Transient;
+import com.esotericsoftware.kryo.serializers.FieldSerializer;
+
 import java.util.concurrent.Semaphore;
 
 public class Protocol<T> {
@@ -13,7 +14,8 @@ public class Protocol<T> {
     // 请求
     private T request;
 
-    private transient Semaphore semaphore;
+    @FieldSerializer.Optional("Protocol.semaphore")
+    private Semaphore semaphore;
 
     public Protocol() {
     }
@@ -24,7 +26,6 @@ public class Protocol<T> {
         this.semaphore = new Semaphore(0);
     }
 
-    @Transient
     public Semaphore getSemaphore() {
         return semaphore;
     }

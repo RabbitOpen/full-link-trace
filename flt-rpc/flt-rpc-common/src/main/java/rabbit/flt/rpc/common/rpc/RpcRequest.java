@@ -1,5 +1,6 @@
 package rabbit.flt.rpc.common.rpc;
 
+import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import rabbit.flt.rpc.common.Protocol;
 import rabbit.flt.rpc.common.Request;
 import rabbit.flt.rpc.common.RpcException;
@@ -18,15 +19,20 @@ public class RpcRequest extends Protocol<Request> {
     /**
      * 请求计数器
      */
-    private transient int counter = 0;
+    @FieldSerializer.Optional("RpcRequest.counter")
+    private int counter = 0;
 
     // 响应
     private RpcResponse response;
 
-    // 最大重试次数
-    private transient int maxRetryTimes;
+    /**
+     * 最大重试次数
+     */
+    @FieldSerializer.Optional("RpcRequest.maxRetryTimes")
+    private int maxRetryTimes;
 
-    private transient ResponseHolder<RpcResponse> responseHolder;
+    @FieldSerializer.Optional("RpcRequest.responseHolder")
+    private ResponseHolder<RpcResponse> responseHolder;
 
     public RpcRequest() {
         super(null);
