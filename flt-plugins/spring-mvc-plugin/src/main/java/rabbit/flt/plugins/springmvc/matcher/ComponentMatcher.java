@@ -7,7 +7,7 @@ import rabbit.flt.plugins.common.matcher.PerformanceMatcher;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
-public class ComponentMatcher extends PerformanceMatcher {
+public class ComponentMatcher implements PerformanceMatcher {
 
     @Override
     public ElementMatcher.Junction<TypeDescription> classMatcher() {
@@ -19,7 +19,8 @@ public class ComponentMatcher extends PerformanceMatcher {
 
     @Override
     public ElementMatcher.Junction methodMatcher(TypeDescription typeDescription) {
-        return super.methodMatcher(typeDescription).and(not(isAnnotatedWith(Traceable.class)));
+        return isPublic().and(not(named("toString").or(named("hashCode")).or(named("equal"))))
+                .and(not(isAnnotatedWith(Traceable.class)));
     }
 
     @Override

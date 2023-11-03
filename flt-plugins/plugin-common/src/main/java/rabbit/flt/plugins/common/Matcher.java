@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import static net.bytebuddy.matcher.ElementMatchers.*;
-
 /**
  * 匹配定义
  */
@@ -27,18 +25,18 @@ public interface Matcher {
      * @param typeDescription
      * @return
      */
-    default ElementMatcher.Junction methodMatcher(TypeDescription typeDescription) {
-        return isPublic().and(not(named("toString").or(named("hashCode")).or(named("equal"))));
-    }
+    ElementMatcher.Junction methodMatcher(TypeDescription typeDescription);
 
     /**
      * 插件class名
+     *
      * @return
      */
     String getPluginClassName();
 
     /**
      * 获取已经定义的matcher
+     *
      * @return
      */
     static List<Matcher> loadMatchers() {

@@ -1,10 +1,10 @@
 package rabbit.flt.plugins.common.plugin;
 
-import rabbit.flt.plugins.common.Plugin;
+import rabbit.flt.plugins.common.AbstractPlugin;
 
 import java.lang.reflect.Method;
 
-public abstract class ConstructorPlugin extends Plugin {
+public abstract class ConstructorPlugin extends AbstractPlugin {
 
     @Override
     public Object[] before(Object objectEnhanced, Method method, Object[] args) {

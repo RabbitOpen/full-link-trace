@@ -2,7 +2,7 @@ package rabbit.flt.plugins.common.plugin;
 
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.common.trace.TraceData;
-import rabbit.flt.plugins.common.Plugin;
+import rabbit.flt.plugins.common.AbstractPlugin;
 
 import java.lang.reflect.Method;
 
@@ -11,7 +11,7 @@ import static rabbit.flt.common.trace.MessageType.METHOD;
 /**
  * 性能插件，统计开销
  */
-public class PerformancePlugin extends Plugin {
+public class PerformancePlugin extends AbstractPlugin {
 
     @Override
     protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) {

@@ -7,7 +7,7 @@ import rabbit.flt.plugins.common.matcher.ConstructorMatcher;
 import static net.bytebuddy.matcher.ElementMatchers.any;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
-public class ReactorConstructorEnhanceMatcher extends ConstructorMatcher {
+public class ReactorConstructorEnhanceMatcher implements ConstructorMatcher {
 
     @Override
     public ElementMatcher.Junction<TypeDescription> classMatcher() {

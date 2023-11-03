@@ -7,7 +7,7 @@ import rabbit.flt.plugins.common.matcher.PerformanceMatcher;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
-public class TraceableMatcher extends PerformanceMatcher {
+public class TraceableMatcher implements PerformanceMatcher {
 
     @Override
     public ElementMatcher.Junction<TypeDescription> classMatcher() {

@@ -1,13 +1,13 @@
 package rabbit.flt.plugins.common.plugin;
 
-import rabbit.flt.plugins.common.Plugin;
+import rabbit.flt.plugins.common.AbstractPlugin;
 
 import java.lang.reflect.Method;
 
 /**
  * 支持插件
  */
-public abstract class SupportPlugin extends Plugin {
+public abstract class SupportPlugin extends AbstractPlugin {
 
     @Override
     public Object[] before(Object objectEnhanced, Method method, Object[] args) {

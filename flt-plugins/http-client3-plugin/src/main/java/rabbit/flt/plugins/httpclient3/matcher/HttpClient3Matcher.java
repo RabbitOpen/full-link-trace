@@ -7,7 +7,7 @@ import rabbit.flt.plugins.common.matcher.PerformanceMatcher;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 
-public class HttpClient3Matcher extends PerformanceMatcher {
+public class HttpClient3Matcher implements PerformanceMatcher {
     @Override
     public ElementMatcher.Junction<TypeDescription> classMatcher() {
         return named("org.apache.commons.httpclient.HttpClient");

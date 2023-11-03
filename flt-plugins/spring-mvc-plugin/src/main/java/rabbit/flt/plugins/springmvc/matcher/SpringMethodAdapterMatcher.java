@@ -7,7 +7,7 @@ import rabbit.flt.plugins.common.matcher.PerformanceMatcher;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 
-public class SpringMethodAdapterMatcher extends PerformanceMatcher {
+public class SpringMethodAdapterMatcher implements PerformanceMatcher {
 
     @Override
     public ElementMatcher.Junction<TypeDescription> classMatcher() {

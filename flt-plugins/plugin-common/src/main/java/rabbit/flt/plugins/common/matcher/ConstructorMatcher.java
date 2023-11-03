@@ -5,5 +5,5 @@ import rabbit.flt.plugins.common.Matcher;
 /**
  * 构造函数匹配
  */
-public abstract class ConstructorMatcher implements Matcher {
+public interface ConstructorMatcher extends Matcher {
 }
