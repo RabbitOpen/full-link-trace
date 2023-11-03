@@ -207,13 +207,18 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
                 selectionKey.cancel();
             }
             getWrapper().addHookJob(() -> {
-                socketChannel = SocketChannel.open();
-                socketChannel.configureBlocking(false);
-                Map<String, Object> attr = new ConcurrentHashMap<>();
-                attr.put(NIO_CLIENT, this);
-                selectionKey = socketChannel.register(selectorWrapper.getSelector(),
-                        SelectionKey.OP_CONNECT, attr);
-                socketChannel.connect(new InetSocketAddress(serverNode.getHost(), serverNode.getPort()));
+                try {
+                    socketChannel = SocketChannel.open();
+                    socketChannel.configureBlocking(false);
+                    Map<String, Object> attr = new ConcurrentHashMap<>();
+                    attr.put(NIO_CLIENT, this);
+                    selectionKey = socketChannel.register(selectorWrapper.getSelector(),
+                            SelectionKey.OP_CONNECT, attr);
+                    socketChannel.connect(new InetSocketAddress(serverNode.getHost(), serverNode.getPort()));
+                } catch (Exception e) {
+                    // 连接失败回置状态
+                    setChannelStatus(INIT);
+                }
             });
             setChannelStatus(CONNECTING);
         } finally {
@@ -294,6 +299,8 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
             if (null != socketChannel) {
                 close(socketChannel);
                 socketChannel = null;
+            }
+            if (null != selectionKey) {
                 selectionKey.cancel();
             }
             clearSignals();

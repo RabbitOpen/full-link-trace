@@ -3,7 +3,6 @@ package rabbit.flt.rpc.common.nio;
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
 import rabbit.flt.common.utils.ResourceUtils;
-import rabbit.flt.rpc.common.Hook;
 import rabbit.flt.rpc.common.RpcException;
 
 import java.io.IOException;
@@ -19,7 +18,7 @@ public class SelectorWrapper {
     /**
      * 回调任务队列
      */
-    private ArrayBlockingQueue<Hook> hooks = new ArrayBlockingQueue<>(1024);
+    private ArrayBlockingQueue<Runnable> hooks = new ArrayBlockingQueue<>(1024);
 
     public SelectorWrapper() {
         try {
@@ -33,7 +32,7 @@ public class SelectorWrapper {
      * 添加hook，然后换新selector
      * @param hook
      */
-    public void addHookJob(Hook hook) {
+    public void addHookJob(Runnable hook) {
         this.hooks.add(hook);
         wakeup();
     }
@@ -43,15 +42,11 @@ public class SelectorWrapper {
      */
     public void executeHooks() {
         while (true) {
-            Hook hook = hooks.poll();
+            Runnable hook = hooks.poll();
             if (null == hook) {
                 return;
             }
-            try {
-                hook.run();
-            } catch (Exception t) {
-                logger.error(t.getMessage(), t);
-            }
+            hook.run();
         }
     }
 

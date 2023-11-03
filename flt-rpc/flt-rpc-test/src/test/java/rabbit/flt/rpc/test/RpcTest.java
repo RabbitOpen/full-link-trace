@@ -357,11 +357,15 @@ public class RpcTest {
                 for (int j = 0; j < times; j++) {
                     if (100 == j) {
                         resourcePool.getWrapper().addHookJob(() -> {
-                            Field processorField = ChannelResourcePool.class.getDeclaredField("channelProcessor");
-                            Object processor = ReflectUtils.getValue(resourcePool, processorField);
-                            Method method = processor.getClass().getDeclaredMethod("rebuildSelectorWhenEpollBugFound");
-                            method.setAccessible(true);
-                            method.invoke(processor);
+                            try {
+                                Field processorField = ChannelResourcePool.class.getDeclaredField("channelProcessor");
+                                Object processor = ReflectUtils.getValue(resourcePool, processorField);
+                                Method method = processor.getClass().getDeclaredMethod("rebuildSelectorWhenEpollBugFound");
+                                method.setAccessible(true);
+                                method.invoke(processor);
+                            } catch (Exception e) {
+                                logger.error(e.getMessage(), e);
+                            }
                         });
                     }
                     TestCase.assertEquals("name" + j + "001", userService.getName("name" + j));
