@@ -20,7 +20,7 @@ public abstract class DataHandler {
     /**
      * 全局唯一
      */
-    private static final AgentRequestFactory requestFactory = new AgentRequestFactory();
+    private static final FltRequestFactory requestFactory = new FltRequestFactory();
 
     private DataService dataService;
 

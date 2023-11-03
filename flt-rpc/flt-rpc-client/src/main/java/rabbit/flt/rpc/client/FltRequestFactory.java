@@ -3,7 +3,7 @@ package rabbit.flt.rpc.client;
 import rabbit.flt.rpc.client.pool.PoolConfig;
 import rabbit.flt.rpc.client.pool.SecureChannelResourcePool;
 
-public class AgentRequestFactory extends RequestFactory {
+public class FltRequestFactory extends RequestFactory {
 
     private SecureChannelResourcePool resourcePool = new SecureChannelResourcePool();
 
