@@ -268,16 +268,6 @@
                 <sonar.projectName>${project.artifactId}</sonar.projectName>
             </properties>
         </profile>
-
-        <profile>
-            <id>deploy</id>
-            <properties>
-                <sonar.host.url>http://localhost:9000</sonar.host.url>
-                <sonar.projectName>${project.artifactId}</sonar.projectName>
-                <shading.skip>false</shading.skip>
-                <sonar.scan.skip>true</sonar.scan.skip>
-            </properties>
-        </profile>
     </profiles>
 
     <build>
