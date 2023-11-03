@@ -96,20 +96,20 @@ public class AgentLogger implements InvocationHandler {
     private String appendSimpleParameter(Object args, String result) {
         String errorMsg = StringUtils.toString(args);
         if (args instanceof Exception) {
-            result = result.concat(", ").concat(errorMsg);
+            return result.concat(", ").concat(errorMsg);
         } else {
-            result = result.replaceFirst("\\{\\}", Matcher.quoteReplacement(errorMsg));
+            return result.replaceFirst("\\{\\}", Matcher.quoteReplacement(errorMsg));
         }
-        return result;
     }
 
     /**
      * 整合数组参数
      * @param arr
-     * @param result
+     * @param data
      * @return
      */
-    private String appendArrayParameter(Object[] arr, String result) {
+    private String appendArrayParameter(Object[] arr, String data) {
+        String result = data;
         for (int i = 0; i < arr.length; i++) {
             result = appendSimpleParameter(arr[i], result);
         }
