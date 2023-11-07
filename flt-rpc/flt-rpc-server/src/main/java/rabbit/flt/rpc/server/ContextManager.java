@@ -4,7 +4,6 @@ package rabbit.flt.rpc.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rabbit.flt.rpc.common.Attributes;
-import rabbit.flt.rpc.common.Serializer;
 
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
