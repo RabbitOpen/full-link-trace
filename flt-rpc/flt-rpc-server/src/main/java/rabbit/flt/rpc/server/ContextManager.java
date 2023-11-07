@@ -56,7 +56,7 @@ public class ContextManager {
             return;
         }
         Map<String, Object> attrs = (Map<String, Object>) key.attachment();
-        ReentrantLock lock = (ReentrantLock) attrs.get(Attributes.WRITE_LOCK);
+        ReentrantLock lock = getLock(attrs);
         try {
             lock.lock();
             server.getClientEventHandler().onClientClosed(key);
@@ -67,6 +67,14 @@ public class ContextManager {
         } finally {
             lock.unlock();
         }
+    }
+
+    private ReentrantLock getLock(Map<String, Object> attrs) {
+        if (null == attrs) {
+            // epoll bug 重置时 attrs可能为空
+            return new ReentrantLock();
+        }
+        return (ReentrantLock) attrs.get(Attributes.WRITE_LOCK);
     }
 
     private SocketAddress getRemoteAddress(SelectionKey key) {
