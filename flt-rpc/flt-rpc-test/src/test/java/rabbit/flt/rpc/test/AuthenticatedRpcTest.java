@@ -17,7 +17,6 @@ import rabbit.flt.rpc.common.rpc.ProtocolService;
 import rabbit.flt.rpc.server.Server;
 import rabbit.flt.rpc.server.ServerBuilder;
 
-import java.io.IOException;
 import java.net.StandardSocketOptions;
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +25,7 @@ import java.util.List;
 public class AuthenticatedRpcTest {
 
     @Test
-    public void authenticatedRpcTest() throws IOException {
+    public void authenticatedRpcTest() {
         int port = 10002;
         String host = "localhost";
         Server server = ServerBuilder.builder()
