@@ -31,6 +31,7 @@ import rabbit.flt.rpc.common.rpc.Authentication;
 import rabbit.flt.rpc.common.rpc.DataService;
 import rabbit.flt.rpc.common.rpc.KeepAlive;
 import rabbit.flt.rpc.common.rpc.ProtocolService;
+import rabbit.flt.rpc.server.ClientEventHandler;
 import rabbit.flt.rpc.server.Server;
 import rabbit.flt.rpc.server.ServerBuilder;
 
@@ -101,6 +102,8 @@ public class RpcTest {
                 })
                 .registerHandler(UserService.class, name -> name + "001")
                 .maxFrameLength(16 * 1024 * 1024)
+                .maxIdleSeconds(300)
+                .clientEventHandler(new ClientEventHandler() {})
                 .maxPendingConnections(1000)
                 .build();
 
@@ -143,7 +146,9 @@ public class RpcTest {
                 .bossThreadCount(1)
                 .password("1234567f1234567f")
                 .connectionsPerServer(1)
+                .maxRetryTime(0)
                 .acquireClientTimeoutSeconds(3)
+                .keepAliveIntervalSeconds(10)
                 .rpcRequestTimeoutSeconds(2)
                 .serverNodes(Arrays.asList(new ServerNode(host, port), new ServerNode(host, port + 4)))
                 .build());

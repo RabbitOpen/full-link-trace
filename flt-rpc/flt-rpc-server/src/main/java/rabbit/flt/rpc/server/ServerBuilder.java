@@ -113,6 +113,30 @@ public class ServerBuilder {
         return this;
     }
 
+    /**
+     * 最大空闲时间
+     * @param maxIdleSeconds
+     * @return
+     */
+    public ServerBuilder maxIdleSeconds(int maxIdleSeconds) {
+        operations.add(s -> s.setMaxIdleSeconds(maxIdleSeconds));
+        return this;
+    }
+
+    /**
+     * 设置客户端事件处理器
+     * @param clientEventHandler
+     * @return
+     */
+    public ServerBuilder clientEventHandler(ClientEventHandler clientEventHandler) {
+        operations.add(s -> s.setClientEventHandler(clientEventHandler));
+        return this;
+    }
+
+    /**
+     * 新建builder
+     * @return
+     */
     public static ServerBuilder builder() {
         return new ServerBuilder();
     }

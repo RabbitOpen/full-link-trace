@@ -4,6 +4,7 @@ package rabbit.flt.rpc.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rabbit.flt.rpc.common.Attributes;
+import rabbit.flt.rpc.common.Serializer;
 
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
@@ -24,7 +25,10 @@ public class ContextManager {
 
     private Semaphore quit = new Semaphore(0);
 
-    protected ContextManager() {
+    private Server server;
+
+    protected ContextManager(Server server) {
+        this.server = server;
         monitor = new Thread(() -> {
             while (true) {
                 try {
@@ -32,7 +36,8 @@ public class ContextManager {
                         break;
                     }
                     selectionKeyCache.forEach((key, lastActiveTime) -> {
-                        if (System.currentTimeMillis() - lastActiveTime > 5 * 60 * 1000) {
+                        long maxIdleTime = server.getMaxIdleSeconds() * 1000L;
+                        if (System.currentTimeMillis() - lastActiveTime > maxIdleTime) {
                             logger.info("close dead client: {}", getRemoteAddress(key));
                             selectionKeyCache.remove(key);
                             closeKey(key);
@@ -55,6 +60,7 @@ public class ContextManager {
         ReentrantLock lock = (ReentrantLock) attrs.get(Attributes.WRITE_LOCK);
         try {
             lock.lock();
+            server.getClientEventHandler().onClientClosed(key);
             key.cancel();
             key.channel().close();
         } catch (Exception e) {

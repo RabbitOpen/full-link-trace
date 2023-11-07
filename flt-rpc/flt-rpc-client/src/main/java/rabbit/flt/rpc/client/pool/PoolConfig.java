@@ -50,6 +50,11 @@ public class PoolConfig {
 
     private String password;
 
+    /**
+     * 心跳间隔
+     */
+    private int keepAliveIntervalSeconds = 30;
+
     public int getBossThreadCount() {
         return bossThreadCount;
     }
@@ -145,5 +150,13 @@ public class PoolConfig {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getKeepAliveIntervalSeconds() {
+        return keepAliveIntervalSeconds;
+    }
+
+    public void setKeepAliveIntervalSeconds(int keepAliveIntervalSeconds) {
+        this.keepAliveIntervalSeconds = keepAliveIntervalSeconds;
     }
 }

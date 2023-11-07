@@ -74,6 +74,11 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
     private long lastConnectTime = 0L;
 
     /**
+     * 心跳间隔
+     */
+    private int keepAliveIntervalSeconds = 30;
+
+    /**
      * 构建函数
      *
      * @param pool
@@ -83,6 +88,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
         this(pool.getWorkerExecutor(), pool.getBossExecutor(), serverNode, pool.getResourceGuard(),
                 pool.getWrapper(), pool.getPoolConfig().getRpcRequestTimeoutSeconds());
         this.callbackExecutor = pool.getCallbackExecutor();
+        this.keepAliveIntervalSeconds = pool.getPoolConfig().getKeepAliveIntervalSeconds();
         this.channelListener = pool.getPoolConfig().getChannelListener();
     }
 
@@ -327,7 +333,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
 
     @Override
     public void keepAlive() {
-        if (System.currentTimeMillis() - lastKeepAliveTime < 30L * 1000) {
+        if (System.currentTimeMillis() - lastKeepAliveTime < keepAliveIntervalSeconds * 1000L) {
             return;
         }
         lastKeepAliveTime = System.currentTimeMillis();

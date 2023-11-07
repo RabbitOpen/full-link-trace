@@ -60,6 +60,18 @@ public class Server extends AbstractServerChannel implements Registrar {
 
     private boolean started = false;
 
+    /**
+     * 最大空闲时间
+     */
+    private int maxIdleSeconds = 5 * 60;
+
+    /**
+     * 客户端事件处理器
+     */
+    private ClientEventHandler clientEventHandler = new ClientEventHandler() {
+        // do nothing
+    };
+
     protected Server() {
         // 注册认证，默认通过
         register(Authentication.class, (applicationCode, signature) -> {
@@ -82,7 +94,7 @@ public class Server extends AbstractServerChannel implements Registrar {
             throw new RpcException("illegal status error, server is started!");
         }
         started = true;
-        contextManager = new ContextManager();
+        contextManager = new ContextManager(this);
         selectorWrapper = new SelectorWrapper();
         serverSocketChannel = ServerSocketChannel.open();
         for (SocketOptionPair optionPair : socketOptionPairs) {
@@ -166,13 +178,7 @@ public class Server extends AbstractServerChannel implements Registrar {
 
     @Override
     protected void onClientConnected(SelectionKey selectionKey) {
-        try {
-            SocketAddress remoteAddress = ((SocketChannel) selectionKey.channel()).getRemoteAddress();
-            logger.info("client[{}] is connected!", remoteAddress);
-        } catch (IOException e) {
-            // ignore
-        }
-
+        getClientEventHandler().onClientConnected(selectionKey);
     }
 
     @Override
@@ -231,5 +237,21 @@ public class Server extends AbstractServerChannel implements Registrar {
 
     public RequestDispatcher getRequestDispatcher() {
         return requestDispatcher;
+    }
+
+    public int getMaxIdleSeconds() {
+        return maxIdleSeconds;
+    }
+
+    public void setMaxIdleSeconds(int maxIdleSeconds) {
+        this.maxIdleSeconds = maxIdleSeconds;
+    }
+
+    public ClientEventHandler getClientEventHandler() {
+        return clientEventHandler;
+    }
+
+    public void setClientEventHandler(ClientEventHandler clientEventHandler) {
+        this.clientEventHandler = clientEventHandler;
     }
 }

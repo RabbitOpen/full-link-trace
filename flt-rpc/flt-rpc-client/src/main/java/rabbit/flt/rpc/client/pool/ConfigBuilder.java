@@ -115,4 +115,14 @@ public class ConfigBuilder {
         operations.add(c -> c.setConnectionsPerServer(connectionsPerServer));
         return this;
     }
+
+    /**
+     * 设置心跳间隔
+     * @param keepAliveIntervalSeconds
+     * @return
+     */
+    public ConfigBuilder keepAliveIntervalSeconds(int keepAliveIntervalSeconds) {
+        operations.add(c -> c.setKeepAliveIntervalSeconds(keepAliveIntervalSeconds));
+        return this;
+    }
 }

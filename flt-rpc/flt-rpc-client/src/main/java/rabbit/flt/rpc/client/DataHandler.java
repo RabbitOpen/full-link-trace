@@ -71,6 +71,7 @@ public abstract class DataHandler {
                 .rpcRequestTimeoutSeconds(config.getRpcRequestTimeoutSeconds())
                 .connectionsPerServer(config.getMaxReportConnections())
                 .applicationCode(config.getApplicationCode())
+                .maxRetryTime(0)
                 .password(config.getSecurityKey())
                 .build());
         return requestFactory.proxy(clz);
