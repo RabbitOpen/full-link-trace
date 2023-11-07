@@ -87,30 +87,34 @@ public class Server extends AbstractServerChannel implements Registrar {
      * @return
      * @throws IOException
      */
-    public synchronized Server start() throws IOException {
+    public synchronized Server start() {
         if (started) {
             throw new RpcException("illegal status error, server is started!");
         }
-        started = true;
-        contextManager = new ContextManager(this);
-        selectorWrapper = new SelectorWrapper();
-        serverSocketChannel = ServerSocketChannel.open();
-        for (SocketOptionPair optionPair : socketOptionPairs) {
-            serverSocketChannel.setOption(optionPair.getKey(), optionPair.getValue());
+        try {
+            started = true;
+            contextManager = new ContextManager(this);
+            selectorWrapper = new SelectorWrapper();
+            serverSocketChannel = ServerSocketChannel.open();
+            for (SocketOptionPair optionPair : socketOptionPairs) {
+                serverSocketChannel.setOption(optionPair.getKey(), optionPair.getValue());
+            }
+            serverSocketChannel.configureBlocking(false);
+            serverSocketChannel.bind(new InetSocketAddress(getHost(), port), maxPendingConnections);
+            serverSocketChannel.register(getWrapper().getSelector(), SelectionKey.OP_ACCEPT);
+            processor = new ChannelProcessor(selectorWrapper, this);
+            processor.start();
+            if (null == workerExecutor) {
+                workerExecutor = NamedExecutor.fixedThreadsPool(this.workerThreadCount, "worker-executor-");
+            }
+            if (null == bossExecutor) {
+                bossExecutor = NamedExecutor.fixedThreadsPool(this.bossThreadCount, "boss-executor-");
+            }
+            logger.info("server is started");
+            return this;
+        } catch (Exception e) {
+            throw new RpcException(e);
         }
-        serverSocketChannel.configureBlocking(false);
-        serverSocketChannel.bind(new InetSocketAddress(getHost(), port), maxPendingConnections);
-        serverSocketChannel.register(getWrapper().getSelector(), SelectionKey.OP_ACCEPT);
-        processor = new ChannelProcessor(selectorWrapper, this);
-        processor.start();
-        if (null == workerExecutor) {
-            workerExecutor = NamedExecutor.fixedThreadsPool(this.workerThreadCount, "worker-executor-");
-        }
-        if (null == bossExecutor) {
-            bossExecutor = NamedExecutor.fixedThreadsPool(this.bossThreadCount, "boss-executor-");
-        }
-        logger.info("server is started");
-        return this;
     }
 
     @Override
