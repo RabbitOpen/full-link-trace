@@ -91,8 +91,8 @@ public class RpcRequest extends Protocol<Request> {
     }
 
     private String getReturnTypeName() {
-        Request request = getRequest();
         try {
+            Request request = getRequest();
             return request.getInterfaceClz().getDeclaredMethod(request.getMethodName(),
                     request.getParameterTypes()).getReturnType().getName();
         } catch (Exception e) {
