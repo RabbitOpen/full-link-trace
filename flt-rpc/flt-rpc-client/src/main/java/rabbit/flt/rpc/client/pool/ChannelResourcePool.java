@@ -282,13 +282,13 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
     @Override
     public <T> T doRequest(RpcRequest request, int timeoutSeconds) {
         if (request.isMonoRequest()) {
-            return doAsyncRequest(request, timeoutSeconds);
+            return (T) doAsyncRequest(request, timeoutSeconds);
         } else {
-            return doSyncRequest(request, timeoutSeconds);
+            return (T) doSyncRequest(request, timeoutSeconds);
         }
     }
 
-    private <T> T doSyncRequest(RpcRequest request, int timeoutSeconds) {
+    private Object doSyncRequest(RpcRequest request, int timeoutSeconds) {
         try {
             request.increase();
             long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;
@@ -303,8 +303,8 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
         }
     }
 
-    private <T> T doAsyncRequest(RpcRequest request, int timeoutSeconds) {
-        return (T) Mono.defer(() -> {
+    private Object doAsyncRequest(RpcRequest request, int timeoutSeconds) {
+        return Mono.defer(() -> {
             request.increase();
             long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;
             return getClient(timeoutMills).doRequest(request, timeoutSeconds);
