@@ -33,7 +33,7 @@ public abstract class RequestFactory implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) {
         String methodName = method.getName();
         if ("toString".equals(methodName)) {
             return "proxyInterface";

@@ -54,7 +54,7 @@ public class RpcRequest extends Protocol<Request> {
      * @return
      */
     public final Object getResponse(int timeoutSeconds, Runnable finalCallback) {
-        if ("reactor.core.publisher.Mono".equals(getReturnTypeName())) {
+        if (isMonoRequest()) {
             return Mono.create(responseHolder).map(resp -> {
                 try {
                     return readResponseData(resp);
@@ -72,6 +72,10 @@ public class RpcRequest extends Protocol<Request> {
         } finally {
             finalCallback.run();
         }
+    }
+
+    public boolean isMonoRequest() {
+        return "reactor.core.publisher.Mono".equals(getReturnTypeName());
     }
 
     private <T> T readResponseData(RpcResponse response) {
