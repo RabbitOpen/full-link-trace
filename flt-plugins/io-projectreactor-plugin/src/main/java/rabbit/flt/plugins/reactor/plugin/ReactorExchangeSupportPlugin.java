@@ -39,11 +39,11 @@ public class ReactorExchangeSupportPlugin extends SupportPlugin {
 
     private Function createExchangeFunction(Object target, TraceContextData holderData, Function mapFunc) {
         return t -> {
-            boolean noTrace = tryOpenTrace(target, holderData);
+            boolean opened = tryOpenTrace(target, holderData);
             try {
                 return mapFunc.apply(t);
             } finally {
-                if (noTrace && TraceContext.isTraceOpenedBy(target)) {
+                if (opened && TraceContext.isTraceOpenedBy(target)) {
                     TraceContext.clearContext();
                 }
             }
@@ -51,17 +51,16 @@ public class ReactorExchangeSupportPlugin extends SupportPlugin {
     }
 
     private boolean tryOpenTrace(Object target, TraceContextData holderData) {
-        boolean noTrace = false;
         if (!TraceContext.isTraceOpened()) {
-            noTrace = true;
             // 传递值
             TraceContext.openTrace(target);
             TraceContext.setTraceId(holderData.getTraceId());
             TraceContext.initRootSpanId(holderData.getRootSpanId());
             TraceContext.setSpanIdChildCounter(holderData.getRootSpanId(), holderData.getSpanIdCounter());
             TraceContext.setWebTraceDataContextData(holderData.getWebTraceDataContext());
+            return true;
         }
-        return noTrace;
+        return false;
     }
 
     private BiConsumer createExchangeConsumer(Object target, TraceContextData holderData, BiConsumer mapFunc) {
