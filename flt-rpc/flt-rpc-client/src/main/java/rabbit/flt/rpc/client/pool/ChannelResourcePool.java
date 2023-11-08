@@ -282,35 +282,43 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
     @Override
     public <T> T doRequest(RpcRequest request, int timeoutSeconds) {
         if (request.isMonoRequest()) {
-            return (T) Mono.defer(() -> {
-                request.increase();
-                long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;
-                return getClient(timeoutMills).doRequest(request, timeoutSeconds);
-            }).onErrorResume(e -> {
-                if (e instanceof NoPreparedClientException || e instanceof UnRegisteredHandlerException
-                        || e instanceof AuthenticationException || e instanceof RpcTimeoutException) {
-                    return Mono.error(e);
-                } else {
-                    if (request.getCounter() > request.getMaxRetryTimes()) {
-                        return Mono.error(e);
-                    }
-                    return doRequest(request, timeoutSeconds);
-                }
-            });
+            return doAsyncRequest(request, timeoutSeconds);
         } else {
-            try {
-                request.increase();
-                long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;
-                return getClient(timeoutMills).doRequest(request, timeoutSeconds);
-            } catch (NoPreparedClientException | UnRegisteredHandlerException | AuthenticationException | RpcTimeoutException e) {
+            return doSyncRequest(request, timeoutSeconds);
+        }
+    }
+
+    private <T> T doSyncRequest(RpcRequest request, int timeoutSeconds) {
+        try {
+            request.increase();
+            long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;
+            return getClient(timeoutMills).doRequest(request, timeoutSeconds);
+        } catch (NoPreparedClientException | UnRegisteredHandlerException | AuthenticationException | RpcTimeoutException e) {
+            throw e;
+        } catch (RpcException e) {
+            if (request.getCounter() > request.getMaxRetryTimes()) {
                 throw e;
-            } catch (RpcException e) {
+            }
+            return doRequest(request, timeoutSeconds);
+        }
+    }
+
+    private <T> T doAsyncRequest(RpcRequest request, int timeoutSeconds) {
+        return (T) Mono.defer(() -> {
+            request.increase();
+            long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;
+            return getClient(timeoutMills).doRequest(request, timeoutSeconds);
+        }).onErrorResume(e -> {
+            if (e instanceof NoPreparedClientException || e instanceof UnRegisteredHandlerException
+                    || e instanceof AuthenticationException || e instanceof RpcTimeoutException) {
+                return Mono.error(e);
+            } else {
                 if (request.getCounter() > request.getMaxRetryTimes()) {
-                    throw e;
+                    return Mono.error(e);
                 }
                 return doRequest(request, timeoutSeconds);
             }
-        }
+        });
     }
 
     @Override
