@@ -76,8 +76,8 @@ public abstract class AbstractPlugin implements Plugin {
             return;
         }
         TraceData traceData = stackInfo.getTraceData();
-        fillTraceData(traceData, objectEnhanced, method, args, result);
         if (stackInfo.isPopped()) {
+            fillTraceData(traceData, objectEnhanced, method, args, result);
             handleTraceData(traceData);
         }
     }
@@ -139,6 +139,7 @@ public abstract class AbstractPlugin implements Plugin {
 
     /**
      * 处理trace数据
+     *
      * @param traceData
      */
     protected void handleTraceData(TraceData traceData) {
