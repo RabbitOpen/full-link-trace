@@ -62,41 +62,65 @@ public class RequestDispatcher implements Registrar {
         try {
             keyHolder.set(key);
             requestHolder.set(request);
-            callBizMethod(request, response);
-            response.setSuccess(true);
+            Object result = callBizMethod(request);
+            if (hasMono && (result instanceof Mono)) {
+                handleMonoResponse(key, response, (Mono) result);
+            } else {
+                response.setData(result);
+                response.setSuccess(true);
+                write(key, response);
+            }
         } catch (AuthenticationException e) {
             response.setSuccess(false);
             response.setCode(ResponseCode.UN_AUTHENTICATED);
             response.setMsg(e.getMessage());
+            write(key, response);
         } catch (Throwable e) {
             logger.warn(e.getMessage());
             response.setSuccess(false);
             response.setMsg(e.getMessage());
             response.setCode(ResponseCode.FAILED);
+            write(key, response);
         } finally {
             keyHolder.remove();
             requestHolder.remove();
         }
-        write(key, response);
+    }
+
+    /**
+     * 处理异步响应
+     * @param key
+     * @param response
+     * @param result
+     */
+    private void handleMonoResponse(SelectionKey key, RpcResponse<Object> response, Mono result) {
+        result.map(d -> {
+            response.setData(d);
+            response.setSuccess(true);
+            write(key, response);
+            return d;
+        }).onErrorResume(e -> {
+            Throwable t = (Throwable) e;
+            logger.warn(t.getMessage());
+            response.setSuccess(false);
+            response.setMsg(t.getMessage());
+            response.setCode(ResponseCode.FAILED);
+            write(key, response);
+            return Mono.empty();
+        }).subscribe();
     }
 
     /**
      * 调业务方法
      *
      * @param request
-     * @param response
      * @throws Throwable
      */
-    private void callBizMethod(Request request, RpcResponse response) throws Throwable {
+    private Object callBizMethod(Request request) throws Throwable {
         try {
             Method method = request.getInterfaceClz().getDeclaredMethod(request.getMethodName(), request.getParameterTypes());
             Object handler = this.handlerCache.get(request.getInterfaceClz());
-            Object data = method.invoke(handler, request.getParameters());
-            if (hasMono && (data instanceof Mono)) {
-                response.setData(((Mono) data).block());
-            } else {
-                response.setData(data);
-            }
+            return method.invoke(handler, request.getParameters());
         } catch (InvocationTargetException e) {
             throw e.getCause();
         }

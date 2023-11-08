@@ -40,12 +40,7 @@ public class MonoRpcTest {
                 .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
                 .build();
-        server.getRequestDispatcher().registerDirectly(MonoUserService.class, new MonoUserService() {
-            @Override
-            public Mono<String> getUserName() {
-                return Mono.just("abc");
-            }
-        }).registerDirectly(ProtocolService.class, new ProtocolService() {
+        server.getRequestDispatcher().registerDirectly(MonoUserService.class, (MonoUserService) () -> Mono.just("abc")).registerDirectly(ProtocolService.class, new ProtocolService() {
             @Override
             public List<ServerNode> getServerNodes() {
                 return Arrays.asList(new ServerNode(host, port));
@@ -95,4 +90,5 @@ public class MonoRpcTest {
         server.close();
         resourcePool.close();
     }
+
 }
