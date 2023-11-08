@@ -75,8 +75,8 @@ public abstract class AbstractPlugin implements Plugin {
         if (null == stackInfo) {
             return;
         }
-        TraceData traceData = stackInfo.getTraceData();
         if (stackInfo.isPopped()) {
+            TraceData traceData = stackInfo.getTraceData();
             fillTraceData(traceData, objectEnhanced, method, args, result);
             handleTraceData(traceData);
         }
