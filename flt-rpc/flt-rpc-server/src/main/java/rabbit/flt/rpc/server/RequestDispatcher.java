@@ -76,11 +76,7 @@ public class RequestDispatcher implements Registrar {
             response.setMsg(e.getMessage());
             write(key, response);
         } catch (Throwable e) {
-            logger.warn(e.getMessage());
-            response.setSuccess(false);
-            response.setMsg(e.getMessage());
-            response.setCode(ResponseCode.FAILED);
-            write(key, response);
+            responseWhenError(key, response, e);
         } finally {
             keyHolder.remove();
             requestHolder.remove();
@@ -89,6 +85,7 @@ public class RequestDispatcher implements Registrar {
 
     /**
      * 处理异步响应
+     *
      * @param key
      * @param response
      * @param result
@@ -100,14 +97,17 @@ public class RequestDispatcher implements Registrar {
             write(key, response);
             return d;
         }).onErrorResume(e -> {
-            Throwable t = (Throwable) e;
-            logger.warn(t.getMessage());
-            response.setSuccess(false);
-            response.setMsg(t.getMessage());
-            response.setCode(ResponseCode.FAILED);
-            write(key, response);
+            responseWhenError(key, response, (Throwable) e);
             return Mono.empty();
         }).subscribe();
+    }
+
+    private void responseWhenError(SelectionKey key, RpcResponse<Object> response, Throwable t) {
+        logger.warn(t.getMessage());
+        response.setSuccess(false);
+        response.setMsg(t.getMessage());
+        response.setCode(ResponseCode.FAILED);
+        write(key, response);
     }
 
     /**
