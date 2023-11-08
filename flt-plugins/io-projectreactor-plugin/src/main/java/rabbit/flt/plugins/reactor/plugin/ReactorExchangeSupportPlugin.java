@@ -63,11 +63,11 @@ public class ReactorExchangeSupportPlugin extends SupportPlugin {
         return false;
     }
 
-    private BiConsumer createExchangeConsumer(Object target, TraceContextData holderData, BiConsumer mapFunc) {
+    private BiConsumer createExchangeConsumer(Object target, TraceContextData holderData, BiConsumer consumer) {
         return (t, u) -> {
             boolean noTrace = tryOpenTrace(target, holderData);
             try {
-                mapFunc.accept(t, u);
+                consumer.accept(t, u);
             } finally {
                 if (noTrace && TraceContext.isTraceOpenedBy(target)) {
                     TraceContext.clearContext();
