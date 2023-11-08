@@ -6,7 +6,7 @@ import rabbit.flt.plugins.common.matcher.SupportMatcher;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
-public class ReactorMapSupportMatcher implements SupportMatcher {
+public class ReactorExchangeSupportMatcher implements SupportMatcher {
 
     @Override
     public ElementMatcher.Junction<TypeDescription> classMatcher() {
@@ -15,11 +15,14 @@ public class ReactorMapSupportMatcher implements SupportMatcher {
 
     @Override
     public ElementMatcher.Junction methodMatcher(TypeDescription typeDescription) {
-        return named("map").or(named("flatMap"));
+        return named("map").or(named("flatMap"))
+                .or(named("onErrorContinue"))
+                .or(named("onErrorResume"))
+                .or(named("onErrorMap"));
     }
 
     @Override
     public String getPluginClassName() {
-        return "rabbit.flt.plugins.reactor.plugin.ReactorMapSupportPlugin";
+        return "rabbit.flt.plugins.reactor.plugin.ReactorExchangeSupportPlugin";
     }
 }
