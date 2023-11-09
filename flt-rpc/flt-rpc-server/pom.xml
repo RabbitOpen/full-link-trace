@@ -34,4 +34,59 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>rabbit.flt:*:jar:</include>
+                                    <!--需要一起打包的类-->
+                                    <include>com.esotericsoftware:*:jar:</include>
+                                    <include>org.objenesis:*:jar:</include>
+                                    <include>com.fasterxml.uuid:*:jar:</include>
+                                </includes>
+                            </artifactSet>
+                            <!-- relocation -->
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.esotericsoftware</pattern>
+                                    <shadedPattern>rabbit.flt.esotericsoftware</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.objenesis</pattern>
+                                    <shadedPattern>rabbit.flt.objenesis</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.fasterxml.uuid</pattern>
+                                    <shadedPattern>rabbit.flt.uuid</shadedPattern>
+                                </relocation>
+                            </relocations>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
