@@ -110,7 +110,7 @@ public class Server extends AbstractServerChannel implements Registrar {
             if (null == bossExecutor) {
                 bossExecutor = NamedExecutor.fixedThreadsPool(this.bossThreadCount, "boss-executor-");
             }
-            logger.info("server is started");
+            logger.info("server is started on port {}", port);
             return this;
         } catch (Exception e) {
             throw new RpcException(e);
