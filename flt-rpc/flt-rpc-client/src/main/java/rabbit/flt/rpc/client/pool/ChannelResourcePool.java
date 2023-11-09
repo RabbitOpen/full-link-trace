@@ -279,7 +279,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
      */
     @Override
     public <T> T doRequest(RpcRequest request, int timeoutSeconds) {
-        if (request.isMonoRequest()) {
+        if (request.isAsyncRequest()) {
             return (T) doAsyncRequest(request, timeoutSeconds);
         } else {
             return (T) doSyncRequest(request, timeoutSeconds);
