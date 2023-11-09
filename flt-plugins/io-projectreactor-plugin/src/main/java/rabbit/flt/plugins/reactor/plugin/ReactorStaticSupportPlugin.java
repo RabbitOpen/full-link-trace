@@ -14,11 +14,7 @@ public class ReactorStaticSupportPlugin extends SupportPlugin {
     @Override
     public Object[] before(Object target, Method method, Object[] args) {
         if (isTraceOpened()) {
-            TraceContextData data = new TraceContextData(TraceContext.getTraceId(),
-                    TraceContext.getRootSpanId(),
-                    TraceContext.getSpanIdChildCounter(TraceContext.getRootSpanId()),
-                    TraceContext.getWebTraceDataContextData(), null);
-            enhanceFunction(args, data);
+            enhanceFunction(args);
         }
         return super.before(target, method, args);
     }
@@ -27,9 +23,12 @@ public class ReactorStaticSupportPlugin extends SupportPlugin {
      * 增强 defer / fromCallable / fromRunnable 函数参数的逻辑
      *
      * @param args
-     * @param data
      */
-    private void enhanceFunction(Object[] args, TraceContextData data) {
+    private void enhanceFunction(Object[] args) {
+        TraceContextData data = new TraceContextData(TraceContext.getTraceId(),
+                TraceContext.getRootSpanId(),
+                TraceContext.getSpanIdChildCounter(TraceContext.getRootSpanId()),
+                TraceContext.getWebTraceDataContextData(), null);
         for (int i = 0; i < args.length; i++) {
             Object arg = args[i];
             if (arg instanceof Runnable) {
