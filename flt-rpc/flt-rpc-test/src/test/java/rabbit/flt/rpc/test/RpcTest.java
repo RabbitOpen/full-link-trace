@@ -21,10 +21,7 @@ import rabbit.flt.rpc.client.pool.*;
 import rabbit.flt.rpc.common.NamedExecutor;
 import rabbit.flt.rpc.common.RpcException;
 import rabbit.flt.rpc.common.ServerNode;
-import rabbit.flt.rpc.common.exception.AuthenticationException;
-import rabbit.flt.rpc.common.exception.NoPreparedClientException;
-import rabbit.flt.rpc.common.exception.RpcTimeoutException;
-import rabbit.flt.rpc.common.exception.UnRegisteredHandlerException;
+import rabbit.flt.rpc.common.exception.*;
 import rabbit.flt.rpc.common.nio.ChannelProcessor;
 import rabbit.flt.rpc.common.nio.SelectorWrapper;
 import rabbit.flt.rpc.common.rpc.Authentication;
@@ -293,7 +290,8 @@ public class RpcTest {
      */
     @Test
     public void epollBugTest() throws Exception {
-        int port = 10005;
+        logger.info("-------------------------  begin epollBugTest  -------------------------");
+        int port = 10035;
         String host = "localhost";
         ChannelResourcePool resourcePool = new SecureChannelResourcePool();
         Server server = ServerBuilder.builder()
@@ -373,7 +371,12 @@ public class RpcTest {
                             }
                         });
                     }
-                    TestCase.assertEquals("name" + j + "001", userService.getName("name" + j));
+                    try {
+                        // 发送完数据还未等到响应，selector挂了，此时可能出现异常
+                        TestCase.assertEquals("name" + j + "001", userService.getName("name" + j));
+                    } catch (ChannelClosedException e) {
+                        logger.warn(e.getMessage());
+                    }
                     requestCounter.release();
                 }
             }).start();
