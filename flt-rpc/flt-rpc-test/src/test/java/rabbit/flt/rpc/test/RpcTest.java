@@ -31,6 +31,7 @@ import rabbit.flt.rpc.common.rpc.ProtocolService;
 import rabbit.flt.rpc.server.ClientEventHandler;
 import rabbit.flt.rpc.server.Server;
 import rabbit.flt.rpc.server.ServerBuilder;
+import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -100,7 +101,8 @@ public class RpcTest {
                 .registerHandler(UserService.class, name -> name + "001")
                 .maxFrameLength(16 * 1024 * 1024)
                 .maxIdleSeconds(300)
-                .clientEventHandler(new ClientEventHandler() {})
+                .clientEventHandler(new ClientEventHandler() {
+                })
                 .maxPendingConnections(1000)
                 .build();
 
@@ -231,7 +233,8 @@ public class RpcTest {
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .registerHandler(Authentication.class, (app, sig) -> {  })
+                .registerHandler(Authentication.class, (app, sig) -> {
+                })
                 .registerHandler(ProtocolService.class, () -> Arrays.asList(new ServerNode(host, port),
                         new ServerNode(host, port),
                         new ServerNode(host, port + 1),
@@ -484,7 +487,8 @@ public class RpcTest {
                 .host("localhost").port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .registerHandler(Authentication.class, (app, sig) -> {})
+                .registerHandler(Authentication.class, (app, sig) -> {
+                })
                 .registerHandler(ProtocolService.class, new ProtocolService() {
                     @Override
                     public List<ServerNode> getServerNodes() {
@@ -577,5 +581,17 @@ public class RpcTest {
         semaphore.acquire();
         TestCase.assertTrue(map.get("trace") instanceof List);
         server.close();
+    }
+
+    @Test
+    public void monoTest() {
+        String value = "world";
+        Object block = Mono.create(m -> m.success(m.contextView().get("hello")))
+                .onErrorResume(e -> Mono.empty()).contextWrite(ctx -> ctx.put("hello", value))
+                .map(d -> {
+                    logger.info("context: {}", d);
+                    return d;
+                }).block();
+        TestCase.assertEquals(value, block);
     }
 }

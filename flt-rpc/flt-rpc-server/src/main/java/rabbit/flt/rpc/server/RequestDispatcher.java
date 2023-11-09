@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static rabbit.flt.rpc.server.Server.SELECTION_KEY;
+
 public class RequestDispatcher implements Registrar {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -90,16 +92,16 @@ public class RequestDispatcher implements Registrar {
      * @param response
      * @param result
      */
-    private void handleMonoResponse(SelectionKey key, RpcResponse<Object> response, Mono result) {
+    private void handleMonoResponse(SelectionKey key, RpcResponse<Object> response, Mono<Object> result) {
         result.map(d -> {
             response.setData(d);
             response.setSuccess(true);
             write(key, response);
             return d;
         }).onErrorResume(e -> {
-            responseWhenError(key, response, (Throwable) e);
+            responseWhenError(key, response, e);
             return Mono.empty();
-        }).subscribe();
+        }).contextWrite(ctx -> ctx.put(SELECTION_KEY, key)).subscribe();
     }
 
     private void responseWhenError(SelectionKey key, RpcResponse<Object> response, Throwable t) {

@@ -21,6 +21,8 @@ import java.util.concurrent.ExecutorService;
 
 public class Server extends AbstractServerChannel implements Registrar {
 
+    public static final String SELECTION_KEY = "SELECTION_KEY";
+
     /**
      * 服务端端口
      */
