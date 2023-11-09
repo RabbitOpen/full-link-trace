@@ -1,6 +1,5 @@
 package rabbit.flt.rpc.client;
 
-import rabbit.flt.rpc.common.RpcException;
 import rabbit.flt.rpc.common.rpc.RpcRequest;
 
 /**
@@ -15,7 +14,6 @@ public interface Client {
      * @param timeoutSeconds
      * @param <T>
      * @return
-     * @throws RpcException
      */
     <T> T doRequest(RpcRequest request, int timeoutSeconds);
 

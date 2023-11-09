@@ -275,9 +275,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
      *
      * @param request
      * @param timeoutSeconds
-     * @param <T>
      * @return
-     * @throws RpcException
      */
     @Override
     public <T> T doRequest(RpcRequest request, int timeoutSeconds) {
@@ -288,11 +286,16 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
         }
     }
 
+    /**
+     * 同步请求
+     *
+     * @param request
+     * @param timeoutSeconds
+     * @return
+     */
     private Object doSyncRequest(RpcRequest request, int timeoutSeconds) {
         try {
-            request.increase();
-            long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;
-            return getClient(timeoutMills).doRequest(request, timeoutSeconds);
+            return doRpcRequest(request, timeoutSeconds);
         } catch (NoPreparedClientException | UnRegisteredHandlerException | AuthenticationException | RpcTimeoutException e) {
             throw e;
         } catch (RpcException e) {
@@ -303,12 +306,28 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
         }
     }
 
+    /**
+     * 发起rpc请求
+     *
+     * @param request
+     * @param timeoutSeconds
+     * @return
+     */
+    private Object doRpcRequest(RpcRequest request, int timeoutSeconds) {
+        request.increase();
+        long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;
+        return getClient(timeoutMills).doRequest(request, timeoutSeconds);
+    }
+
+    /**
+     * 异步请求
+     *
+     * @param request
+     * @param timeoutSeconds
+     * @return
+     */
     private Object doAsyncRequest(RpcRequest request, int timeoutSeconds) {
-        return Mono.defer(() -> {
-            request.increase();
-            long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;
-            return getClient(timeoutMills).doRequest(request, timeoutSeconds);
-        }).onErrorResume(e -> {
+        return Mono.defer(() -> (Mono<?>) doRpcRequest(request, timeoutSeconds)).onErrorResume(e -> {
             if (e instanceof NoPreparedClientException || e instanceof UnRegisteredHandlerException
                     || e instanceof AuthenticationException || e instanceof RpcTimeoutException) {
                 return Mono.error(e);
