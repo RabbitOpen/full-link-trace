@@ -19,5 +19,7 @@ public interface ProtocolService {
      * @param type
      * @return
      */
-    boolean isMetricsEnabled(String applicationCode, Class<? extends Metrics> type);
+    default boolean isMetricsEnabled(String applicationCode, Class<? extends Metrics> type) {
+        return false;
+    }
 }
