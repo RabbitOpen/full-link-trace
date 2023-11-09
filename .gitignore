@@ -1,2 +1,3 @@
 /flt-core/dependency-reduced-pom.xml
 *.class
+/flt-rpc/flt-rpc-server/dependency-reduced-pom.xml
