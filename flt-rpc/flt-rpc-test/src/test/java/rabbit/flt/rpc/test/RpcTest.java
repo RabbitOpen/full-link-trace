@@ -232,21 +232,11 @@ public class RpcTest {
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> {  })
-                .registerHandler(ProtocolService.class, new ProtocolService() {
-                    @Override
-                    public List<ServerNode> getServerNodes() {
-                        return Arrays.asList(new ServerNode(host, port),
-                                new ServerNode(host, port),
-                                new ServerNode(host, port + 1),
-                                new ServerNode(host, port + 2)
-                        );
-                    }
-
-                    @Override
-                    public boolean isMetricsEnabled(String applicationCode, Class<? extends Metrics> type) {
-                        return false;
-                    }
-                })
+                .registerHandler(ProtocolService.class, () -> Arrays.asList(new ServerNode(host, port),
+                        new ServerNode(host, port),
+                        new ServerNode(host, port + 1),
+                        new ServerNode(host, port + 2)
+                ))
                 .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
                 .build();
@@ -301,20 +291,10 @@ public class RpcTest {
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> resourcePool.getResourceGuard().wakeup())
-                .registerHandler(ProtocolService.class, new ProtocolService() {
-                    @Override
-                    public List<ServerNode> getServerNodes() {
-                        return Arrays.asList(new ServerNode(host, port),
-                                new ServerNode(host, port + 1),
-                                new ServerNode(host, port + 2)
-                        );
-                    }
-
-                    @Override
-                    public boolean isMetricsEnabled(String applicationCode, Class<? extends Metrics> type) {
-                        return false;
-                    }
-                })
+                .registerHandler(ProtocolService.class, () -> Arrays.asList(new ServerNode(host, port),
+                        new ServerNode(host, port + 1),
+                        new ServerNode(host, port + 2)
+                ))
                 .registerHandler(UserService.class, name -> name + "001")
                 .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
@@ -412,17 +392,7 @@ public class RpcTest {
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> resourcePool.getResourceGuard().wakeup())
-                .registerHandler(ProtocolService.class, new ProtocolService() {
-                    @Override
-                    public List<ServerNode> getServerNodes() {
-                        return Arrays.asList(new ServerNode(host, port));
-                    }
-
-                    @Override
-                    public boolean isMetricsEnabled(String applicationCode, Class<? extends Metrics> type) {
-                        return false;
-                    }
-                })
+                .registerHandler(ProtocolService.class, () -> Arrays.asList(new ServerNode(host, port)))
                 .registerHandler(UserService.class, name -> name + "001")
                 .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)

@@ -4,7 +4,6 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import rabbit.flt.common.Metrics;
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.client.RequestFactory;
 import rabbit.flt.rpc.client.pool.ConfigBuilder;
@@ -19,7 +18,6 @@ import rabbit.flt.rpc.server.ServerBuilder;
 
 import java.net.StandardSocketOptions;
 import java.util.Arrays;
-import java.util.List;
 
 @RunWith(JUnit4.class)
 public class AuthenticatedRpcTest {
@@ -36,17 +34,7 @@ public class AuthenticatedRpcTest {
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> {})
                 .registerHandler(UserService.class, name -> name + "001")
-                .registerHandler(ProtocolService.class, new ProtocolService() {
-                    @Override
-                    public List<ServerNode> getServerNodes() {
-                        return Arrays.asList(new ServerNode(host, port));
-                    }
-
-                    @Override
-                    public boolean isMetricsEnabled(String applicationCode, Class<? extends Metrics> type) {
-                        return false;
-                    }
-                })
+                .registerHandler(ProtocolService.class, () -> Arrays.asList(new ServerNode(host, port)))
                 .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
                 .build();

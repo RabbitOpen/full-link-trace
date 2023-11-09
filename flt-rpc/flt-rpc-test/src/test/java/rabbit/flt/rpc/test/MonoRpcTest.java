@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rabbit.flt.common.Metrics;
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.client.RequestFactory;
 import rabbit.flt.rpc.client.pool.ChannelResourcePool;
@@ -19,7 +18,6 @@ import reactor.core.publisher.Mono;
 
 import java.net.StandardSocketOptions;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 
 @RunWith(JUnit4.class)
@@ -40,17 +38,8 @@ public class MonoRpcTest {
                 .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
                 .build();
-        server.getRequestDispatcher().registerDirectly(MonoUserService.class, (MonoUserService) () -> Mono.just("abc")).registerDirectly(ProtocolService.class, new ProtocolService() {
-            @Override
-            public List<ServerNode> getServerNodes() {
-                return Arrays.asList(new ServerNode(host, port));
-            }
-
-            @Override
-            public boolean isMetricsEnabled(String applicationCode, Class<? extends Metrics> type) {
-                return false;
-            }
-        });
+        server.getRequestDispatcher().registerDirectly(MonoUserService.class, (MonoUserService) () -> Mono.just("abc"))
+                .registerDirectly(ProtocolService.class, (ProtocolService) () -> Arrays.asList(new ServerNode(host, port)));
         server.start();
         ChannelResourcePool resourcePool = new ChannelResourcePool() {
         };
