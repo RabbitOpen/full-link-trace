@@ -2,6 +2,7 @@ package rabbit.flt.rpc.client.pool;
 
 import rabbit.flt.common.utils.CollectionUtils;
 import rabbit.flt.rpc.client.Client;
+import rabbit.flt.rpc.client.RpcRequestInterceptor;
 import rabbit.flt.rpc.common.NamedExecutor;
 import rabbit.flt.rpc.common.RpcException;
 import rabbit.flt.rpc.common.SelectorResetListener;
@@ -17,9 +18,7 @@ import rabbit.flt.rpc.common.rpc.RpcRequest;
 import reactor.core.publisher.Mono;
 
 import java.nio.channels.SelectionKey;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
@@ -64,6 +63,8 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
      */
     private PoolConfig poolConfig;
 
+    private List<RpcRequestInterceptor> interceptors = new ArrayList<>();
+
     /**
      * 初始化
      *
@@ -72,6 +73,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
     public void init(PoolConfig config) {
         try {
             this.poolConfig = config;
+            loadInterceptors(config);
             if (CollectionUtils.isEmpty(poolConfig.getServerNodes())) {
                 throw new RpcException("server nodes can't be empty");
             }
@@ -86,6 +88,18 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
         } catch (Exception e) {
             throw new RpcException(e);
         }
+    }
+
+    /**
+     * 加载蓝机器
+     * @param config
+     */
+    private void loadInterceptors(PoolConfig config) {
+        if (null != config.getRequestInterceptor()) {
+            interceptors.add(config.getRequestInterceptor());
+        }
+        ServiceLoader.load(RpcRequestInterceptor.class).forEach(interceptors::add);
+        Collections.sort(interceptors, Comparator.comparing(RpcRequestInterceptor::getPriority));
     }
 
     /**
@@ -279,6 +293,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
      */
     @Override
     public <T> T doRequest(RpcRequest request, int timeoutSeconds) {
+        interceptors.forEach(interceptor -> interceptor.before(request));
         if (request.isAsyncRequest()) {
             return (T) doAsyncRequest(request, timeoutSeconds);
         } else {

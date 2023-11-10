@@ -1,5 +1,6 @@
 package rabbit.flt.rpc.client.pool;
 
+import rabbit.flt.rpc.client.RpcRequestInterceptor;
 import rabbit.flt.rpc.common.ServerNode;
 
 import java.util.ArrayList;
@@ -54,6 +55,8 @@ public class PoolConfig {
      * 心跳间隔
      */
     private int keepAliveIntervalSeconds = 30;
+
+    private RpcRequestInterceptor requestInterceptor;
 
     public int getBossThreadCount() {
         return bossThreadCount;
@@ -158,5 +161,13 @@ public class PoolConfig {
 
     public void setKeepAliveIntervalSeconds(int keepAliveIntervalSeconds) {
         this.keepAliveIntervalSeconds = keepAliveIntervalSeconds;
+    }
+
+    public RpcRequestInterceptor getRequestInterceptor() {
+        return requestInterceptor;
+    }
+
+    public void setRequestInterceptor(RpcRequestInterceptor requestInterceptor) {
+        this.requestInterceptor = requestInterceptor;
     }
 }

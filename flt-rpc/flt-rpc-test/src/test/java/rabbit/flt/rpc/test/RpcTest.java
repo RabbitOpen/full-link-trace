@@ -251,6 +251,9 @@ public class RpcTest {
         resourcePool.init(ConfigBuilder.builder()
                 .workerThreadCount(1)
                 .bossThreadCount(1)
+                .requestInterceptor(request -> {
+                    logger.info("begin request: {}", request.getRequestId());
+                })
                 .password("1234567f1234567f")
                 .connectionsPerServer(connectionsPerServer)
                 .acquireClientTimeoutSeconds(3)

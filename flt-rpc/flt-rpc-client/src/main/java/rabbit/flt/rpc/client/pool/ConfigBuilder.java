@@ -1,5 +1,6 @@
 package rabbit.flt.rpc.client.pool;
 
+import rabbit.flt.rpc.client.RpcRequestInterceptor;
 import rabbit.flt.rpc.common.ServerNode;
 
 import java.util.ArrayList;
@@ -73,6 +74,16 @@ public class ConfigBuilder {
      */
     public ConfigBuilder acquireClientTimeoutSeconds(int acquireClientTimeoutSeconds) {
         operations.add(c -> c.setAcquireClientTimeoutSeconds(acquireClientTimeoutSeconds));
+        return this;
+    }
+
+    /**
+     * 设置请求拦截器
+     * @param interceptor
+     * @return
+     */
+    public ConfigBuilder requestInterceptor(RpcRequestInterceptor interceptor) {
+        operations.add(c -> c.setRequestInterceptor(interceptor));
         return this;
     }
 
