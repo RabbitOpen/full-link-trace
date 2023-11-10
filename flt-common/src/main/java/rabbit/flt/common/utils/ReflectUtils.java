@@ -54,9 +54,9 @@ public class ReflectUtils {
      * @param clzName
      * @return
      */
-    public static <T> T loadClass(String clzName) {
+    public static <T> Class<T> loadClass(String clzName) {
         try {
-            return (T) Class.forName(clzName);
+            return (Class<T>) Class.forName(clzName);
         } catch (Exception e) {
             throw new ReflectException(e);
         }

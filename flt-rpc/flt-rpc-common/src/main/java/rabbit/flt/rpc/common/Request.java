@@ -13,6 +13,11 @@ public class Request {
     private Class<?> interfaceClz;
 
     /**
+     * 响应接口名称，默认情况下为空
+     */
+    private String handlerInterfaceName;
+
+    /**
      * 入参
      */
     private Object[] parameters;
@@ -52,5 +57,13 @@ public class Request {
 
     public void setParameterTypes(Class<?>[] parameterTypes) {
         this.parameterTypes = parameterTypes;
+    }
+
+    public String getHandlerInterfaceName() {
+        return handlerInterfaceName;
+    }
+
+    public void setHandlerInterfaceName(String handlerInterfaceName) {
+        this.handlerInterfaceName = handlerInterfaceName;
     }
 }

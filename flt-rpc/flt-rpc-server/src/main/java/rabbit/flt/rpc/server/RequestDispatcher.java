@@ -3,6 +3,8 @@ package rabbit.flt.rpc.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rabbit.flt.common.utils.GZipUtils;
+import rabbit.flt.common.utils.ReflectUtils;
+import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.rpc.common.*;
 import rabbit.flt.rpc.common.exception.AuthenticationException;
 import rabbit.flt.rpc.common.rpc.Authentication;
@@ -27,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static rabbit.flt.rpc.server.Server.SELECTION_KEY;
 
-public class RequestDispatcher implements Registrar {
+public class RequestDispatcher implements Registrar  {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -120,8 +122,12 @@ public class RequestDispatcher implements Registrar {
      */
     private Object callBizMethod(Request request) throws Throwable {
         try {
-            Method method = request.getInterfaceClz().getDeclaredMethod(request.getMethodName(), request.getParameterTypes());
-            Object handler = this.handlerCache.get(request.getInterfaceClz());
+            Class clz = request.getInterfaceClz();
+            if (!StringUtils.isEmpty(request.getHandlerInterfaceName())) {
+                clz = ReflectUtils.loadClass(request.getHandlerInterfaceName());
+            }
+            Method method = clz.getDeclaredMethod(request.getMethodName(), request.getParameterTypes());
+            Object handler = this.handlerCache.get(clz);
             return method.invoke(handler, request.getParameters());
         } catch (InvocationTargetException e) {
             throw e.getCause();
@@ -175,14 +181,14 @@ public class RequestDispatcher implements Registrar {
      * @param <T>
      */
     @Override
-    public <T> void register(Class<T> clz, Object handler) {
+    public <T> void register(Class<T> clz, T handler) {
         InvocationHandler proxyHandler;
         if (Authentication.class == clz) {
             proxyHandler = new AuthenticationHandler((Authentication) handler);
         } else {
             proxyHandler = new RpcRequestHandler(handler);
         }
-        registerWithNoProxy(clz, Proxy.newProxyInstance(clz.getClassLoader(), handler.getClass().getInterfaces(), proxyHandler));
+        registerWithNoProxy(clz, Proxy.newProxyInstance(clz.getClassLoader(), new Class[]{clz}, proxyHandler));
     }
 
     public Object getHandler(Class<?> clz) {

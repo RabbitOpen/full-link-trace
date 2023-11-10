@@ -53,17 +53,6 @@ public class ServerBuilder {
     }
 
     /**
-     * 注册rpc接口
-     * @param clz
-     * @param handler
-     * @return
-     */
-    public ServerBuilder registerHandlerDirectly(Class<?> clz, Object handler) {
-        operations.add(s -> s.register(clz, handler));
-        return this;
-    }
-
-    /**
      * 设置最大挂起连接数
      * @param maxPendingConnections
      * @return

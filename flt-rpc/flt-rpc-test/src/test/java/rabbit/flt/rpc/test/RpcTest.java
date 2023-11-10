@@ -493,7 +493,7 @@ public class RpcTest {
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> {
                 })
-                .registerHandlerDirectly(ProtocolService.class, new ProtocolService() {
+                .registerHandler(ProtocolService.class, new ProtocolService() {
                     @Override
                     public List<ServerNode> getServerNodes() {
                         return Arrays.asList(new ServerNode("localhost", port));

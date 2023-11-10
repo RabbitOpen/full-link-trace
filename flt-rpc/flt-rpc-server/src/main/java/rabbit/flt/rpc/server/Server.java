@@ -1,5 +1,8 @@
 package rabbit.flt.rpc.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import rabbit.flt.common.utils.ReflectUtils;
 import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.rpc.common.*;
 import rabbit.flt.rpc.common.nio.AbstractServerChannel;
@@ -21,6 +24,8 @@ import java.util.concurrent.ExecutorService;
 
 public class Server extends AbstractServerChannel implements Registrar {
 
+    private Logger slf4jLogger = LoggerFactory.getLogger(getClass());
+    
     public static final String SELECTION_KEY = "SELECTION_KEY";
 
     /**
@@ -74,7 +79,7 @@ public class Server extends AbstractServerChannel implements Registrar {
 
     protected Server() {
         // 注册认证，默认通过
-        register(Authentication.class, (Authentication) (applicationCode, signature) -> {
+        register(Authentication.class, (applicationCode, signature) -> {
             // do nothing
         });
         // 注册心跳
@@ -112,7 +117,7 @@ public class Server extends AbstractServerChannel implements Registrar {
             if (null == bossExecutor) {
                 bossExecutor = NamedExecutor.fixedThreadsPool(this.bossThreadCount, "boss-executor-");
             }
-            logger.info("server is started on port {}", port);
+            slf4jLogger.info("server is started on port {}", port);
             return this;
         } catch (Exception e) {
             throw new RpcException(e);
@@ -127,7 +132,7 @@ public class Server extends AbstractServerChannel implements Registrar {
         contextManager.close();
         selectorWrapper.close();
         close(serverSocketChannel);
-        logger.info("server is closed!");
+        slf4jLogger.info("server is closed!");
         bossExecutor = null;
         workerExecutor = null;
         started = false;
@@ -191,24 +196,38 @@ public class Server extends AbstractServerChannel implements Registrar {
         try {
             rpcRequest = Serializer.deserialize(data);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            slf4jLogger.error(e.getMessage(), e);
             contextManager.closeKey(selectionKey);
             return;
         }
         Request request = rpcRequest.getRequest();
-        Object handler = getRequestDispatcher().getHandler(request.getInterfaceClz());
+        String handlerInterfaceName = getRequestHandlerName(request);
+        Object handler = getRequestDispatcher().getHandler(ReflectUtils.loadClass(handlerInterfaceName));
         if (null == handler) {
-            logger.error("unregistered handler[{}]", request.getInterfaceClz());
+            String msg = String.format("unregistered handler[%s]", handlerInterfaceName);
+            slf4jLogger.error(msg);
             RpcResponse<Object> response = new RpcResponse<>();
             response.setRequestId(rpcRequest.getRequestId());
             response.setSuccess(false);
-            response.setMsg("unregistered handler[" + request.getInterfaceClz().getName() + "]");
+            response.setMsg(msg);
             response.setCode(ResponseCode.UN_REGISTERED_HANDLER);
             getRequestDispatcher().write(selectionKey, response);
         } else {
             contextManager.active(selectionKey);
             getRequestDispatcher().handleRequest(selectionKey, rpcRequest);
         }
+    }
+
+    /**
+     * 获取处理器class名字
+     * @param request
+     * @return
+     */
+    private String getRequestHandlerName(Request request) {
+        if (StringUtils.isEmpty(request.getHandlerInterfaceName())) {
+            return request.getInterfaceClz().getName();
+        }
+        return request.getHandlerInterfaceName();
     }
 
     @Override
@@ -235,7 +254,7 @@ public class Server extends AbstractServerChannel implements Registrar {
     }
 
     @Override
-    public <T> void register(Class<T> clz, Object handler) {
+    public <T> void register(Class<T> clz, T handler) {
         getRequestDispatcher().register(clz, handler);
     }
 

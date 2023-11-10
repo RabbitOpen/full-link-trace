@@ -18,7 +18,9 @@ import rabbit.flt.rpc.common.rpc.RpcRequest;
 import reactor.core.publisher.Mono;
 
 import java.nio.channels.SelectionKey;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
@@ -63,7 +65,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
      */
     private PoolConfig poolConfig;
 
-    private List<RpcRequestInterceptor> interceptors = new ArrayList<>();
+    private RpcRequestInterceptor requestInterceptor;
 
     /**
      * 初始化
@@ -73,7 +75,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
     public void init(PoolConfig config) {
         try {
             this.poolConfig = config;
-            loadInterceptors(config);
+            loadInterceptor(config);
             if (CollectionUtils.isEmpty(poolConfig.getServerNodes())) {
                 throw new RpcException("server nodes can't be empty");
             }
@@ -91,15 +93,17 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
     }
 
     /**
-     * 加载蓝机器
+     * 加载拦截器
      * @param config
      */
-    private void loadInterceptors(PoolConfig config) {
+    private void loadInterceptor(PoolConfig config) {
         if (null != config.getRequestInterceptor()) {
-            interceptors.add(config.getRequestInterceptor());
+            requestInterceptor = config.getRequestInterceptor();
+        } else {
+            requestInterceptor = request -> {
+                // do nothing
+            };
         }
-        ServiceLoader.load(RpcRequestInterceptor.class).forEach(interceptors::add);
-        Collections.sort(interceptors, Comparator.comparing(RpcRequestInterceptor::getPriority));
     }
 
     /**
@@ -293,7 +297,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
      */
     @Override
     public <T> T doRequest(RpcRequest request, int timeoutSeconds) {
-        interceptors.forEach(interceptor -> interceptor.before(request));
+        requestInterceptor.before(request);
         if (request.isAsyncRequest()) {
             return (T) doAsyncRequest(request, timeoutSeconds);
         } else {
