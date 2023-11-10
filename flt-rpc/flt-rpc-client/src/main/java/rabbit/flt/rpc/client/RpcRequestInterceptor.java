@@ -11,7 +11,8 @@ public interface RpcRequestInterceptor {
      * 请求前置逻辑
      * @param request
      */
-    void before(RpcRequest request);
+    default void before(RpcRequest request) {
+    }
 
     /**
      * 值越小，越先执行

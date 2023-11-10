@@ -15,6 +15,7 @@ import rabbit.flt.common.utils.ReflectUtils;
 import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.client.RequestFactory;
+import rabbit.flt.rpc.client.RpcRequestInterceptor;
 import rabbit.flt.rpc.client.handler.RpcMetricsDataHandler;
 import rabbit.flt.rpc.client.handler.RpcTraceDataHandler;
 import rabbit.flt.rpc.client.pool.*;
@@ -24,10 +25,7 @@ import rabbit.flt.rpc.common.ServerNode;
 import rabbit.flt.rpc.common.exception.*;
 import rabbit.flt.rpc.common.nio.ChannelProcessor;
 import rabbit.flt.rpc.common.nio.SelectorWrapper;
-import rabbit.flt.rpc.common.rpc.Authentication;
-import rabbit.flt.rpc.common.rpc.DataService;
-import rabbit.flt.rpc.common.rpc.KeepAlive;
-import rabbit.flt.rpc.common.rpc.ProtocolService;
+import rabbit.flt.rpc.common.rpc.*;
 import rabbit.flt.rpc.server.ClientEventHandler;
 import rabbit.flt.rpc.server.Server;
 import rabbit.flt.rpc.server.ServerBuilder;
@@ -251,8 +249,11 @@ public class RpcTest {
         resourcePool.init(ConfigBuilder.builder()
                 .workerThreadCount(1)
                 .bossThreadCount(1)
-                .requestInterceptor(request -> {
-                    logger.info("begin request: {}", request.getRequestId());
+                .requestInterceptor(new RpcRequestInterceptor() {
+                    @Override
+                    public void before(RpcRequest request) {
+                        logger.info("begin request: {}", request.getRequestId());
+                    }
                 })
                 .password("1234567f1234567f")
                 .connectionsPerServer(connectionsPerServer)
