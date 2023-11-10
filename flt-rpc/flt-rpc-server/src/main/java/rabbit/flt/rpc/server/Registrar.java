@@ -8,5 +8,5 @@ public interface Registrar {
      * @param handler
      * @param <T>
      */
-    <T> void register(Class<T> clz, T handler);
+    <T> void register(Class<T> clz, Object handler);
 }

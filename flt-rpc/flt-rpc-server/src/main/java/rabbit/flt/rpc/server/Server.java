@@ -74,7 +74,7 @@ public class Server extends AbstractServerChannel implements Registrar {
 
     protected Server() {
         // 注册认证，默认通过
-        register(Authentication.class, (applicationCode, signature) -> {
+        register(Authentication.class, (Authentication) (applicationCode, signature) -> {
             // do nothing
         });
         // 注册心跳
@@ -235,7 +235,7 @@ public class Server extends AbstractServerChannel implements Registrar {
     }
 
     @Override
-    public <T> void register(Class<T> clz, T handler) {
+    public <T> void register(Class<T> clz, Object handler) {
         getRequestDispatcher().register(clz, handler);
     }
 
