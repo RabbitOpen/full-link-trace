@@ -182,7 +182,7 @@ public class RequestDispatcher implements Registrar {
         } else {
             proxyHandler = new RpcRequestHandler(handler);
         }
-        registerWithNoProxy(clz, Proxy.newProxyInstance(clz.getClassLoader(), new Class[]{clz}, proxyHandler));
+        registerWithNoProxy(clz, Proxy.newProxyInstance(clz.getClassLoader(), handler.getClass().getInterfaces(), proxyHandler));
     }
 
     public Object getHandler(Class<?> clz) {
