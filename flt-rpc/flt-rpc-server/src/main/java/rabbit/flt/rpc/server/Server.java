@@ -78,7 +78,7 @@ public class Server extends AbstractServerChannel implements Registrar {
             // do nothing
         });
         // 注册心跳
-        getRequestDispatcher().registerDirectly(KeepAlive.class, (KeepAlive) () -> {
+        getRequestDispatcher().registerWithNoProxy(KeepAlive.class, (KeepAlive) () -> {
             // do nothing
         });
     }

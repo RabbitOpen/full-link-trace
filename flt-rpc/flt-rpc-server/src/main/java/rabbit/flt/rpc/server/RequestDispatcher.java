@@ -175,14 +175,14 @@ public class RequestDispatcher implements Registrar {
      * @param <T>
      */
     @Override
-    public <T> void register(Class<T> clz, T handler) {
+    public <T> void register(Class<T> clz, Object handler) {
         InvocationHandler proxyHandler;
         if (Authentication.class == clz) {
             proxyHandler = new AuthenticationHandler((Authentication) handler);
         } else {
             proxyHandler = new RpcRequestHandler(handler);
         }
-        registerDirectly(clz, Proxy.newProxyInstance(clz.getClassLoader(), new Class[]{clz}, proxyHandler));
+        registerWithNoProxy(clz, Proxy.newProxyInstance(clz.getClassLoader(), new Class[]{clz}, proxyHandler));
     }
 
     public Object getHandler(Class<?> clz) {
@@ -196,7 +196,7 @@ public class RequestDispatcher implements Registrar {
      * @param proxyHandler
      * @param <T>
      */
-    public <T> RequestDispatcher registerDirectly(Class<T> clz, Object proxyHandler) {
+    public <T> RequestDispatcher registerWithNoProxy(Class<T> clz, Object proxyHandler) {
         this.handlerCache.put(clz, proxyHandler);
         return this;
     }

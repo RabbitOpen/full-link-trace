@@ -38,8 +38,8 @@ public class MonoRpcTest {
                 .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
                 .build();
-        server.getRequestDispatcher().registerDirectly(MonoUserService.class, (MonoUserService) () -> Mono.just("abc"))
-                .registerDirectly(ProtocolService.class, (ProtocolService) () -> Arrays.asList(new ServerNode(host, port)));
+        server.getRequestDispatcher().registerWithNoProxy(MonoUserService.class, (MonoUserService) () -> Mono.just("abc"))
+                .registerWithNoProxy(ProtocolService.class, (ProtocolService) () -> Arrays.asList(new ServerNode(host, port)));
         server.start();
         ChannelResourcePool resourcePool = new ChannelResourcePool() {
         };
