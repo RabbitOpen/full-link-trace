@@ -100,7 +100,12 @@ public class RequestDispatcher implements Registrar  {
             response.setSuccess(true);
             write(key, response);
             return d;
-        }).onErrorResume(e -> {
+        }).switchIfEmpty(Mono.defer(() -> {
+            response.setData(null);
+            response.setSuccess(true);
+            write(key, response);
+            return Mono.empty();
+        })).onErrorResume(e -> {
             responseWhenError(key, response, e);
             return Mono.empty();
         }).contextWrite(ctx -> ctx.put(SELECTION_KEY, key)).subscribe();
