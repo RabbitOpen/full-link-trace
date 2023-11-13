@@ -101,7 +101,6 @@ public class RequestDispatcher implements Registrar  {
             write(key, response);
             return d;
         }).switchIfEmpty(Mono.defer(() -> {
-            response.setData(null);
             response.setSuccess(true);
             write(key, response);
             return Mono.empty();
