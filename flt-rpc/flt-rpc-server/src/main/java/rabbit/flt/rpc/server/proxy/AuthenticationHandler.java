@@ -33,7 +33,7 @@ public class AuthenticationHandler implements InvocationHandler {
             attrs.put(AUTHENTICATE, true);
             return null;
         } catch (Exception e) {
-            throw new AuthenticationFailedException();
+            throw new AuthenticationFailedException(e);
         }
     }
 }

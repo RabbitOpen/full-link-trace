@@ -5,8 +5,8 @@ package rabbit.flt.rpc.common.exception;
  */
 public class AuthenticationFailedException extends AuthenticationException {
 
-    public AuthenticationFailedException() {
-        super("authentication failed!");
+    public AuthenticationFailedException(Throwable cause) {
+        super("authentication failed! ".concat(cause.getMessage()));
     }
 
 }
