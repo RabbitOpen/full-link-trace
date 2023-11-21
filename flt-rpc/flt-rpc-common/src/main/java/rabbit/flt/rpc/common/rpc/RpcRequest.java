@@ -55,9 +55,10 @@ public class RpcRequest extends Protocol<Request> {
      */
     public final Object getResponse(int timeoutSeconds, Runnable finalCallback) {
         if (isAsyncRequest()) {
-            return Mono.create(responseHolder).map(resp -> {
+            return Mono.create(responseHolder).flatMap(resp -> {
                 try {
-                    return readResponseData(resp);
+                    Object data = readResponseData(resp);
+                    return null == data ? Mono.empty() : Mono.just(data);
                 } finally {
                     finalCallback.run();
                 }
@@ -76,6 +77,7 @@ public class RpcRequest extends Protocol<Request> {
 
     /**
      * 异步请求
+     *
      * @return
      */
     public boolean isAsyncRequest() {
