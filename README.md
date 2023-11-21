@@ -6,4 +6,4 @@ mvn versions:set -DnewVersion={新的版本}
 mvn clean install sonar:sonar
 
 #部署
-mvn clean install -Pdeploy
+mvn clean install -Pdeploy -Dmaven.test.skip=true
