@@ -3,12 +3,10 @@ package rabbit.flt.core.loader;
 import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
-import rabbit.flt.core.AgentEntry;
 import rabbit.flt.core.PluginClassLoader;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -119,17 +117,5 @@ public class DefaultPluginClassLoader extends PluginClassLoader {
             data = os.toByteArray();
         }
         return (Class<?>) defineClassMethod.invoke(loader, name, data, 0, data.length);
-    }
-
-    @Override
-    public String getAgentJarFilePath() {
-        String classResourcePath = AgentEntry.class.getName().replaceAll("\\.", "/").concat(".class");
-        String url = ClassLoader.getSystemClassLoader().getResource(classResourcePath).toString();
-        url = url.substring(url.indexOf("file:"), url.indexOf('!'));
-        try {
-            return new File(new URL(url).toURI()).getPath();
-        } catch (Exception e) {
-            throw new AgentException(e);
-        }
     }
 }

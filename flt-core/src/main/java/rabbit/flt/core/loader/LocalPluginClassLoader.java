@@ -9,8 +9,4 @@ public class LocalPluginClassLoader extends PluginClassLoader {
         return getClass().getClassLoader().loadClass(name);
     }
 
-    @Override
-    public String getAgentJarFilePath() {
-        throw new UnsupportedOperationException();
-    }
 }

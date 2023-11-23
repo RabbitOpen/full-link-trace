@@ -1,7 +1,11 @@
 package rabbit.flt.core;
 
+import rabbit.flt.common.exception.AgentException;
+
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 
 /**
  * 插件类加载器
@@ -31,6 +35,15 @@ public abstract class PluginClassLoader {
      * 获取代理类路径
      * @return
      */
-    public abstract String getAgentJarFilePath();
+    protected String getAgentJarFilePath() {
+        String classResourcePath = AgentEntry.class.getName().replaceAll("\\.", "/").concat(".class");
+        String url = ClassLoader.getSystemClassLoader().getResource(classResourcePath).toString();
+        url = url.substring(url.indexOf("file:"), url.indexOf('!'));
+        try {
+            return new File(new URL(url).toURI()).getPath();
+        } catch (Exception e) {
+            throw new AgentException(e);
+        }
+    }
 
 }
