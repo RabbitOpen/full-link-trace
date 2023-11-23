@@ -1,7 +1,5 @@
 package rabbit.flt.test.common.spi;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import rabbit.flt.common.TraceDataHandler;
 import rabbit.flt.common.trace.TraceData;
 
@@ -9,9 +7,9 @@ import java.util.List;
 
 public class TestTraceHandler implements TraceDataHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(TestTraceHandler.class);
+//    private static Logger logger = LoggerFactory.getLogger(TestTraceHandler.class);
 
-    private static TaskHandler discardDataHandler = traceData -> logger.info("discard {}", traceData.getNodeName());
+    private static TaskHandler discardDataHandler = traceData -> {};
 
     private static TaskHandler traceDataHandler = null;
 

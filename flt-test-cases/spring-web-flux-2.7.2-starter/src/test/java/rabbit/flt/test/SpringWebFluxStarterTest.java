@@ -20,6 +20,7 @@ public class SpringWebFluxStarterTest extends BaseCases {
     public void webFluxStarterTest() throws Exception {
         // 通过starter加载， 注意Mono加载时机点
         TestCase.assertTrue(ClassProxyLogger.getClassMap().containsKey("reactor.core.publisher.Mono"));
+        httpClientTest();
         util.init();
         mybatisPlusTest();
         contextStatusTest();
