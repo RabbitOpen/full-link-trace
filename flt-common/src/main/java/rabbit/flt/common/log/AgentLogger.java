@@ -1,7 +1,6 @@
 package rabbit.flt.common.log;
 
 
-import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.utils.ReflectUtils;
 import rabbit.flt.common.utils.StringUtils;
 
