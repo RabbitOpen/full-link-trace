@@ -16,6 +16,7 @@
         <module>spring-cloud-2.7.2</module>
         <module>spring-web-flux-2.7.2</module>
         <module>spring-cloud-2.7.2-starter</module>
+        <module>spring-web-flux-2.7.2-starter</module>
     </modules>
 
     <properties>

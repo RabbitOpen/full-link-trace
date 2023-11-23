@@ -20,6 +20,8 @@ public class SpringWebFluxTest extends BaseCases {
 
     @Test
     public void webFluxTest() throws Exception {
+        // 通过agent加载， 插件先运行，能保证Mono加载
+        TestCase.assertTrue(ClassProxyLogger.getClassMap().containsKey("reactor.core.publisher.Mono"));
         util.init();
         mybatisPlusTest();
         contextStatusTest();

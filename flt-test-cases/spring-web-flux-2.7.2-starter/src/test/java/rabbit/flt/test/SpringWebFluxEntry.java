@@ -7,10 +7,10 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfigurati
 
 @MapperScan(basePackages = {"rabbit.flt.test.common.mybatis"})
 @SpringBootApplication(exclude = {CassandraAutoConfiguration.class},
-        scanBasePackages = {"rabbit.flt.test.common", "rabbit.flt.test.mvc"})
-public class SpringBootEntry {
+        scanBasePackages = {"rabbit.flt.test.common", "rabbit.flt.test.webflux"})
+public class SpringWebFluxEntry {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringBootEntry.class);
+        SpringApplication.run(SpringWebFluxEntry.class);
     }
 }
