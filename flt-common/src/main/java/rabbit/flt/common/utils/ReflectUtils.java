@@ -4,6 +4,7 @@ package rabbit.flt.common.utils;
 import rabbit.flt.common.exception.ReflectException;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 public class ReflectUtils {
 
@@ -58,6 +59,35 @@ public class ReflectUtils {
         try {
             return (Class<T>) Class.forName(clzName);
         } catch (Exception e) {
+            throw new ReflectException(e);
+        }
+    }
+
+    /**
+     * 获取方法
+     * @param clz
+     * @param methodName
+     * @param argsType
+     * @return
+     */
+    public static Method loadMethod(Class<?> clz, String methodName, Class<?>... argsType) {
+        try {
+            return clz.getDeclaredMethod(methodName, argsType);
+        } catch (NoSuchMethodException e) {
+            throw new ReflectException(e);
+        }
+    }
+
+    /**
+     * 获取字段
+     * @param clz
+     * @param fieldName
+     * @return
+     */
+    public static Field loadField(Class<?> clz, String fieldName) {
+        try {
+            return clz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
             throw new ReflectException(e);
         }
     }

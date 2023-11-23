@@ -2,6 +2,7 @@ package rabbit.flt.common.log;
 
 
 import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.utils.ReflectUtils;
 import rabbit.flt.common.utils.StringUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -22,7 +23,7 @@ public class AgentLogger implements InvocationHandler {
 
     /**
      * 一级key：日志方法名（方法重载导致有很多同名方法）
-     *  二级key: 函数方法别名（同名方法，参数不同，别名不同）
+     * 二级key: 函数方法别名（同名方法，参数不同，别名不同）
      */
     private Map<String, Map<String, Method>> methodCache = new ConcurrentHashMap<>();
 
@@ -43,13 +44,9 @@ public class AgentLogger implements InvocationHandler {
             }
         }
         return methodCache.computeIfAbsent(method.getName(), name -> new ConcurrentHashMap<>())
-                .computeIfAbsent(getMethodAlias(method.getParameterTypes()), name -> {
-                    try {
-                        return slf4jLogger.getClass().getDeclaredMethod(method.getName(), method.getParameterTypes());
-                    } catch (Exception e) {
-                        throw new AgentException(e);
-                    }
-                }).invoke(slf4jLogger, args);
+                .computeIfAbsent(getMethodAlias(method.getParameterTypes()), name ->
+                        ReflectUtils.loadMethod(slf4jLogger.getClass(), method.getName(), method.getParameterTypes()))
+                .invoke(slf4jLogger, args);
     }
 
     private String getMethodAlias(Class<?>[] types) {
@@ -89,6 +86,7 @@ public class AgentLogger implements InvocationHandler {
 
     /**
      * 整合简单参数
+     *
      * @param args
      * @param result
      * @return
@@ -104,6 +102,7 @@ public class AgentLogger implements InvocationHandler {
 
     /**
      * 整合数组参数
+     *
      * @param arr
      * @param data
      * @return
@@ -118,6 +117,7 @@ public class AgentLogger implements InvocationHandler {
 
     /**
      * 通过控制台输出
+     *
      * @param result
      */
     private void logWithConsole(String result) {

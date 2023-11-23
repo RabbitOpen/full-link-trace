@@ -1,6 +1,7 @@
 package rabbit.flt.common;
 
 import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.utils.ReflectUtils;
 import rabbit.flt.common.utils.StringUtils;
 
 import java.io.InputStream;
@@ -80,7 +81,7 @@ public abstract class AbstractConfigFactory {
                 if (map.containsKey(field.getName())) {
                     Object value = functionMap.get(field.getType()).apply(map.get(field.getName()));
                     String setMethod = "set".concat(field.getName().substring(0, 1).toUpperCase().concat(field.getName().substring(1)));
-                    Method declaredMethod = AgentConfig.class.getDeclaredMethod(setMethod, field.getType());
+                    Method declaredMethod = ReflectUtils.loadMethod(AgentConfig.class, setMethod, field.getType());
                     declaredMethod.invoke(config, value);
                 }
             }

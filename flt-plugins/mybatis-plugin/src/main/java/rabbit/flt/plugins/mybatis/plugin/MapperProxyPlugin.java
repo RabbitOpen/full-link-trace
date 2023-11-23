@@ -79,7 +79,7 @@ public class MapperProxyPlugin extends PerformancePlugin {
         Class<?> clz = objClz;
         while (true) {
             try {
-                return clz.getDeclaredField(name);
+                return ReflectUtils.loadField(clz, name);
             } catch (Exception e) {
                 clz = clz.getSuperclass();
             }
