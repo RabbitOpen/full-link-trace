@@ -8,6 +8,7 @@ import static net.bytebuddy.matcher.ElementMatchers.isPublic;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
 public class LogbackLineNumberMatcher implements SupportMatcher {
+
     @Override
     public ElementMatcher.Junction<TypeDescription> classMatcher() {
         return named("ch.qos.logback.classic.pattern.LineOfCallerConverter");

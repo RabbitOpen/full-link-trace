@@ -33,7 +33,7 @@ public class LineNumberPlugin extends SupportPlugin {
                         || className.startsWith("sun.reflect.")) {
                     continue;
                 }
-                return Integer.toBinaryString(stackTraceElement.getLineNumber());
+                return Integer.toString(stackTraceElement.getLineNumber());
             }
         }
         return CallerData.NA;
