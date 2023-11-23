@@ -3,9 +3,7 @@ package rabbit.flt.core;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.description.NamedElement;
 import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.utility.JavaModule;
 import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.log.AgentLoggerFactory;
@@ -71,36 +69,7 @@ public class AgentEntry {
             }
         }
         getBasicAgentBuilder().type(classMatcher).transform(new ClassTransformer(matchers))
-                .with(getEmptyListener()).installOn(inst);
-    }
-
-    private static AgentBuilder.Listener getEmptyListener() {
-        return new AgentBuilder.Listener() {
-            @Override
-            public void onDiscovery(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded) {
-                // ignore
-            }
-
-            @Override
-            public void onTransformation(TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded, DynamicType dynamicType) {
-                // ignore
-            }
-
-            @Override
-            public void onIgnored(TypeDescription typeDescription, ClassLoader classLoader, JavaModule module, boolean loaded) {
-                // ignore
-            }
-
-            @Override
-            public void onError(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded, Throwable throwable) {
-                // ignore
-            }
-
-            @Override
-            public void onComplete(String typeName, ClassLoader classLoader, JavaModule module, boolean loaded) {
-                // ignore
-            }
-        };
+                .installOn(inst);
     }
 
     public static AgentBuilder getBasicAgentBuilder() {
