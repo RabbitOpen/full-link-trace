@@ -9,12 +9,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ClassProxyLogger implements ClassProxyListener {
 
-    private Logger logger = LoggerFactory.getLogger("transformer");
-
     private static Map<String, String> classMap = new ConcurrentHashMap<>();
 
     @Override
-    public void onProxy(String className) {
+    public synchronized void onProxy(String className) {
+        Logger logger = LoggerFactory.getLogger(getClass());
         logger.info("found target class: [{}]", className);
         classMap.put(className, "");
     }

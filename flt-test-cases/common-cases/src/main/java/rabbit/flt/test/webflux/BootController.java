@@ -11,10 +11,10 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/mvc")
 public class BootController {
 
-    private Logger logger  = LoggerFactory.getLogger(getClass());
 
     @GetMapping("/hello")
     public Mono<String> hello() {
+        Logger logger = LoggerFactory.getLogger(getClass());
         logger.info("invoke web-flux hello");
         return Mono.just("abc");
     }
