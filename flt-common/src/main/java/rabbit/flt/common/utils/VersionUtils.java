@@ -19,11 +19,11 @@ public class VersionUtils {
         if (!StringUtils.isEmpty(version)) {
             return version;
         }
-        version = getVersion("flt.properties", "version");
+        version = getProperty("flt.properties", "version");
         return version;
     }
 
-    public static String getVersion(String resourceFile, String propertyName) {
+    public static String getProperty(String resourceFile, String propertyName) {
         return new VersionUtils().loadProperty(resourceFile, propertyName);
     }
 
