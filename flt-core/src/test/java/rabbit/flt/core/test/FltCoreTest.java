@@ -38,11 +38,11 @@ public class FltCoreTest {
     @Test
     public void classLoaderTest() throws IOException, ClassNotFoundException, InvocationTargetException, IllegalAccessException {
         String baseDir = VersionUtils.getProperty("flt.properties", "baseDir");
-        String jar = baseDir + "/../flt-plugins/logback-support-plugin/target/logback-support-plugin-"+ VersionUtils.getVersion()+".jar";
+        String path = baseDir + "/../flt-plugins/logback-support-plugin/target/logback-support-plugin-"+ VersionUtils.getVersion()+".jar";
         DefaultPluginClassLoader classLoader = new DefaultPluginClassLoader() {
             @Override
             protected String getAgentJarFilePath() {
-                return jar;
+                return path;
             }
         };
         Class<?> clz = classLoader.loadClassByName("rabbit.flt.plugins.logback.plugin.LineNumberPlugin");
