@@ -28,7 +28,7 @@ public class ReactorStaticSupportPlugin extends SupportPlugin {
         TraceContextData data = new TraceContextData(TraceContext.getTraceId(),
                 TraceContext.getRootSpanId(),
                 TraceContext.getSpanIdChildCounter(TraceContext.getRootSpanId()),
-                TraceContext.getWebTraceDataContextData(), null);
+                TraceContext.getWebTraceDataContextData());
         for (int i = 0; i < args.length; i++) {
             Object arg = args[i];
             if (arg instanceof Runnable) {

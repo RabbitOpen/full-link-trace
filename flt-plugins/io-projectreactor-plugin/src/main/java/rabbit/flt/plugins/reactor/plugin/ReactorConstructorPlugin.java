@@ -34,7 +34,7 @@ public class ReactorConstructorPlugin extends ConstructorPlugin {
             TraceContextData data = new TraceContextData(TraceContext.getTraceId(),
                     TraceContext.getRootSpanId(),
                     TraceContext.getSpanIdChildCounter(TraceContext.getRootSpanId()),
-                    TraceContext.getWebTraceDataContextData(), target);
+                    TraceContext.getWebTraceDataContextData());
             holder.setTraceContextData(data);
             return result;
         }
@@ -48,7 +48,7 @@ public class ReactorConstructorPlugin extends ConstructorPlugin {
             TraceContextHolder tch = (TraceContextHolder) arg;
             TraceContextData data = (TraceContextData) tch.getTraceContextData();
             if (null != data) {
-                holder.setTraceContextData(new TraceContextData(data, target));
+                holder.setTraceContextData(new TraceContextData(data));
             }
         }
         return result;
