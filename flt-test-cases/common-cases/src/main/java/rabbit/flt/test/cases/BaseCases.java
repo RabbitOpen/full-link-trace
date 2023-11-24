@@ -224,5 +224,6 @@ public abstract class BaseCases {
         TestCase.assertTrue(headers.containsKey(Headers.SPAN_ID.toLowerCase()) || headers.containsKey(Headers.SPAN_ID));
         TestCase.assertEquals("HTTP_CLIENT4", map.get("0-0").getNodeName());
         TestCase.assertEquals("callError", map.get("0").getNodeName());
+        TestTraceHandler.setDiscardDataHandler(null);
     }
 }
