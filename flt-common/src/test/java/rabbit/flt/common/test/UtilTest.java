@@ -29,6 +29,12 @@ public class UtilTest {
     }
 
     @Test
+    public void loggerTest() {
+        logger.info("data: {}", new String[]{"a", "b"});
+        logger.info("data: {}", "b");
+    }
+
+    @Test
     public void aesTest() {
         String password = "1234567812345678";
         String data = Long.toString(System.currentTimeMillis());

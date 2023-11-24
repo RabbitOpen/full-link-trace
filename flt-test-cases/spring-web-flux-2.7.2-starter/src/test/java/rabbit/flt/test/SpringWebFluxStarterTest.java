@@ -9,10 +9,15 @@ import rabbit.flt.test.cases.BaseCases;
 import rabbit.flt.test.common.ignore.IgnorePackage;
 import rabbit.flt.test.common.service.IgnoreService;
 import rabbit.flt.test.starter.ClassProxyLogger;
+import rabbit.flt.test.starter.SpringBootStartListener;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SpringWebFluxEntry.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class SpringWebFluxStarterTest extends BaseCases {
+
+    static {
+        new SpringBootStartListener().onApplicationEvent(null);
+    }
 
     private WebClientUtil util = new WebClientUtil();
 

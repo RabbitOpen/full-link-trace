@@ -1,13 +1,10 @@
 package rabbit.flt.test.starter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
-import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.utils.ResourceUtils;
 import rabbit.flt.core.AgentHelper;
 import rabbit.flt.core.factory.DefaultConfigFactory;
@@ -16,8 +13,6 @@ import java.io.InputStream;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class SpringBootStartListener implements ApplicationListener, Ordered {
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private static ReentrantLock lock = new ReentrantLock();
 
@@ -29,25 +24,20 @@ public class SpringBootStartListener implements ApplicationListener, Ordered {
             lock.lock();
             if (!initialized) {
                 initialized = true;
-                try {
-                    final AgentConfig defaultConfig = getAgentConfig();
-                    initLoggerFactory();
-                    AbstractConfigFactory.setFactoryLoader(() -> new AbstractConfigFactory() {
+                final AgentConfig defaultConfig = getAgentConfig();
+                AbstractConfigFactory.setFactoryLoader(() -> new AbstractConfigFactory() {
 
-                        @Override
-                        public void initialize() {
-                        }
+                    @Override
+                    public void initialize() {
+                    }
 
-                        @Override
-                        protected AgentConfig getAgentConfig() {
-                            return defaultConfig;
-                        }
+                    @Override
+                    protected AgentConfig getAgentConfig() {
+                        return defaultConfig;
+                    }
 
-                    });
-                    AgentHelper.installPlugins();
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                }
+                });
+                AgentHelper.installPlugins();
             }
         } finally {
             lock.unlock();
@@ -68,17 +58,4 @@ public class SpringBootStartListener implements ApplicationListener, Ordered {
         return Ordered.HIGHEST_PRECEDENCE;
     }
 
-    private void initLoggerFactory() {
-        AgentLoggerFactory.setFactory(new rabbit.flt.common.log.LoggerFactory() {
-            @Override
-            public rabbit.flt.common.log.Logger getLogger(String name) {
-                return new LoggerProxy(LoggerFactory.getLogger(name));
-            }
-
-            @Override
-            public rabbit.flt.common.log.Logger getLogger(Class<?> clz) {
-                return new LoggerProxy(LoggerFactory.getLogger(clz));
-            }
-        });
-    }
 }

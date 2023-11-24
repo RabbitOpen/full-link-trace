@@ -3,6 +3,7 @@ package rabbit.flt.core.loader;
 import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
+import rabbit.flt.common.utils.ReflectUtils;
 import rabbit.flt.core.PluginClassLoader;
 
 import java.io.BufferedInputStream;
@@ -31,13 +32,9 @@ public class DefaultPluginClassLoader extends PluginClassLoader {
     private final Logger logger = AgentLoggerFactory.getLogger(getClass());
 
     public DefaultPluginClassLoader() {
-        try {
-            defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass",
-                    String.class, byte[].class, int.class, int.class);
-            defineClassMethod.setAccessible(true);
-        } catch (Exception e) {
-            throw new AgentException(e);
-        }
+        defineClassMethod = ReflectUtils.loadMethod(ClassLoader.class, "defineClass",
+                String.class, byte[].class, int.class, int.class);
+        defineClassMethod.setAccessible(true);
     }
 
     @Override
