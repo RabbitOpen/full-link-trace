@@ -213,6 +213,7 @@ public abstract class BaseCases {
         TestCase.assertTrue(map.get("0-0").getHttpRequest().getHeaders().containsKey("name"));
         // http client4未记录
         TestCase.assertTrue(map.get("0-0").getHttpRequest().getRequestParameters().isEmpty());
+        TestCase.assertTrue(!map.get("0-0").getHttpResponse().getHeaders().isEmpty());
 
         caseService.callError();
         semaphore.acquire(4);
