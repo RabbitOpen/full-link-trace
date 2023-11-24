@@ -3,7 +3,7 @@ package rabbit.flt.common.utils;
 import com.fasterxml.uuid.EthernetAddress;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
-import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.exception.FltException;
 
 import java.util.UUID;
 
@@ -24,6 +24,6 @@ public class UUIDUtils {
         if (1 == id.version()) {
             return (id.timestamp() - 0x01b21dd213814000L) / 10000;
         }
-        throw new AgentException("timestamp is not supported by this version");
+        throw new FltException("timestamp is not supported by this version");
     }
 }

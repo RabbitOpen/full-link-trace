@@ -1,6 +1,6 @@
 package rabbit.flt.common.utils;
 
-import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.exception.FltException;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -34,7 +34,7 @@ public class VersionUtils {
             properties.load(resource);
             return StringUtils.toString(properties.get(propertyName));
         } catch (Exception e) {
-            throw new AgentException(e);
+            throw new FltException(e);
         } finally {
             ResourceUtils.close(resource);
         }

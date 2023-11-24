@@ -1,6 +1,6 @@
 package rabbit.flt.common;
 
-import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.exception.FltException;
 import rabbit.flt.common.utils.ReflectUtils;
 
 import java.lang.reflect.Field;
@@ -121,7 +121,7 @@ public class AgentConfig {
                 continue;
             }
             if (null == ReflectUtils.getValue(this, field)) {
-                throw new AgentException(annotation.value());
+                throw new FltException(annotation.value());
             }
         }
     }

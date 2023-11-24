@@ -1,6 +1,6 @@
 package rabbit.flt.core;
 
-import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.exception.FltException;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +42,7 @@ public abstract class PluginClassLoader {
         try {
             return new File(new URL(url).toURI()).getPath();
         } catch (Exception e) {
-            throw new AgentException(e);
+            throw new FltException(e);
         }
     }
 

@@ -7,7 +7,7 @@ import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.Headers;
 import rabbit.flt.common.context.TraceContext;
-import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.exception.FltException;
 import rabbit.flt.common.trace.MessageType;
 import rabbit.flt.common.trace.MethodStackInfo;
 import rabbit.flt.common.trace.TraceData;
@@ -65,7 +65,7 @@ public class HttpClient3Plugin extends PerformancePlugin {
             try {
                 traceData.setNodeDesc(httpMethod.getURI().toString());
             } catch (URIException e) {
-                throw new AgentException(e);
+                throw new FltException(e);
             }
             HttpRequest request = new HttpRequest();
             for (Header header : httpMethod.getRequestHeaders()) {

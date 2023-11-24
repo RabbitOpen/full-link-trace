@@ -1,6 +1,6 @@
 package rabbit.flt.common.utils;
 
-import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.exception.FltException;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -29,7 +29,7 @@ public class AESUtils {
             cipher.init(Cipher.ENCRYPT_MODE, spec);
             return StringUtils.base64Encode(cipher.doFinal(content.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
-            throw new AgentException(e);
+            throw new FltException(e);
         }
     }
 
@@ -49,7 +49,7 @@ public class AESUtils {
             byte[] decryptBytes = cipher.doFinal(encryptBytes);
             return new String(decryptBytes);
         } catch (Exception e) {
-            throw new AgentException(e);
+            throw new FltException(e);
         }
     }
 }

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import rabbit.flt.common.Headers;
 import rabbit.flt.common.context.TraceContext;
-import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.exception.FltException;
 import rabbit.flt.common.trace.TraceData;
 import rabbit.flt.test.common.mybatis.UserMapper;
 import rabbit.flt.test.common.spi.TestTraceHandler;
@@ -80,6 +80,7 @@ public abstract class BaseCases {
 
     /**
      * web flux 专用测试
+     *
      * @throws Exception
      */
     protected void contextStatusTest() throws Exception {
@@ -139,7 +140,7 @@ public abstract class BaseCases {
                             CloseableHttpResponse resp = client.execute(httpGet);
                             resp.close();
                         } catch (Exception e) {
-                            throw new AgentException(e);
+                            throw new FltException(e);
                         }
                     }
                     cdl.countDown();
@@ -209,5 +210,18 @@ public abstract class BaseCases {
         TestCase.assertTrue(headers.containsKey(Headers.SPAN_ID.toLowerCase()) || headers.containsKey(Headers.SPAN_ID));
         TestCase.assertEquals("HTTP_CLIENT4", map.get("0-0").getNodeName());
         TestCase.assertEquals("doHttp4Request", map.get("0").getNodeName());
+
+        caseService.callError();
+        semaphore.acquire(4);
+        TestCase.assertEquals(4, map.size());
+        TestCase.assertEquals("error", map.get("0-0-0-0").getNodeName());
+        TestCase.assertTrue(map.get("0-0-0-0").getData().contains("rabbit.flt.common.exception.FltException: hello"));
+        TestCase.assertTrue(map.get("0-0-0-0").getStatus() == TraceData.Status.ERR);
+        TestCase.assertEquals("/mvc/error", map.get("0-0-0").getNodeName());
+        headers = map.get("0-0-0").getHttpRequest().getHeaders();
+        TestCase.assertTrue(headers.containsKey(Headers.TRACE_ID.toLowerCase()) || headers.containsKey(Headers.TRACE_ID));
+        TestCase.assertTrue(headers.containsKey(Headers.SPAN_ID.toLowerCase()) || headers.containsKey(Headers.SPAN_ID));
+        TestCase.assertEquals("HTTP_CLIENT4", map.get("0-0").getNodeName());
+        TestCase.assertEquals("callError", map.get("0").getNodeName());
     }
 }

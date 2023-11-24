@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import rabbit.flt.common.AbstractConfigFactory;
-import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.exception.FltException;
 import rabbit.flt.common.utils.VersionUtils;
 import rabbit.flt.core.factory.DefaultConfigFactory;
 import rabbit.flt.core.loader.DefaultPluginClassLoader;
@@ -25,7 +25,7 @@ public class FltCoreTest {
         try {
             factory.initialize();
             throw new RuntimeException("");
-        } catch (AgentException e) {
+        } catch (FltException e) {
 
         }
         AbstractConfigFactory.setAgentConfigFile("classpath:agent.properties");

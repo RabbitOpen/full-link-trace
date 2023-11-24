@@ -1,6 +1,6 @@
 package rabbit.flt.common;
 
-import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.exception.FltException;
 import rabbit.flt.common.utils.ReflectUtils;
 import rabbit.flt.common.utils.StringUtils;
 
@@ -59,7 +59,7 @@ public abstract class AbstractConfigFactory {
     public static AgentConfig getConfig() {
         AbstractConfigFactory factory = getFactory();
         if (null == factory) {
-            throw new AgentException("no factory exception");
+            throw new FltException("no factory exception");
         }
         return factory.getAgentConfig();
     }
@@ -88,7 +88,7 @@ public abstract class AbstractConfigFactory {
             config.doValidation();
             return config;
         } catch (Exception e) {
-            throw new AgentException(e);
+            throw new FltException(e);
         }
     }
 
@@ -112,7 +112,7 @@ public abstract class AbstractConfigFactory {
 
     public static void setAgentConfigFile(String agentConfigFile) {
         if (StringUtils.isEmpty(agentConfigFile)) {
-            throw new AgentException("agent config error, config file can't be empty!");
+            throw new FltException("agent config error, config file can't be empty!");
         }
         AbstractConfigFactory.agentConfigFile = agentConfigFile;
     }

@@ -3,6 +3,7 @@ package rabbit.flt.test.webflux;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rabbit.flt.common.exception.FltException;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -17,5 +18,10 @@ public class BootController {
     @GetMapping("/hello1")
     public Mono<String> hello1() {
         return Mono.just("abc");
+    }
+
+    @GetMapping("/error")
+    public void error() {
+        throw new FltException("hello");
     }
 }

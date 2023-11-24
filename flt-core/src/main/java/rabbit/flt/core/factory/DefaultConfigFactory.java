@@ -2,7 +2,7 @@ package rabbit.flt.core.factory;
 
 import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
-import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.exception.FltException;
 import rabbit.flt.common.utils.ResourceUtils;
 
 import java.io.FileInputStream;
@@ -30,7 +30,7 @@ public class DefaultConfigFactory extends AbstractConfigFactory {
             String configFile = AbstractConfigFactory.getAgentConfigFile();
             stream = getConfigResource(configFile);
             if (null == stream) {
-                throw new AgentException("[" + configFile + "] is not exist");
+                throw new FltException("[" + configFile + "] is not exist");
             }
             this.setConfig(loadConfig(stream));
         } finally {

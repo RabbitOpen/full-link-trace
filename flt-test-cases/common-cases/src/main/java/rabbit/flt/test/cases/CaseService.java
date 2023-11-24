@@ -49,4 +49,14 @@ public class CaseService {
             client.close();
         }
     }
+
+    @Traceable
+    public void callError() throws IOException {
+        CloseableHttpClient client = HttpClients.createDefault();
+        try {
+            client.execute(new HttpGet("http://localhost:8888/mvc/error"));
+        } finally {
+            client.close();
+        }
+    }
 }

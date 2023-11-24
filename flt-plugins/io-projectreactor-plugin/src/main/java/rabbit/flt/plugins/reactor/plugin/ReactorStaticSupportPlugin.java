@@ -1,7 +1,7 @@
 package rabbit.flt.plugins.reactor.plugin;
 
 import rabbit.flt.common.context.TraceContext;
-import rabbit.flt.common.exception.AgentException;
+import rabbit.flt.common.exception.FltException;
 import rabbit.flt.common.trace.TraceContextData;
 import rabbit.flt.plugins.common.plugin.SupportPlugin;
 
@@ -71,7 +71,7 @@ public class ReactorStaticSupportPlugin extends SupportPlugin {
         try {
             return task.call();
         } catch (Exception e) {
-            throw new AgentException(e);
+            throw new FltException(e);
         } finally {
             if (open) {
                 TraceContext.clearContext();
