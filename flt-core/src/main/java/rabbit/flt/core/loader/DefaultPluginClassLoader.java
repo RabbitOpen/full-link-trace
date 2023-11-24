@@ -1,6 +1,5 @@
 package rabbit.flt.core.loader;
 
-import rabbit.flt.common.exception.AgentException;
 import rabbit.flt.common.log.AgentLoggerFactory;
 import rabbit.flt.common.log.Logger;
 import rabbit.flt.common.utils.ReflectUtils;

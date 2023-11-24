@@ -32,7 +32,7 @@ public class DefaultConfigFactory extends AbstractConfigFactory {
             if (null == stream) {
                 throw new AgentException("[" + configFile + "] is not exist");
             }
-            config = loadConfig(stream);
+            this.setConfig(loadConfig(stream));
         } finally {
             ResourceUtils.close(stream);
             lock.unlock();

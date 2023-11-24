@@ -24,10 +24,10 @@ public class VersionUtils {
     }
 
     public static String getVersion(String resourceFile, String propertyName) {
-        return new VersionUtils().loadVersion(resourceFile, propertyName);
+        return new VersionUtils().loadProperty(resourceFile, propertyName);
     }
 
-    private String loadVersion(String resourceFile, String propertyName) {
+    private String loadProperty(String resourceFile, String propertyName) {
         InputStream resource = getClass().getClassLoader().getResourceAsStream(resourceFile);
         try {
             Properties properties = new Properties();
