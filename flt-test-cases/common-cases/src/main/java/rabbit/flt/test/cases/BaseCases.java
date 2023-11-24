@@ -187,7 +187,7 @@ public abstract class BaseCases {
         Semaphore semaphore = new Semaphore(0);
         Map<String, TraceData> map = new ConcurrentHashMap<>();
         TestTraceHandler.setDiscardDataHandler(d -> {
-            logger.info("traceData: {}#{}", d.getNodeName(), d.getSpanId());
+            logger.info("traceData: {}#{}#{}#{}", d.getNodeName(), d.getSpanId(), d.getNodeDesc(), d.getApplicationCode());
             map.put(d.getSpanId(), d);
             semaphore.release();
         });
@@ -217,6 +217,7 @@ public abstract class BaseCases {
         TestCase.assertEquals("error", map.get("0-0-0-0").getNodeName());
         TestCase.assertTrue(map.get("0-0-0-0").getData().contains("rabbit.flt.common.exception.FltException: hello"));
         TestCase.assertTrue(map.get("0-0-0-0").getStatus() == TraceData.Status.ERR);
+        TestCase.assertTrue(map.get("0-0-0-0").isExceptionPoint());
         TestCase.assertEquals("/mvc/error", map.get("0-0-0").getNodeName());
         headers = map.get("0-0-0").getHttpRequest().getHeaders();
         TestCase.assertTrue(headers.containsKey(Headers.TRACE_ID.toLowerCase()) || headers.containsKey(Headers.TRACE_ID));
