@@ -210,6 +210,9 @@ public abstract class BaseCases {
         TestCase.assertTrue(headers.containsKey(Headers.SPAN_ID.toLowerCase()) || headers.containsKey(Headers.SPAN_ID));
         TestCase.assertEquals("HTTP_CLIENT4", map.get("0-0").getNodeName());
         TestCase.assertEquals("doHttp4Request", map.get("0").getNodeName());
+        TestCase.assertTrue(map.get("0-0").getHttpRequest().getHeaders().containsKey("name"));
+        // http client4未记录
+        TestCase.assertNull(map.get("0-0").getHttpRequest().getRequestParameters());
 
         caseService.callError();
         semaphore.acquire(4);

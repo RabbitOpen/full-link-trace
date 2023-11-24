@@ -44,7 +44,9 @@ public class CaseService {
     public void doHttp4Request() throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         try {
-            client.execute(new HttpGet("http://localhost:8888/mvc/hello"));
+            HttpGet request = new HttpGet("http://localhost:8888/mvc/hello?age=10");
+            request.addHeader("name", "zhang3");
+            client.execute(request);
         } finally {
             client.close();
         }
@@ -54,6 +56,7 @@ public class CaseService {
     public void callError() throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         try {
+
             client.execute(new HttpGet("http://localhost:8888/mvc/error"));
         } finally {
             client.close();
