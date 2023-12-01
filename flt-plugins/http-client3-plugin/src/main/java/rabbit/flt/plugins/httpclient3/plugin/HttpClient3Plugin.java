@@ -76,6 +76,13 @@ public class HttpClient3Plugin extends PerformancePlugin {
             for (Header header : httpMethod.getResponseHeaders()) {
                 response.addHeader(header.getName(), truncate(header.getValue()));
             }
+            if (200 != httpMethod.getStatusCode()) {
+                try {
+                    response.setBody(truncate(httpMethod.getResponseBodyAsString()));
+                } catch (Exception e) {
+                    throw new FltException(e);
+                }
+            }
             response.setStatusCode(httpMethod.getStatusCode());
             traceData.setHttpResponse(response);
         }

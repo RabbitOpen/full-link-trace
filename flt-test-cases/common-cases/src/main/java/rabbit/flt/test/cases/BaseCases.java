@@ -215,7 +215,8 @@ public abstract class BaseCases {
         TestCase.assertTrue(map.get("0-0").getHttpRequest().getRequestParameters().isEmpty());
         TestCase.assertTrue(!map.get("0-0").getHttpResponse().getHeaders().isEmpty());
 
-        caseService.callError();
+        String responseBody = caseService.callError();
+        TestCase.assertEquals("error", responseBody);
         semaphore.acquire(4);
         TestCase.assertEquals(4, map.size());
         TestCase.assertEquals("error", map.get("0-0-0-0").getNodeName());
@@ -223,10 +224,12 @@ public abstract class BaseCases {
         TestCase.assertTrue(map.get("0-0-0-0").getStatus() == TraceData.Status.ERR);
         TestCase.assertTrue(map.get("0-0-0-0").isExceptionPoint());
         TestCase.assertEquals("/mvc/error", map.get("0-0-0").getNodeName());
+        TestCase.assertEquals(responseBody, map.get("0-0-0").getHttpResponse().getBody());
         headers = map.get("0-0-0").getHttpRequest().getHeaders();
         TestCase.assertTrue(headers.containsKey(Headers.TRACE_ID.toLowerCase()) || headers.containsKey(Headers.TRACE_ID));
         TestCase.assertTrue(headers.containsKey(Headers.SPAN_ID.toLowerCase()) || headers.containsKey(Headers.SPAN_ID));
         TestCase.assertEquals("HTTP_CLIENT4", map.get("0-0").getNodeName());
+        TestCase.assertEquals(responseBody, map.get("0-0").getHttpResponse().getBody());
         TestCase.assertEquals("callError", map.get("0").getNodeName());
         TestTraceHandler.setDiscardDataHandler(null);
     }

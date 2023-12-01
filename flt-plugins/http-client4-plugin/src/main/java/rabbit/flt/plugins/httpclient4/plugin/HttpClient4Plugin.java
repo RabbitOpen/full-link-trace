@@ -4,10 +4,13 @@ import org.apache.http.Header;
 import org.apache.http.HttpMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 import rabbit.flt.common.AbstractConfigFactory;
 import rabbit.flt.common.AgentConfig;
 import rabbit.flt.common.Headers;
 import rabbit.flt.common.context.TraceContext;
+import rabbit.flt.common.exception.FltException;
 import rabbit.flt.common.trace.MessageType;
 import rabbit.flt.common.trace.MethodStackInfo;
 import rabbit.flt.common.trace.TraceData;
@@ -75,6 +78,16 @@ public class HttpClient4Plugin extends PerformancePlugin {
                 }
                 response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
                 traceData.setHttpResponse(response);
+                if (200 != response.getStatusCode()) {
+                    try {
+                        String body = EntityUtils.toString(httpResponse.getEntity());
+                        // entity不能重复读取，这里获取后需要填充一个回去
+                        httpResponse.setEntity(new StringEntity(body));
+                        response.setBody(truncate(body));
+                    } catch (Exception e) {
+                        throw new FltException(e);
+                    }
+                }
             }
         }
     }

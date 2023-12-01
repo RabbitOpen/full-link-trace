@@ -170,8 +170,9 @@ public abstract class AbstractPlugin implements Plugin {
      * @return
      */
     protected String truncate(String txt) {
-        if (!StringUtils.isEmpty(txt) && txt.length() > 512) {
-            return txt.substring(0, 512) + ".....";
+        int maxLength = 1024;
+        if (!StringUtils.isEmpty(txt) && txt.length() > maxLength) {
+            return txt.substring(0, maxLength) + ".....";
         }
         return txt;
     }

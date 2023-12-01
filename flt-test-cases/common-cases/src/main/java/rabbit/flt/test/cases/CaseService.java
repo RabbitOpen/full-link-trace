@@ -55,11 +55,11 @@ public class CaseService {
     }
 
     @Traceable
-    public void callError() throws IOException {
+    public String callError() throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         try {
             CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8888/mvc/error"));
-            System.out.println(EntityUtils.toString(response.getEntity()));
+            return EntityUtils.toString(response.getEntity());
         } finally {
             client.close();
         }

@@ -19,8 +19,14 @@ import static rabbit.flt.common.trace.TraceData.Status.ERR;
 
 public class SpringMethodAdapterPlugin extends PerformancePlugin {
 
+    /**
+     * 非200响应时缓存traceData
+     */
+    private static final ThreadLocal<TraceData> errorContext = new ThreadLocal<>();
+
     @Override
     public Object[] before(Object objectEnhanced, Method method, Object[] args) {
+        clearContext();
         HttpServletRequest request = (HttpServletRequest) args[0];
         if (DispatcherType.REQUEST != request.getDispatcherType()) {
             return args;
@@ -90,6 +96,12 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
         traceData.setMessageType(MessageType.REST.name());
         setRequestInfo(args, traceData);
         setResponseInfo(args, traceData);
+        // ！！！！正常响应的数据
+        if (200 == traceData.getHttpResponse().getStatusCode()) {
+            super.handleTraceData(traceData);
+        } else {
+            errorContext.set(traceData);
+        }
     }
 
     /**
@@ -139,5 +151,18 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+    }
+
+    @Override
+    protected void handleTraceData(TraceData traceData) {
+        // do nothing, 放在填充数据阶段发送trace
+    }
+
+    public static TraceData getTraceContext() {
+        return errorContext.get();
+    }
+
+    public static void clearContext() {
+        errorContext.remove();
     }
 }

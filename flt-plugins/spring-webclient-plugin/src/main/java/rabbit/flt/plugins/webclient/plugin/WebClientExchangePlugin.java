@@ -74,13 +74,13 @@ public class WebClientExchangePlugin extends PerformancePlugin {
 
     @Override
     public Object after(Object objectEnhanced, Method method, Object[] args, Object result) {
-        Mono mono = (Mono) super.after(objectEnhanced, method, args, result);
+        Mono<ClientResponse> mono = (Mono<ClientResponse>) super.after(objectEnhanced, method, args, result);
         TraceData traceData = getTraceData(TraceContext.getStackInfo(method));
         if (null == traceData) {
             return mono;
         }
-        mono = mono.map(resp -> {
-            ClientResponse response = (ClientResponse) resp;
+        return mono.map(response -> {
+            // 获取response以后设置数据
             ClientResponse.Headers defaultHeaders = response.headers();
             HttpHeaders httpHeaders = defaultHeaders.asHttpHeaders();
             HttpResponse httpResponse = new HttpResponse();
@@ -91,14 +91,8 @@ public class WebClientExchangePlugin extends PerformancePlugin {
             });
             httpResponse.setStatusCode(response.statusCode().value());
             traceData.setHttpResponse(httpResponse);
-            return resp;
-        }).onErrorMap(t -> {
-            HttpResponse httpResponse = new HttpResponse();
-            httpResponse.setStatusCode(500);
-            traceData.setHttpResponse(httpResponse);
-            return t;
-        });
-        return mono.doFinally(t -> {
+            return response;
+        }).doFinally(t -> {
             traceData.setCost(System.currentTimeMillis() - traceData.getRequestTime());
             traceData.setNodeName("WebClient");
             traceData.setMessageType(MessageType.WEBCLIENT.name());

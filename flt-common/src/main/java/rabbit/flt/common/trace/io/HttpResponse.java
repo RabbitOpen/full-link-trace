@@ -12,6 +12,11 @@ public class HttpResponse {
      */
     protected int statusCode = 0;
 
+    /**
+     * 响应body
+     */
+    protected String body;
+
     public void addHeader(String name, String value) {
         headers.put(name, value);
     }
@@ -30,5 +35,13 @@ public class HttpResponse {
 
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 }

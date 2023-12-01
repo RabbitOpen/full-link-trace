@@ -2,3 +2,4 @@ rabbit.flt.plugins.springmvc.matcher.SpringMethodAdapterMatcher
 rabbit.flt.plugins.springmvc.matcher.ComponentMatcher
 rabbit.flt.plugins.springmvc.matcher.ServiceMatcher
 rabbit.flt.plugins.springmvc.matcher.ControllerMatcher
+rabbit.flt.plugins.springmvc.matcher.RequestResponseBodyMethodProcessorMatcher
