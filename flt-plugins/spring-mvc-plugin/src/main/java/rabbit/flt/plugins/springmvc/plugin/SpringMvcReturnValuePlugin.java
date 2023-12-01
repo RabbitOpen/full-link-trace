@@ -17,6 +17,7 @@ public class SpringMvcReturnValuePlugin extends SupportPlugin {
         if (null != traceData) {
             traceData.getHttpResponse().setBody(truncate(StringUtils.toString(args[0])));
             SpringMethodAdapterPlugin.clearContext();
+            traceData.setCost(System.currentTimeMillis() - traceData.getRequestTime());
             super.handleTraceData(traceData);
         }
         return args;

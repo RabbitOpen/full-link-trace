@@ -97,10 +97,10 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
         setRequestInfo(args, traceData);
         setResponseInfo(args, traceData);
         // ！！！！正常响应的数据
-        if (200 == traceData.getHttpResponse().getStatusCode()) {
-            super.handleTraceData(traceData);
-        } else {
+        if (200 != traceData.getHttpResponse().getStatusCode()) {
             errorContext.set(traceData);
+        } else {
+            super.handleTraceData(traceData);
         }
     }
 

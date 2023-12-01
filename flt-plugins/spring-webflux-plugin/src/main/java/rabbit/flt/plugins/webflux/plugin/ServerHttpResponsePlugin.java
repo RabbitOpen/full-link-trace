@@ -18,26 +18,24 @@ public class ServerHttpResponsePlugin extends SupportPlugin {
 
     @Override
     public Object[] before(Object objectEnhanced, Method method, Object[] args) {
-        if ("writeWith".equals(method.getName())) {
+        if ("writeWith".equals(method.getName()) && (args[0] instanceof Mono)) {
             // 非200请求记录response内容
-            if (args[0] instanceof Mono) {
-                ServerHttpResponse response = (ServerHttpResponse) objectEnhanced;
-                args[0] = ((Mono<DataBuffer>) args[0]).map(buffer -> {
-                    if (objectEnhanced instanceof TraceContextHolder) {
-                        TraceContextHolder holder = (TraceContextHolder) objectEnhanced;
-                        TraceData traceData = (TraceData) holder.getTraceContextData();
-                        if (null != traceData && HttpStatus.OK != response.getStatusCode()) {
-                            traceData.setHttpResponse(new HttpResponse());
-                            byte[] bytes = new byte[buffer.readableByteCount()];
-                            buffer.read(bytes);
-                            traceData.getHttpResponse().setBody(truncate(new String(bytes, Charset.forName("UTF8"))));
-                            DataBufferUtils.release(buffer);
-                            return response.bufferFactory().wrap(bytes);
-                        }
+            ServerHttpResponse response = (ServerHttpResponse) objectEnhanced;
+            args[0] = ((Mono<DataBuffer>) args[0]).map(buffer -> {
+                if (objectEnhanced instanceof TraceContextHolder) {
+                    TraceContextHolder holder = (TraceContextHolder) objectEnhanced;
+                    TraceData traceData = (TraceData) holder.getTraceContextData();
+                    if (null != traceData && HttpStatus.OK != response.getStatusCode()) {
+                        traceData.setHttpResponse(new HttpResponse());
+                        byte[] bytes = new byte[buffer.readableByteCount()];
+                        buffer.read(bytes);
+                        traceData.getHttpResponse().setBody(truncate(new String(bytes, Charset.forName("UTF8"))));
+                        DataBufferUtils.release(buffer);
+                        return response.bufferFactory().wrap(bytes);
                     }
-                    return buffer;
-                });
-            }
+                }
+                return buffer;
+            });
         }
         return args;
     }
