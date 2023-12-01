@@ -2,9 +2,11 @@ package rabbit.flt.test.cases;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import rabbit.flt.common.Traceable;
 
 import java.io.IOException;
@@ -56,8 +58,8 @@ public class CaseService {
     public void callError() throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         try {
-
-            client.execute(new HttpGet("http://localhost:8888/mvc/error"));
+            CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8888/mvc/error"));
+            System.out.println(EntityUtils.toString(response.getEntity()));
         } finally {
             client.close();
         }
