@@ -1,2 +1,3 @@
 rabbit.flt.plugins.webclient.matcher.WebClientExchangeMatcher
 rabbit.flt.plugins.webclient.matcher.WebClientSupportMatcher
+rabbit.flt.plugins.webclient.matcher.WebClientDefaultClientResponseMatcher

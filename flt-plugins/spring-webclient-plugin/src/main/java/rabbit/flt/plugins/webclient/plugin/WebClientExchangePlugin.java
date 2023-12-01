@@ -13,10 +13,13 @@ import rabbit.flt.common.trace.io.HttpResponse;
 import rabbit.flt.common.utils.CollectionUtils;
 import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.plugins.common.plugin.PerformancePlugin;
+import rabbit.flt.plugins.webclient.ErrorClientResponseWrapper;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Method;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.OK;
 
 public class WebClientExchangePlugin extends PerformancePlugin {
 
@@ -91,16 +94,18 @@ public class WebClientExchangePlugin extends PerformancePlugin {
             });
             httpResponse.setStatusCode(response.statusCode().value());
             traceData.setHttpResponse(httpResponse);
-            return response;
-        }).doFinally(t -> {
             traceData.setCost(System.currentTimeMillis() - traceData.getRequestTime());
             traceData.setNodeName("WebClient");
             traceData.setMessageType(MessageType.WEBCLIENT.name());
             ClientRequest clientRequest = (ClientRequest) args[0];
             String uri = StringUtils.toString(clientRequest.url());
             traceData.setNodeDesc(uri);
-            // 发送数据
-            super.handleTraceData(traceData);
+            if (OK == response.statusCode()) {
+                // 发送数据
+                super.handleTraceData(traceData);
+                return response;
+            }
+            return ErrorClientResponseWrapper.proxy(response, traceData);
         });
     }
 

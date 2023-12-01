@@ -3,6 +3,8 @@ package rabbit.flt.test;
 import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
 import rabbit.flt.common.Traceable;
 import rabbit.flt.common.context.TraceContext;
@@ -20,6 +22,7 @@ public class WebClientCase {
 
     /**
      * 单次请求
+     *
      * @throws Exception
      */
     public void singleHttpRequestTest(WebClientUtil util) throws Exception {
@@ -49,7 +52,8 @@ public class WebClientCase {
     private void singleTraceableCall(WebClientUtil util) throws Exception {
         Semaphore semaphore = new Semaphore(0);
         WebClient.RequestHeadersUriSpec<?> spec = util.getWebClient().get();
-        spec.uri("http://localhost:8888/mvc/hello").retrieve().bodyToMono(String.class)
+        WebClient.ResponseSpec retrieve = spec.uri("http://localhost:8888/mvc/hello").retrieve();
+        retrieve.bodyToMono(String.class)
                 .subscribe(s -> {
                     logger.info("response: {}", s);
                     semaphore.release();
@@ -65,6 +69,7 @@ public class WebClientCase {
 
     /**
      * 级联测试
+     *
      * @param util
      * @throws Exception
      */
@@ -90,6 +95,44 @@ public class WebClientCase {
         TestTraceHandler.setDiscardDataHandler(null);
     }
 
+    /**
+     * 调用抛异常的接口，验证error body
+     *
+     * @param util
+     * @throws Exception
+     */
+    public void errorCallTest(WebClientUtil util) throws Exception {
+        TestCase.assertFalse(TraceContext.isTraceOpened());
+        Map<String, TraceData> map = new ConcurrentHashMap<>();
+        Semaphore semaphore = new Semaphore(0);
+        TestTraceHandler.setDiscardDataHandler(d -> {
+            logger.info("traceData: {}#{}", d.getNodeName(), d.getSpanId());
+            map.put(d.getSpanId(), d);
+            semaphore.release();
+        });
+        String result = errorCall(util);
+        semaphore.acquire(4);
+        TestCase.assertTrue(result.contains("500"));
+        TestCase.assertEquals("errorCall", map.get("0").getNodeName());
+        TestCase.assertEquals("WebClient", map.get("0-0").getNodeName());
+        TestCase.assertEquals("error", map.get("0-0").getHttpResponse().getBody());
+        TestCase.assertEquals("/mvc/error", map.get("0-0-0").getNodeName());
+        TestCase.assertEquals("error", map.get("0-0-0").getHttpResponse().getBody());
+        TestCase.assertEquals("error", map.get("0-0-0-0").getNodeName());
+
+        result = errorResponseEntityCall(util);
+        semaphore.acquire(4);
+        TestCase.assertEquals("error", result);
+        TestCase.assertEquals("errorResponseEntityCall", map.get("0").getNodeName());
+        TestCase.assertEquals("WebClient", map.get("0-0").getNodeName());
+        TestCase.assertEquals("error", map.get("0-0").getHttpResponse().getBody());
+        TestCase.assertEquals("/mvc/error", map.get("0-0-0").getNodeName());
+        TestCase.assertEquals("error", map.get("0-0-0").getHttpResponse().getBody());
+        TestCase.assertEquals("error", map.get("0-0-0-0").getNodeName());
+        TestCase.assertFalse(TraceContext.isTraceOpened());
+        TestTraceHandler.setDiscardDataHandler(null);
+    }
+
     @Traceable
     private void callHttpContinuously(WebClientUtil util) {
         Mono<String> fm = util.getWebClient().get().uri("http://localhost:8888/mvc/hello")
@@ -97,5 +140,28 @@ public class WebClientCase {
                 .flatMap(f -> util.getWebClient().get().uri("http://localhost:8888/mvc/hello1")
                         .retrieve().bodyToMono(String.class));
         TestCase.assertEquals("abc", fm.block());
+    }
+
+    @Traceable
+    private String errorCall(WebClientUtil util) {
+        try {
+            return util.getWebClient().get().uri("http://localhost:8888/mvc/error")
+                    .retrieve().bodyToMono(String.class).block();
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    @Traceable
+    private String errorResponseEntityCall(WebClientUtil util) {
+        try {
+            return util.getWebClient().get().uri("http://localhost:8888/mvc/error")
+                    .exchangeToMono(r -> r.bodyToMono(ByteArrayResource.class).map(bytes -> {
+                        ResponseEntity<String> responseEntity = new ResponseEntity<>(new String(bytes.getByteArray()), r.headers().asHttpHeaders(), r.statusCode());
+                        return responseEntity;
+                    })).block().getBody();
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 }
