@@ -59,25 +59,29 @@ public class HttpClient4Plugin extends PerformancePlugin {
                 request.addHeader(header.getName(), truncate(header.getValue()));
             }
             traceData.setHttpRequest(request);
-            HttpResponse httpResponse = (HttpResponse) result;
-            if (null != httpResponse) {
-                rabbit.flt.common.trace.io.HttpResponse response = new rabbit.flt.common.trace.io.HttpResponse();
-                for (Header header : httpResponse.getAllHeaders()) {
-                    response.addHeader(header.getName(), truncate(header.getValue()));
-                }
-                response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
-                traceData.setHttpResponse(response);
-                if (200 != response.getStatusCode()) {
-                    try {
-                        String body = EntityUtils.toString(httpResponse.getEntity());
-                        // entity不能重复读取，这里获取后需要填充一个回去
-                        httpResponse.setEntity(new StringEntity(body));
-                        response.setBody(truncate(body));
-                    } catch (Exception e) {
-                        throw new FltException(e);
-                    }
-                }
+            traceData.setHttpResponse(getHttpResponse((HttpResponse) result));
+        }
+    }
+
+    private rabbit.flt.common.trace.io.HttpResponse getHttpResponse(HttpResponse httpResponse) {
+        if (null == httpResponse) {
+            return null;
+        }
+        rabbit.flt.common.trace.io.HttpResponse response = new rabbit.flt.common.trace.io.HttpResponse();
+        for (Header header : httpResponse.getAllHeaders()) {
+            response.addHeader(header.getName(), truncate(header.getValue()));
+        }
+        response.setStatusCode(httpResponse.getStatusLine().getStatusCode());
+        if (200 != response.getStatusCode()) {
+            try {
+                String body = EntityUtils.toString(httpResponse.getEntity());
+                // entity不能重复读取，这里获取后需要填充一个回去
+                httpResponse.setEntity(new StringEntity(body));
+                response.setBody(truncate(body));
+            } catch (Exception e) {
+                throw new FltException(e);
             }
         }
+        return response;
     }
 }
