@@ -133,7 +133,7 @@ public abstract class ChannelReader implements ChannelAdaptor {
                 throw new BeyondLimitException(maxRealSize, getRemoteAddress(channel));
             }
         }
-        ByteBuffer buf = ByteBuffer.allocateDirect(frameLength);
+        ByteBuffer buf = ByteBuffer.allocate(frameLength);
         readInputData(channel, buf);
         byte[] array = new byte[frameLength];
         buf.position(0);
