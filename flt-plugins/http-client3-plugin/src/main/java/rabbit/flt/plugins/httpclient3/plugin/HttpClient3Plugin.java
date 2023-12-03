@@ -29,36 +29,24 @@ public class HttpClient3Plugin extends PerformancePlugin {
     @Override
     public Object[] before(Object target, Method method, Object[] args) {
         Object[] argsReturn = super.before(target, method, args);
-        if (shouldEnhance(args)) {
-            try {
-                MethodStackInfo stackInfo = TraceContext.getStackInfo(method);
-                TraceData traceData = stackInfo.getTraceData();
-                HttpMethod httpMethod = (HttpMethod) args[1];
-                httpMethod.setRequestHeader(Headers.TRACE_ID, TraceContext.getTraceId());
-                httpMethod.setRequestHeader(Headers.SPAN_ID, traceData.getSpanId());
-                AgentConfig config = AbstractConfigFactory.getConfig();
-                if (null != config) {
-                    httpMethod.setRequestHeader(Headers.SOURCE_APP, config.getApplicationCode());
-                }
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+        if (null != args[1] && isTraceOpened()) {
+            MethodStackInfo stackInfo = TraceContext.getStackInfo(method);
+            TraceData traceData = stackInfo.getTraceData();
+            HttpMethod httpMethod = (HttpMethod) args[1];
+            httpMethod.setRequestHeader(Headers.TRACE_ID, TraceContext.getTraceId());
+            httpMethod.setRequestHeader(Headers.SPAN_ID, traceData.getSpanId());
+            AgentConfig config = AbstractConfigFactory.getConfig();
+            if (null != config) {
+                httpMethod.setRequestHeader(Headers.SOURCE_APP, config.getApplicationCode());
             }
         }
         return argsReturn;
     }
 
-    private boolean shouldEnhance(Object[] args) {
-        return isHttpClient3(args) && isTraceOpened();
-    }
-
-    private boolean isHttpClient3(Object[] args) {
-        return 3 == args.length && null != args[1] && args[1] instanceof HttpMethod;
-    }
-
     @Override
     protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) {
         super.fillTraceData(traceData, objectEnhanced, method, args, result);
-        if (shouldEnhance(args)) {
+        if (null != args[1] && isTraceOpened()) {
             traceData.setMessageType(MessageType.HTTP_CLIENT3.name());
             traceData.setNodeName(MessageType.HTTP_CLIENT3.name());
             HttpMethod httpMethod = (HttpMethod) args[1];
@@ -87,4 +75,5 @@ public class HttpClient3Plugin extends PerformancePlugin {
             traceData.setHttpResponse(response);
         }
     }
+
 }

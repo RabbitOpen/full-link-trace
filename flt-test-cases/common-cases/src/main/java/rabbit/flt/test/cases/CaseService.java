@@ -25,7 +25,10 @@ public class CaseService {
     }
 
     @Traceable
-    private void count() {};
+    private void count() {
+    }
+
+    ;
 
     @Traceable
     public void longTrace(int count) {
@@ -55,7 +58,7 @@ public class CaseService {
     }
 
     @Traceable
-    public String callError() throws IOException {
+    public String http4Error() throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();
         try {
             CloseableHttpResponse response = client.execute(new HttpGet("http://localhost:8888/mvc/error"));
@@ -63,5 +66,14 @@ public class CaseService {
         } finally {
             client.close();
         }
+    }
+
+    @Traceable
+    public String http3Error() throws IOException {
+        HttpClient client = new HttpClient();
+        GetMethod method = new GetMethod("http://localhost:8888/mvc/error");
+        method.addRequestHeader("name", "zhangsan");
+        client.executeMethod(method);
+        return method.getResponseBodyAsString();
     }
 }

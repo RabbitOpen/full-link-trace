@@ -23,6 +23,7 @@ public class HttpClient4Plugin extends PerformancePlugin {
 
     /**
      * 增强请求
+     *
      * @param target
      * @param method
      * @param args
@@ -31,36 +32,24 @@ public class HttpClient4Plugin extends PerformancePlugin {
     @Override
     public Object[] before(Object target, Method method, Object[] args) {
         Object[] argsReturn = super.before(target, method, args);
-        if (shouldEnhance(args)) {
-            try {
-                MethodStackInfo stackInfo = TraceContext.getStackInfo(method);
-                TraceData traceData = stackInfo.getTraceData();
-                HttpMessage httpMessage = (HttpMessage) args[1];
-                httpMessage.setHeader(Headers.TRACE_ID, TraceContext.getTraceId());
-                httpMessage.setHeader(Headers.SPAN_ID, traceData.getSpanId());
-                AgentConfig config = AbstractConfigFactory.getConfig();
-                if (null != config) {
-                    httpMessage.setHeader(Headers.SOURCE_APP, config.getApplicationCode());
-                }
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+        if (isTraceOpened() && null != args[1]) {
+            MethodStackInfo stackInfo = TraceContext.getStackInfo(method);
+            TraceData traceData = stackInfo.getTraceData();
+            HttpMessage httpMessage = (HttpMessage) args[1];
+            httpMessage.setHeader(Headers.TRACE_ID, TraceContext.getTraceId());
+            httpMessage.setHeader(Headers.SPAN_ID, traceData.getSpanId());
+            AgentConfig config = AbstractConfigFactory.getConfig();
+            if (null != config) {
+                httpMessage.setHeader(Headers.SOURCE_APP, config.getApplicationCode());
             }
         }
         return argsReturn;
     }
 
-    private boolean shouldEnhance(Object[] args) {
-        return isHttpClient4(args) && isTraceOpened();
-    }
-
-    private boolean isHttpClient4(Object[] args) {
-        return 3 == args.length && null != args[1] && args[1] instanceof HttpMessage;
-    }
-
     @Override
-    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result)  {
+    protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) {
         super.fillTraceData(traceData, objectEnhanced, method, args, result);
-        if (shouldEnhance(args)) {
+        if (null != args[1] && isTraceOpened()) {
             traceData.setMessageType(MessageType.HTTP_CLIENT4.name());
             traceData.setNodeName(MessageType.HTTP_CLIENT4.name());
             HttpRequestBase httpRequest = (HttpRequestBase) args[1];
