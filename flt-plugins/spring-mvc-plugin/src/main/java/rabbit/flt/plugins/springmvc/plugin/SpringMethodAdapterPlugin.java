@@ -112,22 +112,18 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
     private void setRequestInfo(Object[] args, TraceData traceData) {
         HttpServletRequest request = (HttpServletRequest) args[0];
         HttpRequest requestInfo = new HttpRequest();
-        try {
-            requestInfo.setRequestUri(request.getRequestURI());
-            Enumeration<String> names = request.getHeaderNames();
-            while (names.hasMoreElements()) {
-                String name = names.nextElement();
-                requestInfo.addHeader(name, truncate(request.getHeader(name)));
-            }
-            names = request.getParameterNames();
-            while (names.hasMoreElements()) {
-                String name = names.nextElement();
-                requestInfo.addParameter(name, truncate(request.getParameter(name)));
-            }
-            traceData.setHttpRequest(requestInfo);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+        requestInfo.setRequestUri(request.getRequestURI());
+        Enumeration<String> names = request.getHeaderNames();
+        while (names.hasMoreElements()) {
+            String name = names.nextElement();
+            requestInfo.addHeader(name, truncate(request.getHeader(name)));
         }
+        names = request.getParameterNames();
+        while (names.hasMoreElements()) {
+            String name = names.nextElement();
+            requestInfo.addParameter(name, truncate(request.getParameter(name)));
+        }
+        traceData.setHttpRequest(requestInfo);
     }
 
     /**
