@@ -5,6 +5,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 import rabbit.flt.plugins.common.matcher.SupportMatcher;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
+import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 
 public class RequestResponseBodyMethodProcessorMatcher implements SupportMatcher {
 
@@ -15,7 +16,7 @@ public class RequestResponseBodyMethodProcessorMatcher implements SupportMatcher
 
     @Override
     public ElementMatcher.Junction methodMatcher(TypeDescription typeDescription) {
-        return named("handleReturnValue");
+        return named("handleReturnValue").and(takesArguments(4));
     }
 
     @Override
