@@ -1,7 +1,6 @@
 package rabbit.flt.plugins.webflux.plugin;
 
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.AbstractServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -30,8 +29,8 @@ public class ServerHttpResponsePlugin extends SupportPlugin {
                         byte[] bytes = new byte[buffer.readableByteCount()];
                         buffer.read(bytes);
                         traceData.getHttpResponse().setBody(truncate(new String(bytes, Charset.forName("UTF8"))));
-                        DataBufferUtils.release(buffer);
-                        return response.bufferFactory().wrap(bytes);
+                        buffer.readPosition(0);
+                        return buffer;
                     }
                 }
                 return buffer;
