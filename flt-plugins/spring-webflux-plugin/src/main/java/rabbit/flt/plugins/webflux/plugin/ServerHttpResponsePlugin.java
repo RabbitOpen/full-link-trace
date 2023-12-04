@@ -30,7 +30,6 @@ public class ServerHttpResponsePlugin extends SupportPlugin {
                         buffer.read(bytes);
                         traceData.getHttpResponse().setBody(truncate(new String(bytes, Charset.forName("UTF8"))));
                         buffer.readPosition(0);
-                        return buffer;
                     }
                 }
                 return buffer;

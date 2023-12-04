@@ -23,11 +23,12 @@ public class WebClientErrorBodyReaderPlugin extends SupportPlugin {
             return mono.map(resp -> {
                 String body = truncate(StringUtils.toString(resp));
                 if (resp instanceof byte[]) {
-                    body = truncate(new String((byte[]) resp, Charset.forName("UTF8")));
+                    body = new String((byte[]) resp, Charset.forName("UTF8"));
                 } else if (resp instanceof ByteArrayResource) {
-                    body = truncate(new String(((ByteArrayResource) resp).getByteArray(), Charset.forName("UTF8")));
+                    byte[] bytes = ((ByteArrayResource) resp).getByteArray();
+                    body = new String(bytes, Charset.forName("UTF8"));
                 }
-                traceData.getHttpResponse().setBody(body);
+                traceData.getHttpResponse().setBody(truncate(body));
                 super.handleTraceData(traceData);
                 return resp;
             });
