@@ -44,7 +44,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
     /**
      * 回调任务线程池
      */
-    private volatile ExecutorService callbackExecutor;
+    private ExecutorService callbackExecutor;
 
     // 连接的服务端
     private ServerNode serverNode;
@@ -84,22 +84,26 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
     private int keepAliveIntervalSeconds = 30;
 
     /**
-     * 构建函数
+     * 构造函数
      *
      * @param pool
      * @param serverNode
      */
     public ClientChannel(ChannelResourcePool pool, ServerNode serverNode) {
-        this(pool.getWorkerExecutor(), pool.getBossExecutor(), serverNode, pool.getResourceGuard(),
-                pool.getWrapper(), pool.getPoolConfig().getRpcRequestTimeoutSeconds());
+        this.workerExecutor = pool.getWorkerExecutor();
+        this.bossExecutor = pool.getBossExecutor();
+        this.serverNode = serverNode;
+        this.resourceGuard = pool.getResourceGuard();
+        this.selectorWrapper = pool.getWrapper();
+        initKeepAlive(pool.getPoolConfig().getRpcRequestTimeoutSeconds());
         this.callbackExecutor = pool.getCallbackExecutor();
         this.keepAliveIntervalSeconds = pool.getPoolConfig().getKeepAliveIntervalSeconds();
         this.channelListener = pool.getPoolConfig().getChannelListener();
+        this.resourceGuard.add(this);
     }
 
     /**
-     * 构建函数
-     *
+     * 构造函数
      * @param workerExecutor
      * @param bossExecutor
      * @param serverNode
@@ -108,21 +112,6 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
      */
     public ClientChannel(ExecutorService workerExecutor, ExecutorService bossExecutor, ServerNode serverNode,
                          ResourceGuard guard, SelectorWrapper selectorWrapper) {
-        this(workerExecutor, bossExecutor, serverNode, guard, selectorWrapper, 30);
-    }
-
-    /**
-     * 构建函数
-     *
-     * @param workerExecutor
-     * @param bossExecutor
-     * @param serverNode
-     * @param guard
-     * @param selectorWrapper
-     * @param rpcTimeoutSeconds
-     */
-    private ClientChannel(ExecutorService workerExecutor, ExecutorService bossExecutor, ServerNode serverNode,
-                          ResourceGuard guard, SelectorWrapper selectorWrapper, int rpcTimeoutSeconds) {
         this.channelListener = channel -> {
             // do nothing
         };
@@ -131,8 +120,8 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
         this.serverNode = serverNode;
         this.resourceGuard = guard;
         this.selectorWrapper = selectorWrapper;
+        initKeepAlive(30);
         this.resourceGuard.add(this);
-        initKeepAlive(rpcTimeoutSeconds);
     }
 
     /**
