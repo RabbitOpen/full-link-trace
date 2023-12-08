@@ -44,7 +44,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
     /**
      * 回调任务线程池
      */
-    private ExecutorService callbackExecutor;
+    private volatile ExecutorService callbackExecutor;
 
     // 连接的服务端
     private ServerNode serverNode;
