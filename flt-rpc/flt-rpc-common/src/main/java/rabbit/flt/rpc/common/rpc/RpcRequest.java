@@ -22,6 +22,18 @@ public class RpcRequest extends Protocol<Request> {
     @FieldSerializer.Optional("RpcRequest.counter")
     private int counter = 0;
 
+    /**
+     * 请求时间
+     */
+    @FieldSerializer.Optional("RpcRequest.requestTime")
+    private long requestTime;
+
+    /**
+     * 超时秒数
+     */
+    @FieldSerializer.Optional("RpcRequest.timeoutSeconds")
+    private int timeoutSeconds;
+
     // 响应
     private RpcResponse response;
 
@@ -49,11 +61,10 @@ public class RpcRequest extends Protocol<Request> {
     /**
      * 读取响应信息
      *
-     * @param timeoutSeconds
      * @param finalCallback
      * @return
      */
-    public final Object getResponse(int timeoutSeconds, Runnable finalCallback) {
+    public final Object getResponse(Runnable finalCallback) {
         if (isAsyncRequest()) {
             return Mono.create(responseHolder).flatMap(resp -> {
                 try {
@@ -65,7 +76,7 @@ public class RpcRequest extends Protocol<Request> {
             });
         }
         try {
-            if (responseInTime(timeoutSeconds)) {
+            if (responseInTime()) {
                 return readResponseData(getResponse());
             }
             throw new RpcTimeoutException(getRequest().getInterfaceClz().getName().concat(".").concat(getRequest().getMethodName()),
@@ -110,7 +121,7 @@ public class RpcRequest extends Protocol<Request> {
         }
     }
 
-    private boolean responseInTime(int timeoutSeconds) {
+    private boolean responseInTime() {
         try {
             return getSemaphore().tryAcquire(1, timeoutSeconds, TimeUnit.SECONDS);
         } catch (Exception e) {
@@ -141,5 +152,21 @@ public class RpcRequest extends Protocol<Request> {
         if (null != responseHolder) {
             responseHolder.setResponse(response);
         }
+    }
+
+    public long getRequestTime() {
+        return requestTime;
+    }
+
+    public void setRequestTime(long requestTime) {
+        this.requestTime = requestTime;
+    }
+
+    public int getTimeoutSeconds() {
+        return timeoutSeconds;
+    }
+
+    public void setTimeoutSeconds(int timeoutSeconds) {
+        this.timeoutSeconds = timeoutSeconds;
     }
 }

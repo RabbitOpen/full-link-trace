@@ -292,16 +292,15 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
      * 发起请求
      *
      * @param request
-     * @param timeoutSeconds
      * @return
      */
     @Override
-    public <T> T doRequest(RpcRequest request, int timeoutSeconds) {
+    public <T> T doRequest(RpcRequest request) {
         requestInterceptor.before(request);
         if (request.isAsyncRequest()) {
-            return (T) doAsyncRequest(request, timeoutSeconds);
+            return (T) doAsyncRequest(request);
         } else {
-            return (T) doSyncRequest(request, timeoutSeconds);
+            return (T) doSyncRequest(request);
         }
     }
 
@@ -309,19 +308,18 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
      * 同步请求
      *
      * @param request
-     * @param timeoutSeconds
      * @return
      */
-    private Object doSyncRequest(RpcRequest request, int timeoutSeconds) {
+    private Object doSyncRequest(RpcRequest request) {
         try {
-            return doRpcRequest(request, timeoutSeconds);
+            return doRpcRequest(request);
         } catch (NoPreparedClientException | UnRegisteredHandlerException | AuthenticationException | RpcTimeoutException e) {
             throw e;
         } catch (RpcException e) {
             if (request.getCounter() > request.getMaxRetryTimes()) {
                 throw e;
             }
-            return doRequest(request, timeoutSeconds);
+            return doRequest(request);
         }
     }
 
@@ -329,24 +327,22 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
      * 发起rpc请求
      *
      * @param request
-     * @param timeoutSeconds
      * @return
      */
-    private Object doRpcRequest(RpcRequest request, int timeoutSeconds) {
+    private Object doRpcRequest(RpcRequest request) {
         request.increase();
         long timeoutMills = poolConfig.getAcquireClientTimeoutSeconds() * 1000L;
-        return getClient(timeoutMills).doRequest(request, timeoutSeconds);
+        return getClient(timeoutMills).doRequest(request);
     }
 
     /**
      * 异步请求
      *
      * @param request
-     * @param timeoutSeconds
      * @return
      */
-    private Object doAsyncRequest(RpcRequest request, int timeoutSeconds) {
-        return Mono.defer(() -> (Mono<?>) doRpcRequest(request, timeoutSeconds)).onErrorResume(e -> {
+    private Object doAsyncRequest(RpcRequest request) {
+        return Mono.defer(() -> (Mono<?>) doRpcRequest(request)).onErrorResume(e -> {
             if (e instanceof NoPreparedClientException || e instanceof UnRegisteredHandlerException
                     || e instanceof AuthenticationException || e instanceof RpcTimeoutException) {
                 return Mono.error(e);
@@ -354,7 +350,7 @@ public abstract class ChannelResourcePool extends AbstractClientChannel implemen
                 if (request.getCounter() > request.getMaxRetryTimes()) {
                     return Mono.error(e);
                 }
-                return doRequest(request, timeoutSeconds);
+                return doRequest(request);
             }
         });
     }

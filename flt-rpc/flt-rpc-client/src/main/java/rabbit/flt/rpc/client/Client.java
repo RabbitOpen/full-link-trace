@@ -11,11 +11,10 @@ public interface Client {
      * 发送rpc请求
      *
      * @param request
-     * @param timeoutSeconds
      * @param <T>
      * @return
      */
-    <T> T doRequest(RpcRequest request, int timeoutSeconds);
+    <T> T doRequest(RpcRequest request);
 
     /**
      * 连接服务端

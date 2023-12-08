@@ -53,7 +53,9 @@ public abstract class RequestFactory implements InvocationHandler {
         request.setParameters(args);
         rpcRequest.setRequest(request);
         rpcRequest.setMaxRetryTimes(getMaxRetryTime());
-        return getClient().doRequest(rpcRequest, getRequestTimeoutSeconds());
+        rpcRequest.setRequestTime(System.currentTimeMillis());
+        rpcRequest.setTimeoutSeconds(getRequestTimeoutSeconds());
+        return getClient().doRequest(rpcRequest);
     }
 
     /**

@@ -69,6 +69,7 @@ public class ResourceGuard extends Thread {
                         client.doConnect();
                     } else if (client.getChannelStatus().isConnected()) {
                         client.keepAlive();
+                        client.doLeakedRequestsChecking();
                         updateServerNodes();
                     }
                 } catch (Exception e) {

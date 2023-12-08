@@ -69,6 +69,11 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
     private long lastKeepAliveTime = 0L;
 
     /**
+     * 上次泄露检查时间
+     */
+    private long lastLeakCheckingTime = 0L;
+
+    /**
      * 上次连接时间，重连时使用，防止频繁重试
      */
     private long lastConnectTime = 0L;
@@ -117,7 +122,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
      * @param rpcTimeoutSeconds
      */
     private ClientChannel(ExecutorService workerExecutor, ExecutorService bossExecutor, ServerNode serverNode,
-                         ResourceGuard guard, SelectorWrapper selectorWrapper, int rpcTimeoutSeconds) {
+                          ResourceGuard guard, SelectorWrapper selectorWrapper, int rpcTimeoutSeconds) {
         this.channelListener = channel -> {
             // do nothing
         };
@@ -153,7 +158,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
     }
 
     @Override
-    public <T> T doRequest(RpcRequest request, int timeoutSeconds) {
+    public <T> T doRequest(RpcRequest request) {
         try {
             lock.lock();
             if (!getChannelStatus().isConnected()) {
@@ -190,7 +195,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
             lock.unlock();
         }
         try {
-            return (T) request.getResponse(timeoutSeconds, () -> signals.remove(request.getRequestId()));
+            return (T) request.getResponse(() -> signals.remove(request.getRequestId()));
         } catch (RpcTimeoutException e) {
             // 超时断开重连
             disconnected(selectionKey);
@@ -338,6 +343,25 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
         }
         lastKeepAliveTime = System.currentTimeMillis();
         keepAlive.keepAlive();
+    }
+
+    /**
+     * 请求内存泄露检查
+     */
+    public void doLeakedRequestsChecking() {
+        long now = System.currentTimeMillis();
+        if (now - lastLeakCheckingTime < 10 * 1000) {
+            // 10 秒检查一次
+            return;
+        }
+        signals.forEach((id, request) -> {
+            if (now - request.getRequestTime() < 2L * request.getTimeoutSeconds() * 1000) {
+                return;
+            }
+            logger.info("found leaked request! id: {}, name: {}.{}", request.getRequestId(), request.getRequest().getInterfaceClz().getName(), request.getRequest().getMethodName());
+            signals.remove(id);
+        });
+        lastLeakCheckingTime = System.currentTimeMillis();
     }
 
     public boolean isPrepared() {
