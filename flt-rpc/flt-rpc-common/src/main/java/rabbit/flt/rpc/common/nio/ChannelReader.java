@@ -156,7 +156,7 @@ public abstract class ChannelReader implements ChannelAdaptor {
     }
 
     /**
-     * 使用缓存的直接内存
+     * 使用缓存的内存
      * @param frameLength
      * @return
      */
@@ -166,7 +166,7 @@ public abstract class ChannelReader implements ChannelAdaptor {
             /**
              * 此处最大分配次数受 boss executor 线程数个数限制，不会超过boss executor 线程数
              */
-            buffer = ByteBuffer.allocateDirect(getMaxFrameLength());
+            buffer = ByteBuffer.allocate(getMaxFrameLength());
         }
         buffer.clear();
         buffer.limit(frameLength);
