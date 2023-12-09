@@ -109,14 +109,14 @@ public class Server extends AbstractServerChannel implements Registrar {
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.bind(new InetSocketAddress(getHost(), port), maxPendingConnections);
             serverSocketChannel.register(getWrapper().getSelector(), SelectionKey.OP_ACCEPT);
-            processor = new ChannelProcessor(selectorWrapper, this);
-            processor.start();
             if (null == workerExecutor) {
                 workerExecutor = NamedExecutor.fixedThreadsPool(this.workerThreadCount, "worker-executor-");
             }
             if (null == bossExecutor) {
                 bossExecutor = NamedExecutor.fixedThreadsPool(this.bossThreadCount, "boss-executor-");
             }
+            processor = new ChannelProcessor(selectorWrapper, this);
+            processor.start();
             slf4jLogger.info("server is started on port {}", port);
             return this;
         } catch (Exception e) {
