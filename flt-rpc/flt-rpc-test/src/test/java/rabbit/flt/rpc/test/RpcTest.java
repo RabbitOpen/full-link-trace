@@ -24,6 +24,7 @@ import rabbit.flt.rpc.common.RpcException;
 import rabbit.flt.rpc.common.ServerNode;
 import rabbit.flt.rpc.common.exception.*;
 import rabbit.flt.rpc.common.nio.ChannelProcessor;
+import rabbit.flt.rpc.common.nio.ChannelReader;
 import rabbit.flt.rpc.common.nio.SelectorWrapper;
 import rabbit.flt.rpc.common.rpc.*;
 import rabbit.flt.rpc.server.ClientEventHandler;
@@ -36,6 +37,7 @@ import java.lang.reflect.Method;
 import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -291,9 +293,10 @@ public class RpcTest {
         int port = 10035;
         String host = "localhost";
         ChannelResourcePool resourcePool = new SecureChannelResourcePool();
+        int bossThreadCount = 2;
         Server server = ServerBuilder.builder()
                 .workerThreadCount(8)
-                .bossThreadCount(2)
+                .bossThreadCount(bossThreadCount)
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
@@ -340,24 +343,24 @@ public class RpcTest {
         UserService userService = requestFactory.proxy(UserService.class);
         Semaphore requestCounter = new Semaphore(0);
         long start = System.currentTimeMillis();
-        int times = 1000;
-        int threads = 10;
+        int times = 10000;
+        int threads = 20;
         for (int i = 0; i < threads; i++) {
             new Thread(() -> {
                 for (int j = 0; j < times; j++) {
-                    if (100 == j) {
-                        resourcePool.getWrapper().addHookJob(() -> {
-                            try {
-                                Field processorField = ChannelResourcePool.class.getDeclaredField("channelProcessor");
-                                Object processor = ReflectUtils.getValue(resourcePool, processorField);
-                                Method method = processor.getClass().getDeclaredMethod("rebuildSelectorWhenEpollBugFound");
-                                method.setAccessible(true);
-                                method.invoke(processor);
-                            } catch (Exception e) {
-                                logger.error(e.getMessage(), e);
-                            }
-                        });
-                    }
+//                    if (100 == j) {
+//                        resourcePool.getWrapper().addHookJob(() -> {
+//                            try {
+//                                Field processorField = ChannelResourcePool.class.getDeclaredField("channelProcessor");
+//                                Object processor = ReflectUtils.getValue(resourcePool, processorField);
+//                                Method method = processor.getClass().getDeclaredMethod("rebuildSelectorWhenEpollBugFound");
+//                                method.setAccessible(true);
+//                                method.invoke(processor);
+//                            } catch (Exception e) {
+//                                logger.error(e.getMessage(), e);
+//                            }
+//                        });
+//                    }
                     try {
                         // 发送完数据还未等到响应，selector挂了，此时可能出现异常
                         TestCase.assertEquals("name" + j + "001", userService.getName("name" + j));
@@ -372,6 +375,9 @@ public class RpcTest {
         logger.info("cost: {}", System.currentTimeMillis() - start);
         resourcePool.close();
         server.close();
+        Collection cachedByteBuffer = ReflectUtils.getValue(server, ReflectUtils.loadField(ChannelReader.class,
+                "cachedByteBuffer"));
+        TestCase.assertTrue(cachedByteBuffer.size() <= bossThreadCount);
     }
 
     /**

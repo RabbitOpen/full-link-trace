@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.LockSupport;
 
 public abstract class ChannelReader implements ChannelAdaptor {
@@ -29,6 +30,12 @@ public abstract class ChannelReader implements ChannelAdaptor {
 
     // 最大帧长度
     protected int maxFrameLength = 16 * 1024 * 1024;
+
+    private LinkedBlockingQueue<ByteBuffer> cachedByteBuffer;
+
+    public ChannelReader() {
+        cachedByteBuffer = new LinkedBlockingQueue();
+    }
 
     /**
      * 重置selector
@@ -133,15 +140,37 @@ public abstract class ChannelReader implements ChannelAdaptor {
                 throw new BeyondLimitException(maxRealSize, getRemoteAddress(channel));
             }
         }
-        ByteBuffer buf = ByteBuffer.allocate(frameLength);
-        readInputData(channel, buf);
-        byte[] array = new byte[frameLength];
-        buf.position(0);
-        buf.get(array);
-        if (gzipped) {
-            array = GZipUtils.decompress(array, originalSize);
+        ByteBuffer buf = getCachedByteBuffer(frameLength);
+        try {
+            readInputData(channel, buf);
+            byte[] array = new byte[frameLength];
+            buf.position(0);
+            buf.get(array);
+            if (gzipped) {
+                array = GZipUtils.decompress(array, originalSize);
+            }
+            return array;
+        } finally {
+            cachedByteBuffer.add(buf);
         }
-        return array;
+    }
+
+    /**
+     * 使用缓存的直接内存
+     * @param frameLength
+     * @return
+     */
+    private ByteBuffer getCachedByteBuffer(int frameLength) {
+        ByteBuffer buffer = cachedByteBuffer.poll();
+        if (null == buffer) {
+            /**
+             * 此处最大分配次数受 boss executor 线程数个数限制，不会超过boss executor 线程数
+             */
+            buffer = ByteBuffer.allocate(getMaxFrameLength());
+        }
+        buffer.clear();
+        buffer.limit(frameLength);
+        return buffer;
     }
 
     /**
