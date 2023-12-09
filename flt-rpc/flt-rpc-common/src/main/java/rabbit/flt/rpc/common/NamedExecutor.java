@@ -1,7 +1,10 @@
 package rabbit.flt.rpc.common;
 
 import java.util.Objects;
-import java.util.concurrent.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NamedExecutor extends ThreadPoolExecutor {
@@ -9,14 +12,8 @@ public class NamedExecutor extends ThreadPoolExecutor {
     private static final AtomicInteger threadNumber = new AtomicInteger(1);
 
     private NamedExecutor(int poolSize, String namePrefix) {
-        this(poolSize, poolSize, 30, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
+        super(poolSize, poolSize, 30, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
         setThreadFactory(new DefaultThreadFactory(namePrefix));
-    }
-
-    public NamedExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,
-                         BlockingQueue<Runnable> workQueue) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
-        setThreadFactory(new DefaultThreadFactory());
     }
 
     public static NamedExecutor fixedThreadsPool(int poolSize, String namePrefix) {
@@ -34,12 +31,10 @@ public class NamedExecutor extends ThreadPoolExecutor {
     }
 
     private class DefaultThreadFactory implements ThreadFactory {
-        private ThreadGroup group;
-        private String namePrefix;
 
-        public DefaultThreadFactory() {
-            this("named-pool-thread-");
-        }
+        private ThreadGroup group;
+
+        private String namePrefix;
 
         private DefaultThreadFactory(String namePrefix) {
             SecurityManager manager = System.getSecurityManager();
