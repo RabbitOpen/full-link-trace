@@ -75,11 +75,10 @@ public abstract class ChannelReader implements ChannelAdaptor {
         selectionKey.interestOps(0);
         getBossExecutor().submit(() -> {
             SocketChannel channel = (SocketChannel) selectionKey.channel();
-            ByteBuffer buffer = getCachedByteBuffer(12);
+            ByteBuffer buffer = getCachedByteBuffer();
             try {
-                int frameLength = readFrameLength(channel, buffer);
-                byte[] dataBytes = readByteData(channel, buffer, frameLength);
-                handleData(selectionKey, dataBytes, frameLength);
+                byte[] dataBytes = readByteData(channel, buffer, readFrameLength(channel, buffer));
+                handleData(selectionKey, dataBytes, readFrameLength(channel, buffer));
                 wakeupSelectionKey(selectionKey);
             } catch (EndPointClosedException e) {
                 channelClosed(selectionKey, () -> {
@@ -156,10 +155,9 @@ public abstract class ChannelReader implements ChannelAdaptor {
     /**
      * 使用缓存的内存
      *
-     * @param limit
      * @return
      */
-    private ByteBuffer getCachedByteBuffer(int limit) {
+    private ByteBuffer getCachedByteBuffer() {
         ByteBuffer buffer = cachedByteBuffer.poll();
         if (null == buffer) {
             /**
@@ -168,7 +166,6 @@ public abstract class ChannelReader implements ChannelAdaptor {
             buffer = ByteBuffer.allocate(12 + getMaxFrameLength());
         }
         buffer.clear();
-        buffer.limit(limit);
         return buffer;
     }
 
@@ -216,6 +213,7 @@ public abstract class ChannelReader implements ChannelAdaptor {
      * @return
      */
     private int readFrameLength(SocketChannel channel, ByteBuffer buffer) {
+        buffer.limit(12);
         readInputData(channel, buffer);
         buffer.position(0);
         return buffer.getInt();
