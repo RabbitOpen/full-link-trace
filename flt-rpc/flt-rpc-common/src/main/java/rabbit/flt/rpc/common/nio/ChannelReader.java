@@ -75,8 +75,8 @@ public abstract class ChannelReader implements ChannelAdaptor {
         selectionKey.interestOps(0);
         getBossExecutor().submit(() -> {
             SocketChannel channel = (SocketChannel) selectionKey.channel();
+            ByteBuffer buffer = getCachedByteBuffer(12);
             try {
-                ByteBuffer buffer = ByteBuffer.allocate(12);
                 int frameLength = readFrameLength(channel, buffer);
                 byte[] dataBytes = readByteData(channel, buffer, frameLength);
                 handleData(selectionKey, dataBytes, frameLength);
@@ -95,8 +95,9 @@ public abstract class ChannelReader implements ChannelAdaptor {
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 disconnected(selectionKey);
+            } finally {
+                cachedByteBuffer.add(buffer);
             }
-
         });
     }
 
@@ -140,36 +141,34 @@ public abstract class ChannelReader implements ChannelAdaptor {
                 throw new BeyondLimitException(maxRealSize, getRemoteAddress(channel));
             }
         }
-        ByteBuffer buf = getCachedByteBuffer(frameLength);
-        try {
-            readInputData(channel, buf);
-            byte[] array = new byte[frameLength];
-            buf.position(0);
-            buf.get(array);
-            if (gzipped) {
-                array = GZipUtils.decompress(array, originalSize);
-            }
-            return array;
-        } finally {
-            cachedByteBuffer.add(buf);
+        buffer.clear();
+        buffer.limit(frameLength);
+        readInputData(channel, buffer);
+        byte[] array = new byte[frameLength];
+        buffer.position(0);
+        buffer.get(array);
+        if (gzipped) {
+            array = GZipUtils.decompress(array, originalSize);
         }
+        return array;
     }
 
     /**
      * 使用缓存的内存
-     * @param frameLength
+     *
+     * @param limit
      * @return
      */
-    private ByteBuffer getCachedByteBuffer(int frameLength) {
+    private ByteBuffer getCachedByteBuffer(int limit) {
         ByteBuffer buffer = cachedByteBuffer.poll();
         if (null == buffer) {
             /**
              * 此处最大分配次数受 boss executor 线程数个数限制，不会超过boss executor 线程数
              */
-            buffer = ByteBuffer.allocate(getMaxFrameLength());
+            buffer = ByteBuffer.allocate(12 + getMaxFrameLength());
         }
         buffer.clear();
-        buffer.limit(frameLength);
+        buffer.limit(limit);
         return buffer;
     }
 
