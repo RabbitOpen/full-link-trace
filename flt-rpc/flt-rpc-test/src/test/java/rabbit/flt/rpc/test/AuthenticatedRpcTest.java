@@ -78,7 +78,7 @@ public class AuthenticatedRpcTest {
         try {
             String text = reader.readLine();
             TestCase.assertTrue(text.length() > 1024);
-            userService.getName(text);
+            TestCase.assertEquals(text, userService.getName(text));
             resourcePool.close();
             server.close();
         } finally {
