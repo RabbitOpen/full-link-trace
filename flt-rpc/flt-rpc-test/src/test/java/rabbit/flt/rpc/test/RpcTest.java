@@ -15,7 +15,6 @@ import rabbit.flt.common.utils.ReflectUtils;
 import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.rpc.client.Client;
 import rabbit.flt.rpc.client.RequestFactory;
-import rabbit.flt.rpc.client.RpcRequestInterceptor;
 import rabbit.flt.rpc.client.handler.RpcMetricsDataHandler;
 import rabbit.flt.rpc.client.handler.RpcTraceDataHandler;
 import rabbit.flt.rpc.client.pool.*;
@@ -26,14 +25,16 @@ import rabbit.flt.rpc.common.exception.*;
 import rabbit.flt.rpc.common.nio.ChannelProcessor;
 import rabbit.flt.rpc.common.nio.ChannelReader;
 import rabbit.flt.rpc.common.nio.SelectorWrapper;
-import rabbit.flt.rpc.common.rpc.*;
+import rabbit.flt.rpc.common.rpc.Authentication;
+import rabbit.flt.rpc.common.rpc.DataService;
+import rabbit.flt.rpc.common.rpc.KeepAlive;
+import rabbit.flt.rpc.common.rpc.ProtocolService;
 import rabbit.flt.rpc.server.ClientEventHandler;
 import rabbit.flt.rpc.server.Server;
 import rabbit.flt.rpc.server.ServerBuilder;
 import reactor.core.publisher.Mono;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.management.ManagementFactory;
 import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.util.Arrays;
@@ -251,12 +252,7 @@ public class RpcTest {
         resourcePool.init(ConfigBuilder.builder()
                 .workerThreadCount(1)
                 .bossThreadCount(1)
-                .requestInterceptor(new RpcRequestInterceptor() {
-                    @Override
-                    public void before(RpcRequest request) {
-                        logger.info("begin request: {}", request.getRequestId());
-                    }
-                })
+                .requestInterceptor(request -> logger.info("begin request: {}", request.getRequestId()))
                 .password("1234567f1234567f")
                 .connectionsPerServer(connectionsPerServer)
                 .acquireClientTimeoutSeconds(3)
@@ -289,7 +285,8 @@ public class RpcTest {
      */
     @Test
     public void epollBugTest() throws Exception {
-        logger.info("-------------------------  begin epollBugTest  -------------------------");
+        logger.info("-------------------------  {} begin epollBugTest  ------------------------- ",
+                ManagementFactory.getRuntimeMXBean().getName());
         int port = 10035;
         String host = "localhost";
         ChannelResourcePool resourcePool = new SecureChannelResourcePool();
@@ -301,7 +298,7 @@ public class RpcTest {
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> resourcePool.getResourceGuard().wakeup())
-                .registerHandler(ProtocolService.class, () -> Arrays.asList(new ServerNode(host, port),
+                .registerHandler(ProtocolService.class, () -> Arrays.asList(new ServerNode(host, port) ,
                         new ServerNode(host, port + 1),
                         new ServerNode(host, port + 2)
                 ))
@@ -345,25 +342,26 @@ public class RpcTest {
         long start = System.currentTimeMillis();
         int times = 1000;
         int threads = 10;
+        String name = "hello";
         for (int i = 0; i < threads; i++) {
             new Thread(() -> {
                 for (int j = 0; j < times; j++) {
-                    if (100 == j) {
-                        resourcePool.getWrapper().addHookJob(() -> {
-                            try {
-                                Field processorField = ChannelResourcePool.class.getDeclaredField("channelProcessor");
-                                Object processor = ReflectUtils.getValue(resourcePool, processorField);
-                                Method method = processor.getClass().getDeclaredMethod("rebuildSelectorWhenEpollBugFound");
-                                method.setAccessible(true);
-                                method.invoke(processor);
-                            } catch (Exception e) {
-                                logger.error(e.getMessage(), e);
-                            }
-                        });
-                    }
+//                    if (100 == j) {
+//                        resourcePool.getWrapper().addHookJob(() -> {
+//                            try {
+//                                Field processorField = ChannelResourcePool.class.getDeclaredField("channelProcessor");
+//                                Object processor = ReflectUtils.getValue(resourcePool, processorField);
+//                                Method method = processor.getClass().getDeclaredMethod("rebuildSelectorWhenEpollBugFound");
+//                                method.setAccessible(true);
+//                                method.invoke(processor);
+//                            } catch (Exception e) {
+//                                logger.error(e.getMessage(), e);
+//                            }
+//                        });
+//                    }
                     try {
                         // 发送完数据还未等到响应，selector挂了，此时可能出现异常
-                        TestCase.assertEquals("name" + j + "001", userService.getName("name" + j));
+                        TestCase.assertEquals(name + j + "001", userService.getName(name + j));
                     } catch (ChannelClosedException e) {
                         logger.warn(e.getMessage());
                     }
