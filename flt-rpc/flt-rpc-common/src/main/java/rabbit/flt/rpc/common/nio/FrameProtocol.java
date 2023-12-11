@@ -13,28 +13,28 @@ public class FrameProtocol {
     /**
      * 是否压缩
      */
-    private boolean compressed;
+    private boolean gzipped;
 
     /**
      * 明文长度
      */
-    private int plainTextLength;
+    private int plainContentLength;
 
-    public FrameProtocol(int contentLength, boolean compressed, int plainTextLength) {
+    public FrameProtocol(int contentLength, boolean gzipped, int plainContentLength) {
         this.contentLength = contentLength;
-        this.compressed = compressed;
-        this.plainTextLength = plainTextLength;
+        this.gzipped = gzipped;
+        this.plainContentLength = plainContentLength;
     }
 
     public int getContentLength() {
         return contentLength;
     }
 
-    public boolean isCompressed() {
-        return compressed;
+    public boolean isGzipped() {
+        return gzipped;
     }
 
-    public int getPlainTextLength() {
-        return plainTextLength;
+    public int getPlainContentLength() {
+        return plainContentLength;
     }
 }

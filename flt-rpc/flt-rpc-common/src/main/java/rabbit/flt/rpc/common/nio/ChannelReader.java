@@ -132,10 +132,10 @@ public abstract class ChannelReader implements ChannelAdaptor {
         if (protocol.getContentLength() > getMaxFrameLength()) {
             throw new BeyondLimitException(getMaxFrameLength(), getRemoteAddress(channel));
         }
-        boolean gzipped = protocol.isCompressed();
+        boolean gzipped = protocol.isGzipped();
         if (gzipped) {
             int maxRealSize = getMaxFrameLength() * 2;
-            if (protocol.getPlainTextLength() > maxRealSize) {
+            if (protocol.getPlainContentLength() > maxRealSize) {
                 throw new BeyondLimitException(maxRealSize, getRemoteAddress(channel));
             }
         }
@@ -146,7 +146,7 @@ public abstract class ChannelReader implements ChannelAdaptor {
         buffer.position(0);
         buffer.get(array);
         if (gzipped) {
-            array = GZipUtils.decompress(array, protocol.getPlainTextLength());
+            array = GZipUtils.decompress(array, protocol.getPlainContentLength());
         }
         return array;
     }
