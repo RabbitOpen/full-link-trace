@@ -77,8 +77,9 @@ public abstract class ChannelReader implements ChannelAdaptor {
             SocketChannel channel = (SocketChannel) selectionKey.channel();
             ByteBuffer buffer = getCachedByteBuffer();
             try {
-                byte[] dataBytes = readByteData(channel, buffer, readFrameLength(channel, buffer));
-                handleData(selectionKey, dataBytes, readFrameLength(channel, buffer));
+                int frameLength = readFrameLength(channel, buffer);
+                byte[] dataBytes = readByteData(channel, buffer, frameLength);
+                handleData(selectionKey, dataBytes, frameLength);
                 wakeupSelectionKey(selectionKey);
             } catch (EndPointClosedException e) {
                 channelClosed(selectionKey, () -> {
