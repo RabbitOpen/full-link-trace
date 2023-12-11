@@ -153,7 +153,7 @@ public abstract class ChannelReader implements ChannelAdaptor {
     }
 
     /**
-     * 使用缓存的内存
+     * 使用缓存的buffer
      *
      * @return
      */
