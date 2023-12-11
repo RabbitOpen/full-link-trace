@@ -67,7 +67,6 @@ public class GZipUtils {
      * @return
      */
     public static byte[] unzipIgnoreOriginalLength(byte[] data, int stepSize) {
-
         try (
                 ByteArrayInputStream is = new ByteArrayInputStream(data);
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
