@@ -77,9 +77,9 @@ public abstract class ChannelReader implements ChannelAdaptor {
             SocketChannel channel = (SocketChannel) selectionKey.channel();
             ByteBuffer buffer = getCachedByteBuffer();
             try {
-                int frameLength = readFrameLength(channel, buffer);
-                byte[] dataBytes = readByteData(channel, buffer, frameLength);
-                handleData(selectionKey, dataBytes, frameLength);
+                FrameProtocol protocol = readFrameProtocol(channel, buffer);
+                byte[] dataBytes = readByteData(channel, buffer, protocol);
+                handleData(selectionKey, dataBytes, protocol.getContentLength());
                 wakeupSelectionKey(selectionKey);
             } catch (EndPointClosedException e) {
                 channelClosed(selectionKey, () -> {
@@ -125,30 +125,28 @@ public abstract class ChannelReader implements ChannelAdaptor {
      *
      * @param channel
      * @param buffer
-     * @param frameLength
+     * @param protocol
      * @return
      */
-    private byte[] readByteData(SocketChannel channel, ByteBuffer buffer, int frameLength) {
-        if (frameLength > getMaxFrameLength()) {
+    private byte[] readByteData(SocketChannel channel, ByteBuffer buffer, FrameProtocol protocol) {
+        if (protocol.getContentLength() > getMaxFrameLength()) {
             throw new BeyondLimitException(getMaxFrameLength(), getRemoteAddress(channel));
         }
-        boolean gzipped = DataType.GZIPPED == buffer.getInt();
-        int originalSize = 0;
+        boolean gzipped = protocol.isCompressed();
         if (gzipped) {
-            originalSize = buffer.getInt();
             int maxRealSize = getMaxFrameLength() * 2;
-            if (originalSize > maxRealSize) {
+            if (protocol.getPlainTextLength() > maxRealSize) {
                 throw new BeyondLimitException(maxRealSize, getRemoteAddress(channel));
             }
         }
         buffer.clear();
-        buffer.limit(frameLength);
+        buffer.limit(protocol.getContentLength());
         readInputData(channel, buffer);
-        byte[] array = new byte[frameLength];
+        byte[] array = new byte[protocol.getContentLength()];
         buffer.position(0);
         buffer.get(array);
         if (gzipped) {
-            array = GZipUtils.decompress(array, originalSize);
+            array = GZipUtils.decompress(array, protocol.getPlainTextLength());
         }
         return array;
     }
@@ -207,17 +205,18 @@ public abstract class ChannelReader implements ChannelAdaptor {
     }
 
     /**
-     * 读取帧长度
+     * 读取协议部分
      *
      * @param channel
      * @param buffer
      * @return
      */
-    private int readFrameLength(SocketChannel channel, ByteBuffer buffer) {
+    private FrameProtocol readFrameProtocol(SocketChannel channel, ByteBuffer buffer) {
+        buffer.clear();
         buffer.limit(12);
         readInputData(channel, buffer);
         buffer.position(0);
-        return buffer.getInt();
+        return new FrameProtocol(buffer.getInt(),  DataType.GZIPPED == buffer.getInt(), buffer.getInt());
     }
 
     /**
