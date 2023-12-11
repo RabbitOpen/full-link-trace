@@ -164,15 +164,15 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
             }
             signals.put(request.getRequestId(), request);
             byte[] bytes = Serializer.serialize(request);
-            boolean compress = false;
+            boolean zipped = false;
             int originalSize = bytes.length;
             if (originalSize > 1024 * 256) {
-                bytes = GZipUtils.compress(bytes);
-                compress = true;
+                bytes = GZipUtils.zip(bytes);
+                zipped = true;
             }
             ByteBuffer buffer = ByteBuffer.allocate(12 + bytes.length);
             buffer.putInt(bytes.length);
-            buffer.putInt(compress ? DataType.GZIPPED : DataType.UN_COMPRESSED);
+            buffer.putInt(zipped ? DataType.GZIPPED : DataType.UN_COMPRESSED);
             buffer.putInt(originalSize);
             buffer.put(bytes);
             buffer.position(0);

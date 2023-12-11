@@ -16,6 +16,9 @@ import rabbit.flt.rpc.common.rpc.ProtocolService;
 import rabbit.flt.rpc.server.Server;
 import rabbit.flt.rpc.server.ServerBuilder;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.StandardSocketOptions;
 import java.util.Arrays;
 
@@ -23,7 +26,7 @@ import java.util.Arrays;
 public class AuthenticatedRpcTest {
 
     @Test
-    public void authenticatedRpcTest() {
+    public void authenticatedRpcTest() throws IOException {
         int port = 10002;
         String host = "localhost";
         Server server = ServerBuilder.builder()
@@ -32,8 +35,9 @@ public class AuthenticatedRpcTest {
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .registerHandler(Authentication.class, (app, sig) -> {})
-                .registerHandler(UserService.class, name -> name + "001")
+                .registerHandler(Authentication.class, (app, sig) -> {
+                })
+                .registerHandler(UserService.class, name -> name)
                 .registerHandler(ProtocolService.class, () -> Arrays.asList(new ServerNode(host, port)))
                 .maxFrameLength(16 * 1024 * 1024)
                 .maxPendingConnections(1000)
@@ -69,8 +73,18 @@ public class AuthenticatedRpcTest {
         KeepAlive keepAlive = requestFactory.proxy(KeepAlive.class);
         keepAlive.keepAlive();
         UserService userService = requestFactory.proxy(UserService.class);
-        TestCase.assertEquals("hello001", userService.getName("hello"));
-        server.close();
-        resourcePool.close();
+        TestCase.assertEquals("hello", userService.getName("hello"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("file.txt")));
+        try {
+            long start = System.currentTimeMillis();
+            String text = reader.readLine();
+            System.out.println("read: " + (System.currentTimeMillis() - start));
+            TestCase.assertTrue(text.length() > 1024);
+            userService.getName(text);
+            server.close();
+            resourcePool.close();
+        } finally {
+            reader.close();
+        }
     }
 }

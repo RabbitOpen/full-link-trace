@@ -145,7 +145,7 @@ public abstract class ChannelReader implements ChannelAdaptor {
         buffer.position(0);
         buffer.get(array);
         if (protocol.isGzipped()) {
-            array = GZipUtils.decompress(array, protocol.getPlainContentLength());
+            array = GZipUtils.unzip(array, protocol.getPlainContentLength());
         }
         return array;
     }

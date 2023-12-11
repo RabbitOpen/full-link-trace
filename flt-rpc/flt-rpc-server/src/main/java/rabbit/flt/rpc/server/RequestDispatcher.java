@@ -148,18 +148,18 @@ public class RequestDispatcher implements Registrar  {
         Map<String, Object> attrs = (Map<String, Object>) key.attachment();
         ReentrantLock lock = (ReentrantLock) attrs.get(Attributes.WRITE_LOCK);
         byte[] bytes = Serializer.serialize(data);
-        boolean compress = false;
+        boolean zipped = false;
         int originalSize = bytes.length;
         if (originalSize > 1024 * 256) {
-            bytes = GZipUtils.compress(bytes);
-            compress = true;
+            bytes = GZipUtils.zip(bytes);
+            zipped = true;
         }
         try {
             lock.lock();
             SocketChannel channel = (SocketChannel) key.channel();
             ByteBuffer buffer = ByteBuffer.allocate(12 + bytes.length);
             buffer.putInt(bytes.length);
-            buffer.putInt(compress ? DataType.GZIPPED : DataType.UN_COMPRESSED);
+            buffer.putInt(zipped ? DataType.GZIPPED : DataType.UN_COMPRESSED);
             buffer.putInt(originalSize);
             buffer.put(bytes);
             buffer.position(0);

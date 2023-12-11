@@ -18,7 +18,7 @@ public class GZipUtils {
      * @param data
      * @return
      */
-    public static byte[] compress(byte[] data) {
+    public static byte[] zip(byte[] data) {
         try (
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 GZIPOutputStream gzipOs = new GZIPOutputStream(out);
@@ -39,7 +39,7 @@ public class GZipUtils {
      * @param originalSize
      * @return
      */
-    public static byte[] decompress(byte[] data, int originalSize) {
+    public static byte[] unzip(byte[] data, int originalSize) {
         try (
                 ByteArrayInputStream is = new ByteArrayInputStream(data);
                 GZIPInputStream gzipIs = new GZIPInputStream(is);
@@ -66,7 +66,7 @@ public class GZipUtils {
      * @param stepSize
      * @return
      */
-    public static byte[] decompressIgnoreOriginalLength(byte[] data, int stepSize) {
+    public static byte[] unzipIgnoreOriginalLength(byte[] data, int stepSize) {
 
         try (
                 ByteArrayInputStream is = new ByteArrayInputStream(data);
