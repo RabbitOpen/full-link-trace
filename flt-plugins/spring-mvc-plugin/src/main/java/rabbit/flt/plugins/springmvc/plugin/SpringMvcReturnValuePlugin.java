@@ -7,6 +7,7 @@ import rabbit.flt.plugins.common.plugin.SupportPlugin;
 import java.lang.reflect.Method;
 
 /**
+ * 提供了 controller advice 才进入该逻辑
  * spring mvc 模式下拦截response body
  */
 public class SpringMvcReturnValuePlugin extends SupportPlugin {

@@ -1,5 +1,6 @@
 package rabbit.flt.plugins.springmvc.plugin;
 
+import org.springframework.web.servlet.ModelAndView;
 import rabbit.flt.common.Headers;
 import rabbit.flt.common.context.TraceContext;
 import rabbit.flt.common.trace.MessageType;
@@ -26,33 +27,33 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
 
     @Override
     public Object[] before(Object objectEnhanced, Method method, Object[] args) {
-        clearContext();
         HttpServletRequest request = (HttpServletRequest) args[0];
-        if (DispatcherType.REQUEST != request.getDispatcherType()) {
-            return args;
-        }
-        TraceContext.clearContext();
-        TraceContext.openTrace(method);
-        String spanId = request.getHeader(Headers.SPAN_ID);
-        if (StringUtils.isEmpty(spanId)) {
-            TraceContext.initRootSpanId("0");
-        } else {
-            TraceContext.initRootSpanId(spanId.concat("-0"));
-            String traceId = request.getHeader(Headers.TRACE_ID);
-            if (!StringUtils.isEmpty(traceId)) {
-                TraceContext.setTraceId(traceId);
+        if (DispatcherType.REQUEST == request.getDispatcherType()) {
+            clearContext();
+            TraceContext.clearContext();
+            TraceContext.openTrace(method);
+            String spanId = request.getHeader(Headers.SPAN_ID);
+            if (StringUtils.isEmpty(spanId)) {
+                TraceContext.initRootSpanId("0");
+            } else {
+                TraceContext.initRootSpanId(spanId.concat("-0"));
+                String traceId = request.getHeader(Headers.TRACE_ID);
+                if (!StringUtils.isEmpty(traceId)) {
+                    TraceContext.setTraceId(traceId);
+                }
             }
+            super.before(objectEnhanced, method, args);
+            TraceData traceData = TraceContext.getStackInfo(method).getTraceData();
+            setSourceApplication(request, traceData);
+            traceData.setNodeName("");
+            TraceContext.setWebTraceDataContextData(traceData);
         }
-        super.before(objectEnhanced, method, args);
-        TraceData traceData = TraceContext.getStackInfo(method).getTraceData();
-        setSourceApplication(request, traceData);
-        traceData.setNodeName("");
-        TraceContext.setWebTraceDataContextData(traceData);
         return args;
     }
 
     /**
      * 设置来源app字段到trace data中
+     *
      * @param request
      * @param traceData
      */
@@ -106,6 +107,7 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
 
     /**
      * 设置请求参数
+     *
      * @param args
      * @param traceData
      */
@@ -128,6 +130,7 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
 
     /**
      * 设置响应
+     *
      * @param args
      * @param traceData
      */
@@ -147,6 +150,23 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void doFinal(Object objectEnhanced, Method method, Object[] args, Object result) {
+        HttpServletRequest request = (HttpServletRequest) args[0];
+        if (DispatcherType.ERROR == request.getDispatcherType()) {
+            TraceData traceData = errorContext.get();
+            if (null != traceData) {
+                ModelAndView view = (ModelAndView) result;
+                traceData.getHttpResponse().setBody(truncate(StringUtils.toString(view.getModelMap())));
+                clearContext();
+                traceData.setCost(System.currentTimeMillis() - traceData.getRequestTime());
+                super.handleTraceData(traceData);
+            }
+            return;
+        }
+        super.doFinal(objectEnhanced, method, args, result);
     }
 
     @Override
