@@ -149,7 +149,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
     /**
      * 发送数据
      *
-     *  |--4字节 内容长度--|-- 4字节 压缩表示--|-- 4字节 压缩前长度 --|-- n字节真实内容长度 --|
+     *  |--4字节 内容长度--|-- 4字节 压缩标识 --|-- 4字节 压缩前长度 --|-- n字节真实内容长度 --|
      *  |--                     12字节协议头                   --|--  n字节真实内容长度 --|
      * @param request
      * @param <T>
