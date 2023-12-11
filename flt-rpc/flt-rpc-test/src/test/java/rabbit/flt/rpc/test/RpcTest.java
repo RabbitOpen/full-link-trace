@@ -35,6 +35,8 @@ import rabbit.flt.rpc.server.ServerBuilder;
 import reactor.core.publisher.Mono;
 
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.util.Arrays;
@@ -346,19 +348,19 @@ public class RpcTest {
         for (int i = 0; i < threads; i++) {
             new Thread(() -> {
                 for (int j = 0; j < times; j++) {
-//                    if (100 == j) {
-//                        resourcePool.getWrapper().addHookJob(() -> {
-//                            try {
-//                                Field processorField = ChannelResourcePool.class.getDeclaredField("channelProcessor");
-//                                Object processor = ReflectUtils.getValue(resourcePool, processorField);
-//                                Method method = processor.getClass().getDeclaredMethod("rebuildSelectorWhenEpollBugFound");
-//                                method.setAccessible(true);
-//                                method.invoke(processor);
-//                            } catch (Exception e) {
-//                                logger.error(e.getMessage(), e);
-//                            }
-//                        });
-//                    }
+                    if (100 == j) {
+                        resourcePool.getWrapper().addHookJob(() -> {
+                            try {
+                                Field processorField = ChannelResourcePool.class.getDeclaredField("channelProcessor");
+                                Object processor = ReflectUtils.getValue(resourcePool, processorField);
+                                Method method = processor.getClass().getDeclaredMethod("rebuildSelectorWhenEpollBugFound");
+                                method.setAccessible(true);
+                                method.invoke(processor);
+                            } catch (Exception e) {
+                                logger.error(e.getMessage(), e);
+                            }
+                        });
+                    }
                     try {
                         // 发送完数据还未等到响应，selector挂了，此时可能出现异常
                         TestCase.assertEquals(name + j + "001", userService.getName(name + j));
