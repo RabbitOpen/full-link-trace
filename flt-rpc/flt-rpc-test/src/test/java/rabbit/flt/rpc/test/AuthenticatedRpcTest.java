@@ -76,13 +76,11 @@ public class AuthenticatedRpcTest {
         TestCase.assertEquals("hello", userService.getName("hello"));
         BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("file.txt")));
         try {
-            long start = System.currentTimeMillis();
             String text = reader.readLine();
-            System.out.println("read: " + (System.currentTimeMillis() - start));
             TestCase.assertTrue(text.length() > 1024);
             userService.getName(text);
-            server.close();
             resourcePool.close();
+            server.close();
         } finally {
             reader.close();
         }
