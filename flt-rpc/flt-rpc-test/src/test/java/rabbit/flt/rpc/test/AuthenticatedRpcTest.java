@@ -77,7 +77,7 @@ public class AuthenticatedRpcTest {
         BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("file.txt")));
         try {
             String text = reader.readLine();
-            TestCase.assertTrue(text.length() > 1024);
+            TestCase.assertTrue(text.length() > 256 * 1024);
             TestCase.assertEquals(text, userService.getName(text));
             resourcePool.close();
             server.close();
