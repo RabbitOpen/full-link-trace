@@ -28,4 +28,12 @@ public class BootController {
     public void error() {
         throw new FltException("hello");
     }
+
+    /**
+     * 未处理的异常
+     */
+    @GetMapping("/unHandledError")
+    public String unHandledError() {
+        throw new RuntimeException("hello");
+    }
 }

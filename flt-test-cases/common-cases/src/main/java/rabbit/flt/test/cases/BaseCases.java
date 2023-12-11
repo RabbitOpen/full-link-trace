@@ -257,4 +257,24 @@ public abstract class BaseCases {
 
         TestTraceHandler.setDiscardDataHandler(null);
     }
+
+    protected void unhandledHttpErrorTest() throws Exception {
+        Semaphore semaphore = new Semaphore(0);
+        Map<String, TraceData> map = new ConcurrentHashMap<>();
+        TestTraceHandler.setDiscardDataHandler(d -> {
+            logger.info("traceData: {}#{}#{}#{}", d.getNodeName(), d.getSpanId(), d.getNodeDesc(), d.getApplicationCode());
+            map.put(d.getSpanId(), d);
+            semaphore.release();
+        });
+        CaseService caseService = new CaseService();
+        caseService.unHandledErrorRequest();
+        semaphore.acquire(4);
+        TestCase.assertEquals(4, map.size());
+        TestCase.assertEquals("unHandledError", map.get("0-0-0-0").getNodeName());
+        TestCase.assertEquals("/mvc/unHandledError", map.get("0-0-0").getNodeName());
+        TestCase.assertEquals("HTTP_CLIENT3", map.get("0-0").getNodeName());
+        TestCase.assertTrue(map.get("0-0").getHttpResponse().getBody().contains("500"));
+        TestCase.assertEquals("unHandledErrorRequest", map.get("0").getNodeName());
+        TestTraceHandler.setDiscardDataHandler(null);
+    }
 }

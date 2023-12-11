@@ -45,6 +45,15 @@ public class CaseService {
         client.executeMethod(method);
     }
 
+
+    @Traceable
+    public void unHandledErrorRequest() throws IOException {
+        HttpClient client = new HttpClient();
+        GetMethod method = new GetMethod("http://localhost:8888/mvc/unHandledError");
+        method.addRequestHeader("name", "zhangsan");
+        client.executeMethod(method);
+    }
+
     @Traceable
     public void doHttp4Request() throws IOException {
         CloseableHttpClient client = HttpClients.createDefault();

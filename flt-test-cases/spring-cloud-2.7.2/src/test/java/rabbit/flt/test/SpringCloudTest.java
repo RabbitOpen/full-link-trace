@@ -16,10 +16,11 @@ public class SpringCloudTest extends BaseCases {
 
     @Test
     public void springBootTest() throws Exception {
-//        mybatisPlusTest();
-//        pushStackTest();
-//        longTraceTest();
+        mybatisPlusTest();
+        pushStackTest();
+        longTraceTest();
         httpClientTest();
+        unhandledHttpErrorTest();
         TestCase.assertTrue(ClassProxyLogger.getClassMap().containsKey(IgnoreService.class.getName()));
         TestCase.assertTrue(ClassProxyLogger.getClassMap().containsKey(IgnorePackage.class.getName()));
     }

@@ -20,6 +20,7 @@ public class SpringCloudStarterTest extends BaseCases {
         pushStackTest();
         longTraceTest();
         httpClientTest();
+        unhandledHttpErrorTest();
         TestCase.assertFalse(ClassProxyLogger.getClassMap().containsKey(IgnoreService.class.getName()));
         TestCase.assertFalse(ClassProxyLogger.getClassMap().containsKey(IgnorePackage.class.getName()));
     }

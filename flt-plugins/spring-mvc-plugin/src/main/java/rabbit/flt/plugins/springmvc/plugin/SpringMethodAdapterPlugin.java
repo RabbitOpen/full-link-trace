@@ -155,16 +155,25 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
     @Override
     public void doFinal(Object objectEnhanced, Method method, Object[] args, Object result) {
         HttpServletRequest request = (HttpServletRequest) args[0];
+        HttpServletResponse response = (HttpServletResponse) args[1];
         if (DispatcherType.ERROR == request.getDispatcherType()) {
             TraceData traceData = errorContext.get();
             if (null != traceData) {
                 ModelAndView view = (ModelAndView) result;
-                traceData.getHttpResponse().setBody(truncate(StringUtils.toString(view.getModelMap())));
+                HttpResponse httpResponse = new HttpResponse();
+                if (null != view) {
+                    httpResponse.setBody(truncate(StringUtils.toString(view.getModelMap())));
+                }
+                httpResponse.setStatusCode(500);
+                for (String name : response.getHeaderNames()) {
+                    httpResponse.addHeader(name, truncate(response.getHeader(name)));
+                }
+                traceData.setHttpResponse(httpResponse);
                 clearContext();
                 traceData.setCost(System.currentTimeMillis() - traceData.getRequestTime());
                 super.handleTraceData(traceData);
             }
-            return;
+            return ;
         }
         super.doFinal(objectEnhanced, method, args, result);
     }
