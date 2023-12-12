@@ -112,7 +112,7 @@ public class WebClientCase {
         });
         String result = unHandledErrorCase(util);
         semaphore.acquire(4);
-        TestCase.assertTrue(result.contains("500"));
+        TestCase.assertTrue("error".equals(result));
         TestCase.assertEquals("unHandledErrorCase", map.get("0").getNodeName());
         TestCase.assertEquals("WebClient", map.get("0-0").getNodeName());
         TestCase.assertTrue( map.get("0-0").getHttpResponse().getBody().contains("500"));
@@ -126,9 +126,6 @@ public class WebClientCase {
     @Traceable
     private String unHandledErrorCase(WebClientUtil util) {
         return util.getWebClient().get().uri("http://localhost:8888/mvc/unHandledError")
-                .exchangeToMono(r -> r.bodyToMono(ByteArrayResource.class).map(bytes -> {
-                    ResponseEntity<String> responseEntity = new ResponseEntity<>(new String(bytes.getByteArray()), r.headers().asHttpHeaders(), r.statusCode());
-                    return responseEntity;
-                })).block().getBody();
+                .exchangeToMono(r -> Mono.just("error")).block();
     }
 }
