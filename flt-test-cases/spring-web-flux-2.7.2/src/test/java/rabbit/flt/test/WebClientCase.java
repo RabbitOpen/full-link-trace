@@ -3,6 +3,8 @@ package rabbit.flt.test;
 import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
 import rabbit.flt.common.Traceable;
 import rabbit.flt.common.context.TraceContext;
@@ -97,5 +99,36 @@ public class WebClientCase {
                 .flatMap(f -> util.getWebClient().get().uri("http://localhost:8888/mvc/hello1")
                         .retrieve().bodyToMono(String.class));
         TestCase.assertEquals("abc", fm.block());
+    }
+
+    public void unHandledError(WebClientUtil util) throws InterruptedException {
+        TestCase.assertFalse(TraceContext.isTraceOpened());
+        Map<String, TraceData> map = new ConcurrentHashMap<>();
+        Semaphore semaphore = new Semaphore(0);
+        TestTraceHandler.setDiscardDataHandler(d -> {
+            logger.info("traceData: {}#{}", d.getNodeName(), d.getSpanId());
+            map.put(d.getSpanId(), d);
+            semaphore.release();
+        });
+        String result = unHandledErrorCase(util);
+        semaphore.acquire(4);
+        TestCase.assertTrue(result.contains("500"));
+        TestCase.assertEquals("unHandledErrorCase", map.get("0").getNodeName());
+        TestCase.assertEquals("WebClient", map.get("0-0").getNodeName());
+        TestCase.assertTrue( map.get("0-0").getHttpResponse().getBody().contains("500"));
+        TestCase.assertEquals("/mvc/unHandledError", map.get("0-0-0").getNodeName());
+        TestCase.assertTrue(map.get("0-0").getHttpResponse().getBody().contains("500"));
+        TestCase.assertEquals("unHandledError", map.get("0-0-0-0").getNodeName());
+
+        TestTraceHandler.setDiscardDataHandler(null);
+    }
+
+    @Traceable
+    private String unHandledErrorCase(WebClientUtil util) {
+        return util.getWebClient().get().uri("http://localhost:8888/mvc/unHandledError")
+                .exchangeToMono(r -> r.bodyToMono(ByteArrayResource.class).map(bytes -> {
+                    ResponseEntity<String> responseEntity = new ResponseEntity<>(new String(bytes.getByteArray()), r.headers().asHttpHeaders(), r.statusCode());
+                    return responseEntity;
+                })).block().getBody();
     }
 }

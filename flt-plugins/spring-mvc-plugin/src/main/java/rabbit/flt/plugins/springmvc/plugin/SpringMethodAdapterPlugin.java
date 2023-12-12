@@ -160,7 +160,7 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
             TraceData traceData = errorContext.get();
             if (null != traceData) {
                 ModelAndView view = (ModelAndView) result;
-                HttpResponse httpResponse = new HttpResponse();
+                HttpResponse httpResponse = getHttpResponse(traceData);
                 if (null != view) {
                     httpResponse.setBody(truncate(StringUtils.toString(view.getModelMap())));
                 }
@@ -168,14 +168,20 @@ public class SpringMethodAdapterPlugin extends PerformancePlugin {
                 for (String name : response.getHeaderNames()) {
                     httpResponse.addHeader(name, truncate(response.getHeader(name)));
                 }
-                traceData.setHttpResponse(httpResponse);
                 clearContext();
                 traceData.setCost(System.currentTimeMillis() - traceData.getRequestTime());
                 super.handleTraceData(traceData);
             }
-            return ;
+            return;
         }
         super.doFinal(objectEnhanced, method, args, result);
+    }
+
+    private HttpResponse getHttpResponse(TraceData traceData) {
+        if (null == traceData.getHttpResponse()) {
+            traceData.setHttpResponse(new HttpResponse());
+        }
+        return traceData.getHttpResponse();
     }
 
     @Override

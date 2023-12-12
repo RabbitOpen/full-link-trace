@@ -164,4 +164,35 @@ public class WebClientCase {
             return e.getMessage();
         }
     }
+
+    public void unHandledError(WebClientUtil util) throws InterruptedException {
+        TestCase.assertFalse(TraceContext.isTraceOpened());
+        Map<String, TraceData> map = new ConcurrentHashMap<>();
+        Semaphore semaphore = new Semaphore(0);
+        TestTraceHandler.setDiscardDataHandler(d -> {
+            logger.info("traceData: {}#{}", d.getNodeName(), d.getSpanId());
+            map.put(d.getSpanId(), d);
+            semaphore.release();
+        });
+        String result = unHandledErrorCase(util);
+        semaphore.acquire(4);
+        TestCase.assertTrue(result.contains("500"));
+        TestCase.assertEquals("unHandledErrorCase", map.get("0").getNodeName());
+        TestCase.assertEquals("WebClient", map.get("0-0").getNodeName());
+        TestCase.assertTrue( map.get("0-0").getHttpResponse().getBody().contains("500"));
+        TestCase.assertEquals("/mvc/unHandledError", map.get("0-0-0").getNodeName());
+        TestCase.assertTrue(map.get("0-0").getHttpResponse().getBody().contains("500"));
+        TestCase.assertEquals("unHandledError", map.get("0-0-0-0").getNodeName());
+
+        TestTraceHandler.setDiscardDataHandler(null);
+    }
+
+    @Traceable
+    private String unHandledErrorCase(WebClientUtil util) {
+        return util.getWebClient().get().uri("http://localhost:8888/mvc/unHandledError")
+                .exchangeToMono(r -> r.bodyToMono(ByteArrayResource.class).map(bytes -> {
+                    ResponseEntity<String> responseEntity = new ResponseEntity<>(new String(bytes.getByteArray()), r.headers().asHttpHeaders(), r.statusCode());
+                    return responseEntity;
+                })).block().getBody();
+    }
 }

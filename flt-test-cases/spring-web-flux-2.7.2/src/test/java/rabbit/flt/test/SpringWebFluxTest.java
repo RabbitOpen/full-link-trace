@@ -31,6 +31,7 @@ public class SpringWebFluxTest extends BaseCases {
         WebClientCase webClientCase = new WebClientCase();
         webClientCase.singleHttpRequestTest(util);
         webClientCase.cascadedTest(util);
+        webClientCase.unHandledError(util);
         util.close();
         TestCase.assertFalse(ClassProxyLogger.getClassMap().containsKey(IgnoreService.class.getName()));
         TestCase.assertFalse(ClassProxyLogger.getClassMap().containsKey(IgnorePackage.class.getName()));
