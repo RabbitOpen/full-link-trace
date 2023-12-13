@@ -106,6 +106,20 @@ public class WebClientExchangePlugin extends PerformancePlugin {
                 return response;
             }
             return ErrorClientResponseWrapper.proxy(response, traceData);
+        }).onErrorMap(e -> {
+            // 服务方不在线，网络不可达等错误
+            HttpResponse httpResponse = new HttpResponse();
+            httpResponse.setStatusCode(500);
+            httpResponse.setBody(truncate(e.getMessage()));
+            traceData.setHttpResponse(httpResponse);
+            traceData.setCost(System.currentTimeMillis() - traceData.getRequestTime());
+            traceData.setNodeName("WebClient");
+            traceData.setMessageType(MessageType.WEBCLIENT.name());
+            ClientRequest clientRequest = (ClientRequest) args[0];
+            String uri = StringUtils.toString(clientRequest.url());
+            traceData.setNodeDesc(uri);
+            super.handleTraceData(traceData);
+            return e;
         });
     }
 

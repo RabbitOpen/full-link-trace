@@ -165,6 +165,12 @@ public class WebClientCase {
         }
     }
 
+    /**
+     * 未处理的异常
+     *
+     * @param util
+     * @throws InterruptedException
+     */
     public void unHandledError(WebClientUtil util) throws InterruptedException {
         TestCase.assertFalse(TraceContext.isTraceOpened());
         Map<String, TraceData> map = new ConcurrentHashMap<>();
@@ -179,7 +185,7 @@ public class WebClientCase {
         TestCase.assertTrue(result.contains("500"));
         TestCase.assertEquals("unHandledErrorCase", map.get("0").getNodeName());
         TestCase.assertEquals("WebClient", map.get("0-0").getNodeName());
-        TestCase.assertTrue( map.get("0-0").getHttpResponse().getBody().contains("500"));
+        TestCase.assertTrue(map.get("0-0").getHttpResponse().getBody().contains("500"));
         TestCase.assertEquals("/mvc/unHandledError", map.get("0-0-0").getNodeName());
         TestCase.assertTrue(map.get("0-0").getHttpResponse().getBody().contains("500"));
         TestCase.assertEquals("unHandledError", map.get("0-0-0-0").getNodeName());
@@ -194,5 +200,45 @@ public class WebClientCase {
                     ResponseEntity<String> responseEntity = new ResponseEntity<>(new String(bytes.getByteArray()), r.headers().asHttpHeaders(), r.statusCode());
                     return responseEntity;
                 })).block().getBody();
+    }
+
+    /**
+     * 未处理的异常
+     *
+     * @param util
+     * @throws InterruptedException
+     */
+    public void offlineTest(WebClientUtil util) throws InterruptedException {
+        TestCase.assertFalse(TraceContext.isTraceOpened());
+        Map<String, TraceData> map = new ConcurrentHashMap<>();
+        Semaphore semaphore = new Semaphore(0);
+        TestTraceHandler.setDiscardDataHandler(d -> {
+            logger.info("traceData: {}#{}", d.getNodeName(), d.getSpanId());
+            map.put(d.getSpanId(), d);
+            semaphore.release();
+        });
+        String result = offlineCase(util);
+        semaphore.acquire(2);
+        TestCase.assertTrue(result.contains("no further information"));
+        TestCase.assertEquals("offlineCase", map.get("0").getNodeName());
+        TestCase.assertEquals("WebClient", map.get("0-0").getNodeName());
+        TestCase.assertTrue(map.get("0-0").getHttpResponse().getBody().contains("no further information"));
+        TestTraceHandler.setDiscardDataHandler(null);
+    }
+
+    /**
+     * 请求不在的服务
+     *
+     * @param util
+     * @return
+     */
+    @Traceable
+    private String offlineCase(WebClientUtil util) {
+        try {
+            return util.getWebClient().get().uri("http://localhost:12898/mvc/unHandledError")
+                    .exchangeToMono(r -> Mono.just("")).block();
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 }

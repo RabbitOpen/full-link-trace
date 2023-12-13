@@ -3,8 +3,6 @@ package rabbit.flt.test;
 import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
 import rabbit.flt.common.Traceable;
 import rabbit.flt.common.context.TraceContext;
@@ -127,5 +125,45 @@ public class WebClientCase {
     private String unHandledErrorCase(WebClientUtil util) {
         return util.getWebClient().get().uri("http://localhost:8888/mvc/unHandledError")
                 .exchangeToMono(r -> Mono.just("error")).block();
+    }
+
+    /**
+     * 未处理的异常
+     *
+     * @param util
+     * @throws InterruptedException
+     */
+    public void offlineTest(WebClientUtil util) throws InterruptedException {
+        TestCase.assertFalse(TraceContext.isTraceOpened());
+        Map<String, TraceData> map = new ConcurrentHashMap<>();
+        Semaphore semaphore = new Semaphore(0);
+        TestTraceHandler.setDiscardDataHandler(d -> {
+            logger.info("traceData: {}#{}", d.getNodeName(), d.getSpanId());
+            map.put(d.getSpanId(), d);
+            semaphore.release();
+        });
+        String result = offlineCase(util);
+        semaphore.acquire(2);
+        TestCase.assertTrue(result.contains("no further information"));
+        TestCase.assertEquals("offlineCase", map.get("0").getNodeName());
+        TestCase.assertEquals("WebClient", map.get("0-0").getNodeName());
+        TestCase.assertTrue(map.get("0-0").getHttpResponse().getBody().contains("no further information"));
+        TestTraceHandler.setDiscardDataHandler(null);
+    }
+
+    /**
+     * 请求不在的服务
+     *
+     * @param util
+     * @return
+     */
+    @Traceable
+    private String offlineCase(WebClientUtil util) {
+        try {
+            return util.getWebClient().get().uri("http://localhost:12898/mvc/unHandledError")
+                    .exchangeToMono(r -> Mono.just("")).block();
+        } catch (Exception e) {
+            return e.getMessage();
+        }
     }
 }
