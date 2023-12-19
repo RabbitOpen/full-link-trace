@@ -3,8 +3,6 @@ package rabbit.flt.common.trace;
 public enum MessageType {
     METHOD,
     REST,
-    WEBCLIENT,
+    HTTP,               // http请求
     MYBATIS,
-    HTTP_CLIENT3,
-    HTTP_CLIENT4,
 }

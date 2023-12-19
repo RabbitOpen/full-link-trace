@@ -96,7 +96,7 @@ public class WebClientExchangePlugin extends PerformancePlugin {
             traceData.setHttpResponse(httpResponse);
             traceData.setCost(System.currentTimeMillis() - traceData.getRequestTime());
             traceData.setNodeName("WebClient");
-            traceData.setMessageType(MessageType.WEBCLIENT.name());
+            traceData.setMessageType(MessageType.HTTP.name());
             ClientRequest clientRequest = (ClientRequest) args[0];
             String uri = StringUtils.toString(clientRequest.url());
             traceData.setNodeDesc(uri);
@@ -114,7 +114,7 @@ public class WebClientExchangePlugin extends PerformancePlugin {
             traceData.setHttpResponse(httpResponse);
             traceData.setCost(System.currentTimeMillis() - traceData.getRequestTime());
             traceData.setNodeName("WebClient");
-            traceData.setMessageType(MessageType.WEBCLIENT.name());
+            traceData.setMessageType(MessageType.HTTP.name());
             ClientRequest clientRequest = (ClientRequest) args[0];
             String uri = StringUtils.toString(clientRequest.url());
             traceData.setNodeDesc(uri);

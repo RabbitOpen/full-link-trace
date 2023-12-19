@@ -47,8 +47,8 @@ public class HttpClient3Plugin extends PerformancePlugin {
     protected void fillTraceData(TraceData traceData, Object objectEnhanced, Method method, Object[] args, Object result) {
         super.fillTraceData(traceData, objectEnhanced, method, args, result);
         if (null != args[1] && isTraceOpened()) {
-            traceData.setMessageType(MessageType.HTTP_CLIENT3.name());
-            traceData.setNodeName(MessageType.HTTP_CLIENT3.name());
+            traceData.setMessageType(MessageType.HTTP.name());
+            traceData.setNodeName("HTTP_CLIENT3");
             HttpMethod httpMethod = (HttpMethod) args[1];
             try {
                 traceData.setNodeDesc(httpMethod.getURI().toString());
