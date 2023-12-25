@@ -97,7 +97,7 @@ public class RpcTest {
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .filter(new AuthenticationFilter())
+                .addFilter(new AuthenticationFilter())
                 .registerHandler(Authentication.class, (app, sig) -> {
                     if (StringUtils.isEmpty(sig)) {
                         throw new RuntimeException();

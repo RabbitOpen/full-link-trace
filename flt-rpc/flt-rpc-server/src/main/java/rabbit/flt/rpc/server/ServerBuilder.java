@@ -107,7 +107,7 @@ public class ServerBuilder {
      * @param filter
      * @return
      */
-    public ServerBuilder filter(Filter filter) {
+    public ServerBuilder addFilter(Filter filter) {
         operations.add(s -> s.addFilter(filter));
         return this;
     }

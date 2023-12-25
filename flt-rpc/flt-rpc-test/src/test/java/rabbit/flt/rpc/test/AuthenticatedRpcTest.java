@@ -34,7 +34,7 @@ public class AuthenticatedRpcTest {
                 .workerExecutor(NamedExecutor.fixedThreadsPool(1, "worker-executor-"))
                 .bossExecutor(NamedExecutor.fixedThreadsPool(1, "boss-executor-"))
                 .host(host).port(port)
-                .filter(new AuthenticationFilter())
+                .addFilter(new AuthenticationFilter())
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> {
