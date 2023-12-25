@@ -15,6 +15,7 @@ import rabbit.flt.rpc.common.rpc.KeepAlive;
 import rabbit.flt.rpc.common.rpc.ProtocolService;
 import rabbit.flt.rpc.server.Server;
 import rabbit.flt.rpc.server.ServerBuilder;
+import rabbit.flt.rpc.server.filter.AuthenticationFilter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,6 +34,7 @@ public class AuthenticatedRpcTest {
                 .workerExecutor(NamedExecutor.fixedThreadsPool(1, "worker-executor-"))
                 .bossExecutor(NamedExecutor.fixedThreadsPool(1, "boss-executor-"))
                 .host(host).port(port)
+                .filter(new AuthenticationFilter())
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
                 .registerHandler(Authentication.class, (app, sig) -> {

@@ -7,17 +7,11 @@ import rabbit.flt.common.utils.ReflectUtils;
 import rabbit.flt.common.utils.StringUtils;
 import rabbit.flt.rpc.common.*;
 import rabbit.flt.rpc.common.exception.AuthenticationException;
-import rabbit.flt.rpc.common.rpc.Authentication;
 import rabbit.flt.rpc.common.rpc.RpcRequest;
 import rabbit.flt.rpc.common.rpc.RpcResponse;
-import rabbit.flt.rpc.server.proxy.AuthenticationHandler;
-import rabbit.flt.rpc.server.proxy.RpcRequestHandler;
 import reactor.core.publisher.Mono;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
@@ -29,13 +23,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static rabbit.flt.rpc.server.Server.SELECTION_KEY;
 
-public class RequestDispatcher implements Registrar  {
+public class RequestDispatcher implements Registrar {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-
-    public static final ThreadLocal<SelectionKey> keyHolder = new ThreadLocal<>();
-
-    public static final ThreadLocal<Request> requestHolder = new ThreadLocal<>();
 
     private static boolean hasMono;
 
@@ -58,32 +48,34 @@ public class RequestDispatcher implements Registrar  {
      *
      * @param key
      * @param rpcRequest
+     * @param filterChain
      */
-    public void handleRequest(SelectionKey key, RpcRequest rpcRequest) {
+    public void handleRequest(SelectionKey key, RpcRequest rpcRequest, FilterChain filterChain) {
         Request request = rpcRequest.getRequest();
         RpcResponse<Object> response = new RpcResponse<>();
         response.setRequestId(rpcRequest.getRequestId());
         try {
-            keyHolder.set(key);
-            requestHolder.set(request);
-            Object result = callBizMethod(request);
-            if (hasMono && (result instanceof Mono)) {
-                handleMonoResponse(key, response, (Mono) result);
-            } else {
-                response.setData(result);
-                response.setSuccess(true);
-                write(key, response);
-            }
+            FilterChain chain = new FilterChain(filterChain.getFilters(), request, key);
+            chain.add(c -> {
+                Object result = callBizMethod(c.getRequest());
+                if (hasMono && (result instanceof Mono)) {
+                    handleMonoResponse(key, response, (Mono) result);
+                } else {
+                    response.setData(result);
+                    response.setSuccess(true);
+                    write(key, response);
+                }
+                // 后置过滤器
+                c.doChain();
+            });
+            chain.doChain();
         } catch (AuthenticationException e) {
             response.setSuccess(false);
             response.setCode(ResponseCode.UN_AUTHENTICATED);
             response.setMsg(e.getMessage());
             write(key, response);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             responseWhenError(key, response, e);
-        } finally {
-            keyHolder.remove();
-            requestHolder.remove();
         }
     }
 
@@ -124,7 +116,7 @@ public class RequestDispatcher implements Registrar  {
      * @param request
      * @throws Throwable
      */
-    private Object callBizMethod(Request request) throws Throwable {
+    private Object callBizMethod(Request request) {
         try {
             Class clz = request.getInterfaceClz();
             if (!StringUtils.isEmpty(request.getHandlerInterfaceName())) {
@@ -133,8 +125,8 @@ public class RequestDispatcher implements Registrar  {
             Method method = clz.getDeclaredMethod(request.getMethodName(), request.getParameterTypes());
             Object handler = this.handlerCache.get(clz);
             return method.invoke(handler, request.getParameters());
-        } catch (InvocationTargetException e) {
-            throw e.getCause();
+        } catch (Exception e) {
+            throw new RpcException(e.getCause().getMessage());
         }
     }
 
@@ -186,36 +178,11 @@ public class RequestDispatcher implements Registrar  {
      */
     @Override
     public <T> void register(Class<T> clz, T handler) {
-        InvocationHandler proxyHandler;
-        if (Authentication.class == clz) {
-            proxyHandler = new AuthenticationHandler((Authentication) handler);
-        } else {
-            proxyHandler = new RpcRequestHandler(handler);
-        }
-        registerWithNoProxy(clz, Proxy.newProxyInstance(clz.getClassLoader(), new Class[]{clz}, proxyHandler));
+        this.handlerCache.put(clz, handler);
     }
 
     public Object getHandler(Class<?> clz) {
         return handlerCache.get(clz);
     }
 
-    /**
-     * 直接注册（无代理）
-     *
-     * @param clz
-     * @param proxyHandler
-     * @param <T>
-     */
-    public <T> RequestDispatcher registerWithNoProxy(Class<T> clz, Object proxyHandler) {
-        this.handlerCache.put(clz, proxyHandler);
-        return this;
-    }
-
-    public static Request getCurrentRequest() {
-        return requestHolder.get();
-    }
-
-    public static SelectionKey getCurrentSelectionKey() {
-        return keyHolder.get();
-    }
 }

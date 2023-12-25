@@ -32,6 +32,7 @@ import rabbit.flt.rpc.common.rpc.ProtocolService;
 import rabbit.flt.rpc.server.ClientEventHandler;
 import rabbit.flt.rpc.server.Server;
 import rabbit.flt.rpc.server.ServerBuilder;
+import rabbit.flt.rpc.server.filter.AuthenticationFilter;
 import reactor.core.publisher.Mono;
 
 import java.lang.management.ManagementFactory;
@@ -96,6 +97,7 @@ public class RpcTest {
                 .host(host).port(port)
                 .socketOption(StandardSocketOptions.SO_RCVBUF, 256 * 1024)
                 .socketOption(StandardSocketOptions.SO_REUSEADDR, true)
+                .filter(new AuthenticationFilter())
                 .registerHandler(Authentication.class, (app, sig) -> {
                     if (StringUtils.isEmpty(sig)) {
                         throw new RuntimeException();
@@ -163,8 +165,8 @@ public class RpcTest {
         try {
             userService.getName("hello");
             throw new RuntimeException();
-        } catch (Exception e) {
-            TestCase.assertEquals(AuthenticationException.class, e.getClass());
+        } catch (AuthenticationException e) {
+            logger.error(e.getMessage());
         }
         // 密码为空认证会失败
         try {

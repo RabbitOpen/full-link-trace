@@ -65,6 +65,8 @@ public class Server extends AbstractServerChannel implements Registrar {
 
     private boolean started = false;
 
+    private FilterChain filterChain = new FilterChain();
+
     /**
      * 最大空闲时间
      */
@@ -83,7 +85,7 @@ public class Server extends AbstractServerChannel implements Registrar {
             // do nothing
         });
         // 注册心跳
-        getRequestDispatcher().registerWithNoProxy(KeepAlive.class, (KeepAlive) () -> {
+        register(KeepAlive.class, () -> {
             // do nothing
         });
     }
@@ -214,7 +216,7 @@ public class Server extends AbstractServerChannel implements Registrar {
             getRequestDispatcher().write(selectionKey, response);
         } else {
             contextManager.active(selectionKey);
-            getRequestDispatcher().handleRequest(selectionKey, rpcRequest);
+            getRequestDispatcher().handleRequest(selectionKey, rpcRequest, filterChain);
         }
     }
 
@@ -276,5 +278,9 @@ public class Server extends AbstractServerChannel implements Registrar {
 
     public void setClientEventHandler(ClientEventHandler clientEventHandler) {
         this.clientEventHandler = clientEventHandler;
+    }
+
+    public void addFilter(Filter filter) {
+        this.filterChain.add(filter);
     }
 }

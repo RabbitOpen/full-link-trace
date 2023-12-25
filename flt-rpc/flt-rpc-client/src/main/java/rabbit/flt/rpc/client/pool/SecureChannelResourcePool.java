@@ -37,6 +37,7 @@ public class SecureChannelResourcePool extends ChannelResourcePool {
                 channel.setChannelStatus(ChannelStatus.AUTHENTICATED);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
+                channel.disconnected(null);
             }
         });
         super.init(config);

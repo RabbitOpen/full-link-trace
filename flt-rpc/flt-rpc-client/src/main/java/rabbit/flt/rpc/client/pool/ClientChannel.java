@@ -66,7 +66,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
 
     private KeepAlive keepAlive;
 
-    private long lastKeepAliveTime = 0L;
+    private long lastKeepAliveTime = System.currentTimeMillis();
 
     /**
      * 上次泄露检查时间

@@ -103,6 +103,16 @@ public class ServerBuilder {
     }
 
     /**
+     * 添加过滤器
+     * @param filter
+     * @return
+     */
+    public ServerBuilder filter(Filter filter) {
+        operations.add(s -> s.addFilter(filter));
+        return this;
+    }
+
+    /**
      * 设置tcp参数
      * @param key
      * @param value
