@@ -17,6 +17,6 @@ public interface Filter {
      * @return
      */
     default Integer getPriority() {
-        return Integer.MAX_VALUE;
+        return 1000;
     }
 }
