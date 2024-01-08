@@ -36,6 +36,8 @@ public class SecureChannelResourcePool extends ChannelResourcePool {
                 proxy.authenticate(config.getApplicationCode(), signature);
                 channel.setChannelStatus(ChannelStatus.AUTHENTICATED);
             } catch (Exception e) {
+                // 防止因密码错误引发频繁建连接进行认证
+                channel.refreshLastConnectTime();
                 logger.error(e.getMessage(), e);
                 channel.disconnected(null);
             }

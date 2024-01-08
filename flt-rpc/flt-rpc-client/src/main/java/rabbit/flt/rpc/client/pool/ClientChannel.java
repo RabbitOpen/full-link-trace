@@ -209,7 +209,7 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
                     || System.currentTimeMillis() - lastConnectTime < 5000) {
                 return;
             }
-            lastConnectTime = System.currentTimeMillis();
+            this.refreshLastConnectTime();
             if (null != socketChannel) {
                 close(socketChannel);
                 socketChannel = null;
@@ -368,6 +368,10 @@ public class ClientChannel extends AbstractClientChannel implements Client, Keep
 
     protected void resetLastConnectTime() {
         this.lastConnectTime = 0;
+    }
+
+    public void refreshLastConnectTime() {
+        lastConnectTime = System.currentTimeMillis();
     }
 
 }
