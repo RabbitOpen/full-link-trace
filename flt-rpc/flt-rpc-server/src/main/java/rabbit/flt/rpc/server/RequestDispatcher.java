@@ -124,6 +124,9 @@ public class RequestDispatcher implements Registrar {
             }
             Method method = clz.getDeclaredMethod(request.getMethodName(), request.getParameterTypes());
             Object handler = this.handlerCache.get(clz);
+            if (null == handler) {
+                throw new RpcException(String.format("no handler for clz[%s]", clz.getName()));
+            }
             return method.invoke(handler, request.getParameters());
         } catch (Exception e) {
             throw new RpcException(e.getCause().getMessage());
